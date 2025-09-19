@@ -1,0 +1,92 @@
+﻿@model IEnumerable<FuelManagementSystem.Models.Ecard>
+@{
+    ViewBag.Title = "E-Card List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="app-main">
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">E-Card List</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">E-Cards</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="row g-4">
+                <div class="col-md-12">
+                    <!--begin::Table Card-->
+                    <div class="card card-primary card-outline mb-4">
+                        <div class="card-header">
+                            <div class="card-title">All E-Cards</div>
+                            <div class="card-tools">
+                                <a href="@Url.Action("Create", "Ecards")" class="btn btn-sm btn-success">Create New E-Card</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>E-Card ID</th>
+                                        <th>Vehicle</th>
+                                        <th>Balance (ETB)</th>
+                                        <th>Status</th>
+                                        <th>Activation Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.EcardID)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Vehicle.MakeAndType) (@Html.DisplayFor(modelItem => item.PlateNo))</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Balance)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.ActivationDateTime)</td>
+                                            <td>
+                                                <a href="@Url.Action("Details", new { id = item.EcardID })" class="btn btn-sm btn-info">Details</a>
+                                                <a href="@Url.Action("Edit", new { id = item.EcardID })" class="btn btn-sm btn-warning">Edit</a>
+                                                <a href="@Url.Action("Delete", new { id = item.EcardID })" class="btn btn-sm btn-danger">Delete</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--end::Table Card-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content-->
+</main>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTables for better table functionality (optional)
+            $('.table').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true
+            });
+        });
+    </script>
+}

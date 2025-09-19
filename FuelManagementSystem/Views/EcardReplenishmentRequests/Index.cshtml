@@ -1,0 +1,57 @@
+﻿@model IEnumerable<FuelManagementSystem.Models.EcardReplenishmentRequest>
+@{
+    /**/
+
+    ViewBag.Title = "Replenishment Requests";
+}
+
+<h2>Replenishment Requests</h2>
+<p>
+    @Html.ActionLink("Export Approved Requests to PDF", "ExportApprovedToPdf", null, new { @class = "btn btn-danger" })
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ecard</th>
+            <th>Current Balance</th>
+            <th>Requested Amount</th>
+            <th>Balance After</th>
+            <th>Status</th>
+            <th>Requested By</th>
+            <th>Requested At</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.EcardID</td>
+                <td>@item.CurrentBalance</td>
+                <td>@item.RequestedAmount</td>
+                <td>@(item.BalanceAfter.HasValue ? item.BalanceAfter.Value.ToString("N2") : "-")</td>
+                <td>@item.Status</td>
+                <td>@item.RequestedBy</td>
+                <td>@item.RequestedAt</td>
+                <td>
+                    @if (item.Status == "Pending")
+                    {
+                        using (Html.BeginForm("Approve", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                        }
+                        using (Html.BeginForm("Reject", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="text" name="note" placeholder="Reason" class="form-control input-sm" />
+                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

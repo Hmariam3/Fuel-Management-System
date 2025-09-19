@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="fbefe06d9716452f8d7b041ae99bcf4b" Name="Diagram1">
+        <EntityTypeShape EntityType="FuelManagementSystemModel.AuditLog" Width="1.5" PointX="17.75" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.Branch" Width="1.5" PointX="3.75" PointY="3.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.CostCenter" Width="1.5" PointX="3.75" PointY="11" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.Department" Width="1.5" PointX="13.25" PointY="12.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.Document" Width="1.5" PointX="0.75" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.Driver" Width="1.5" PointX="0.75" PointY="6.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.EcardReplenishmentRequest" Width="1.5" PointX="10.5" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.Ecard" Width="1.5" PointX="8.25" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.FuelRefillRequest" Width="1.5" PointX="3" PointY="6.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.FuelStandard" Width="1.5" PointX="6" PointY="13.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.FuelTransaction" Width="1.5" PointX="8.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.FuelType" Width="1.5" PointX="3.75" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.Permission" Width="1.5" PointX="15.5" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.Process" Width="1.5" PointX="8.75" PointY="12.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.RolePermission" Width="1.5" PointX="17.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.Role" Width="1.5" PointX="15.5" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.Subprocess" Width="1.5" PointX="11" PointY="12" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.UserRole" Width="1.5" PointX="17.75" PointY="4.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.User" Width="1.5" PointX="15.5" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.Vehicle" Width="1.5" PointX="6" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.VehicleAssignmentType" Width="1.5" PointX="3.75" PointY="16.25" IsExpanded="true" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__AuditLogs__UserI__04E4BC85" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__Vehicle__BranchI__5CD6CB2B" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK_Users_Branch" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__Vehicle__CostCen__5DCAEF64" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK_Department_Department" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK_Users_Department" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__FuelRefil__Drive__6B24EA82" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__FuelTrans__Drive__70DDC3D8" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__Vehicle__DriverI__5FB337D6" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK_EcardReplenishmentRequest_EcardReplenishmentRequest" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__Ecards__PlateNo__656C112C" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__FuelRefil__Plate__6A30C649" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__FuelTrans__Reque__6EF57B66" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__FuelStand__FuelT__73BA3083" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__FuelTrans__Plate__6FE99F9F" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__Vehicle__FuelTyp__60A75C0F" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK_RolePermissions_Permissions" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK_Subprocess_Process" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK_Users_Process" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__RolePermi__RoleI__6FE99F9F" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK_UserRole_Roles" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK_Users_Subprocess" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK_UserRole_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK__Vehicle__Vehicle__5EBF139D" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

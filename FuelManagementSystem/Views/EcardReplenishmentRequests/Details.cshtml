@@ -1,0 +1,66 @@
+﻿@model FuelManagementSystem.Models.EcardReplenishmentRequest
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>EcardReplenishmentRequest</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.RequestedAmount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RequestedAmount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RequestedBy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RequestedBy)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RequestedAt)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RequestedAt)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Note)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Note)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Ecard.PlateNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Ecard.PlateNo)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

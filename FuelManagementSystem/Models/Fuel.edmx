@@ -1,0 +1,1629 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="FuelManagementSystemModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AuditLogs">
+          <Key>
+            <PropertyRef Name="AuditID" />
+          </Key>
+          <Property Name="AuditID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserID" Type="int" />
+          <Property Name="Action" Type="varchar" MaxLength="100" />
+          <Property Name="TableName" Type="varchar" MaxLength="50" />
+          <Property Name="RecordID" Type="int" />
+          <Property Name="ActionDetails" Type="nvarchar(max)" />
+          <Property Name="ActionDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Branch">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BranchCode" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="BranchName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="SubProcess" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="CostCenter">
+          <Key>
+            <PropertyRef Name="CSID" />
+          </Key>
+          <Property Name="CSID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CostCenterCode" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CostCenterName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="DistrictSapCode" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Department">
+          <Key>
+            <PropertyRef Name="department_Id" />
+          </Key>
+          <Property Name="department_Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="department_Name" Type="nvarchar(max)" />
+          <Property Name="subprocess_id" Type="int" />
+        </EntityType>
+        <EntityType Name="Document">
+          <Key>
+            <PropertyRef Name="DocumentID" />
+          </Key>
+          <Property Name="DocumentID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DocumentType" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="EntityType" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="EntityID" Type="int" Nullable="false" />
+          <Property Name="FilePath" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="FileSize" Type="int" />
+          <Property Name="FileType" Type="varchar" MaxLength="20" />
+          <Property Name="UploadedBy" Type="varchar" MaxLength="100" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedAt" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Driver">
+          <Key>
+            <PropertyRef Name="DriverID" />
+          </Key>
+          <Property Name="DriverID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DriverName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="EmployeeNumber" Type="int" />
+          <Property Name="PhoneNumber" Type="varchar" MaxLength="20" />
+          <Property Name="LicenseNumber" Type="varchar" MaxLength="50" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="CreatedBy" Type="int" />
+        </EntityType>
+        <EntityType Name="EcardReplenishmentRequest">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EcardID" Type="varchar" MaxLength="50" />
+          <Property Name="CurrentBalance" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="RequestedAmount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="BalanceAfter" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="RequestedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="RequestedAt" Type="date" />
+          <Property Name="Status" Type="nvarchar(max)" />
+          <Property Name="Note" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Ecards">
+          <Key>
+            <PropertyRef Name="EcardID" />
+          </Key>
+          <Property Name="EcardID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="PlateNo" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Balance" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Status" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ActivationDateTime" Type="datetime" />
+        </EntityType>
+        <EntityType Name="FuelRefillRequests">
+          <Key>
+            <PropertyRef Name="RequestID" />
+          </Key>
+          <Property Name="RequestID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PlateNo" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="DriverID" Type="int" Nullable="false" />
+          <Property Name="CurrentOdometer" Type="int" Nullable="false" />
+          <Property Name="RequestDateTime" Type="datetime" Nullable="false" />
+          <Property Name="ReceiptImage" Type="varchar" MaxLength="255" />
+          <Property Name="OdometerPhoto" Type="varchar" MaxLength="255" />
+          <Property Name="DigitalSignature" Type="varchar" MaxLength="255" />
+          <Property Name="Status" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="MileageDeviation" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="ReviewStatus" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="FuelStandards">
+          <Key>
+            <PropertyRef Name="StandardID" />
+          </Key>
+          <Property Name="StandardID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="VehicleType" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="FuelTypeID" Type="int" Nullable="false" />
+          <Property Name="StandardKmPerLiter" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="FuelTransactions">
+          <Key>
+            <PropertyRef Name="TransactionID" />
+          </Key>
+          <Property Name="TransactionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RequestID" Type="int" Nullable="false" />
+          <Property Name="PlateNo" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="DriverID" Type="int" Nullable="false" />
+          <Property Name="LitersUsed" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="BegKm" Type="int" Nullable="false" />
+          <Property Name="EndKm" Type="int" Nullable="false" />
+          <Property Name="D_KM" Type="int" Nullable="false" />
+          <Property Name="AvgKmLiter" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="TransactionDateTime" Type="datetime" Nullable="false" />
+          <Property Name="EcardBalanceAfter" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Location" Type="varchar" MaxLength="100" />
+          <Property Name="ReceiptNum" Type="int" />
+          <Property Name="Product" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="FuelTypes">
+          <Key>
+            <PropertyRef Name="FuelTypeID" />
+          </Key>
+          <Property Name="FuelTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FuelTypeName" Type="varchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Permissions">
+          <Key>
+            <PropertyRef Name="PermissionId" />
+          </Key>
+          <Property Name="PermissionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PermissionName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Process">
+          <Key>
+            <PropertyRef Name="proces_Id" />
+          </Key>
+          <Property Name="proces_Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="process_name" Type="nvarchar(max)" />
+          <Property Name="process_acrnm" Type="nvarchar" MaxLength="50" />
+          <Property Name="chief_name" Type="nvarchar(max)" />
+          <Property Name="chief_acrnm" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="RolePermissions">
+          <Key>
+            <PropertyRef Name="RolePermissionId" />
+          </Key>
+          <Property Name="RolePermissionId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RoleId" Type="int" />
+          <Property Name="PermissionId" Type="int" />
+        </EntityType>
+        <EntityType Name="Roles">
+          <Key>
+            <PropertyRef Name="role_id" />
+          </Key>
+          <Property Name="role_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="role_name" Type="nvarchar(max)" />
+          <Property Name="description" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Subprocess">
+          <Key>
+            <PropertyRef Name="subprocess_Id" />
+          </Key>
+          <Property Name="subprocess_Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="subprocess_name" Type="nvarchar(max)" />
+          <Property Name="sunprocess_acrnm" Type="nvarchar" MaxLength="50" />
+          <Property Name="senior_name" Type="nvarchar(max)" />
+          <Property Name="senior_acrnm" Type="nvarchar" MaxLength="50" />
+          <Property Name="process_Id" Type="int" />
+        </EntityType>
+        <EntityType Name="UserRole">
+          <Key>
+            <PropertyRef Name="UserRoleID" />
+          </Key>
+          <Property Name="UserRoleID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserID" Type="int" />
+          <Property Name="RoleID" Type="int" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ADUsername" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="FullName" Type="nvarchar" MaxLength="150" />
+          <Property Name="Email" Type="nvarchar" MaxLength="150" />
+          <Property Name="Position" Type="nvarchar(max)" />
+          <Property Name="Process" Type="int" />
+          <Property Name="Subprocess" Type="int" />
+          <Property Name="Branch" Type="int" />
+          <Property Name="Department" Type="int" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedDate" Type="date" />
+        </EntityType>
+        <EntityType Name="Vehicle">
+          <Key>
+            <PropertyRef Name="PlateNo" />
+          </Key>
+          <Property Name="PlateNo" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="VehicleType" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ChassisNo" Type="varchar" MaxLength="50" />
+          <Property Name="MakeAndType" Type="varchar" MaxLength="100" />
+          <Property Name="BranchID" Type="int" />
+          <Property Name="CostCenterID" Type="int" />
+          <Property Name="VehicleAssignmentType" Type="int" />
+          <Property Name="DriverID" Type="int" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="CreatedBy" Type="int" />
+          <Property Name="FuelTypeID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="VehicleAssignmentType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TypeName" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__AuditLogs__UserI__04E4BC85">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="AuditLogs" Type="Self.AuditLogs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="AuditLogs">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Ecards__PlateNo__656C112C">
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="Ecards" Type="Self.Ecards" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicle">
+              <PropertyRef Name="PlateNo" />
+            </Principal>
+            <Dependent Role="Ecards">
+              <PropertyRef Name="PlateNo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__FuelRefil__Drive__6B24EA82">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="1" />
+          <End Role="FuelRefillRequests" Type="Self.FuelRefillRequests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="DriverID" />
+            </Principal>
+            <Dependent Role="FuelRefillRequests">
+              <PropertyRef Name="DriverID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__FuelRefil__Plate__6A30C649">
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="FuelRefillRequests" Type="Self.FuelRefillRequests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicle">
+              <PropertyRef Name="PlateNo" />
+            </Principal>
+            <Dependent Role="FuelRefillRequests">
+              <PropertyRef Name="PlateNo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__FuelStand__FuelT__73BA3083">
+          <End Role="FuelTypes" Type="Self.FuelTypes" Multiplicity="1" />
+          <End Role="FuelStandards" Type="Self.FuelStandards" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FuelTypes">
+              <PropertyRef Name="FuelTypeID" />
+            </Principal>
+            <Dependent Role="FuelStandards">
+              <PropertyRef Name="FuelTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__FuelTrans__Drive__70DDC3D8">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="1" />
+          <End Role="FuelTransactions" Type="Self.FuelTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="DriverID" />
+            </Principal>
+            <Dependent Role="FuelTransactions">
+              <PropertyRef Name="DriverID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__FuelTrans__Plate__6FE99F9F">
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="FuelTransactions" Type="Self.FuelTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicle">
+              <PropertyRef Name="PlateNo" />
+            </Principal>
+            <Dependent Role="FuelTransactions">
+              <PropertyRef Name="PlateNo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__FuelTrans__Reque__6EF57B66">
+          <End Role="FuelRefillRequests" Type="Self.FuelRefillRequests" Multiplicity="1" />
+          <End Role="FuelTransactions" Type="Self.FuelTransactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FuelRefillRequests">
+              <PropertyRef Name="RequestID" />
+            </Principal>
+            <Dependent Role="FuelTransactions">
+              <PropertyRef Name="RequestID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__RolePermi__RoleI__6FE99F9F">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="0..1" />
+          <End Role="RolePermissions" Type="Self.RolePermissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="role_id" />
+            </Principal>
+            <Dependent Role="RolePermissions">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Vehicle__BranchI__5CD6CB2B">
+          <End Role="Branch" Type="Self.Branch" Multiplicity="0..1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Branch">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="BranchID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Vehicle__CostCen__5DCAEF64">
+          <End Role="CostCenter" Type="Self.CostCenter" Multiplicity="0..1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CostCenter">
+              <PropertyRef Name="CSID" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="CostCenterID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Vehicle__DriverI__5FB337D6">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="0..1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="DriverID" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="DriverID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Vehicle__FuelTyp__60A75C0F">
+          <End Role="FuelTypes" Type="Self.FuelTypes" Multiplicity="1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FuelTypes">
+              <PropertyRef Name="FuelTypeID" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="FuelTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Vehicle__Vehicle__5EBF139D">
+          <End Role="VehicleAssignmentType" Type="Self.VehicleAssignmentType" Multiplicity="0..1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VehicleAssignmentType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="VehicleAssignmentType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Department_Department">
+          <End Role="Subprocess" Type="Self.Subprocess" Multiplicity="0..1" />
+          <End Role="Department" Type="Self.Department" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subprocess">
+              <PropertyRef Name="subprocess_Id" />
+            </Principal>
+            <Dependent Role="Department">
+              <PropertyRef Name="subprocess_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EcardReplenishmentRequest_EcardReplenishmentRequest">
+          <End Role="Ecards" Type="Self.Ecards" Multiplicity="0..1" />
+          <End Role="EcardReplenishmentRequest" Type="Self.EcardReplenishmentRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ecards">
+              <PropertyRef Name="EcardID" />
+            </Principal>
+            <Dependent Role="EcardReplenishmentRequest">
+              <PropertyRef Name="EcardID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RolePermissions_Permissions">
+          <End Role="Permissions" Type="Self.Permissions" Multiplicity="1" />
+          <End Role="RolePermissions" Type="Self.RolePermissions" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Permissions">
+              <PropertyRef Name="PermissionId" />
+            </Principal>
+            <Dependent Role="RolePermissions">
+              <PropertyRef Name="RolePermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Subprocess_Process">
+          <End Role="Process" Type="Self.Process" Multiplicity="0..1" />
+          <End Role="Subprocess" Type="Self.Subprocess" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Process">
+              <PropertyRef Name="proces_Id" />
+            </Principal>
+            <Dependent Role="Subprocess">
+              <PropertyRef Name="process_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRole_Roles">
+          <End Role="Roles" Type="Self.Roles" Multiplicity="0..1" />
+          <End Role="UserRole" Type="Self.UserRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="role_id" />
+            </Principal>
+            <Dependent Role="UserRole">
+              <PropertyRef Name="RoleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRole_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="UserRole" Type="Self.UserRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="UserRole">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Users_Branch">
+          <End Role="Branch" Type="Self.Branch" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.Users" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Branch">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="Branch" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Users_Department">
+          <End Role="Department" Type="Self.Department" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.Users" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Department">
+              <PropertyRef Name="department_Id" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="Department" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Users_Process">
+          <End Role="Process" Type="Self.Process" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.Users" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Process">
+              <PropertyRef Name="proces_Id" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="Process" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Users_Subprocess">
+          <End Role="Subprocess" Type="Self.Subprocess" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.Users" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subprocess">
+              <PropertyRef Name="subprocess_Id" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="Subprocess" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="FuelManagementSystemModelStoreContainer">
+          <EntitySet Name="AuditLogs" EntityType="Self.AuditLogs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Branch" EntityType="Self.Branch" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CostCenter" EntityType="Self.CostCenter" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Department" EntityType="Self.Department" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Document" EntityType="Self.Document" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Driver" EntityType="Self.Driver" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EcardReplenishmentRequest" EntityType="Self.EcardReplenishmentRequest" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Ecards" EntityType="Self.Ecards" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FuelRefillRequests" EntityType="Self.FuelRefillRequests" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FuelStandards" EntityType="Self.FuelStandards" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FuelTransactions" EntityType="Self.FuelTransactions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FuelTypes" EntityType="Self.FuelTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Permissions" EntityType="Self.Permissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Process" EntityType="Self.Process" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RolePermissions" EntityType="Self.RolePermissions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Subprocess" EntityType="Self.Subprocess" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserRole" EntityType="Self.UserRole" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Vehicle" EntityType="Self.Vehicle" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VehicleAssignmentType" EntityType="Self.VehicleAssignmentType" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__AuditLogs__UserI__04E4BC85" Association="Self.FK__AuditLogs__UserI__04E4BC85">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="AuditLogs" EntitySet="AuditLogs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Ecards__PlateNo__656C112C" Association="Self.FK__Ecards__PlateNo__656C112C">
+            <End Role="Vehicle" EntitySet="Vehicle" />
+            <End Role="Ecards" EntitySet="Ecards" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FuelRefil__Drive__6B24EA82" Association="Self.FK__FuelRefil__Drive__6B24EA82">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="FuelRefillRequests" EntitySet="FuelRefillRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FuelRefil__Plate__6A30C649" Association="Self.FK__FuelRefil__Plate__6A30C649">
+            <End Role="Vehicle" EntitySet="Vehicle" />
+            <End Role="FuelRefillRequests" EntitySet="FuelRefillRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FuelStand__FuelT__73BA3083" Association="Self.FK__FuelStand__FuelT__73BA3083">
+            <End Role="FuelTypes" EntitySet="FuelTypes" />
+            <End Role="FuelStandards" EntitySet="FuelStandards" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FuelTrans__Drive__70DDC3D8" Association="Self.FK__FuelTrans__Drive__70DDC3D8">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="FuelTransactions" EntitySet="FuelTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FuelTrans__Plate__6FE99F9F" Association="Self.FK__FuelTrans__Plate__6FE99F9F">
+            <End Role="Vehicle" EntitySet="Vehicle" />
+            <End Role="FuelTransactions" EntitySet="FuelTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FuelTrans__Reque__6EF57B66" Association="Self.FK__FuelTrans__Reque__6EF57B66">
+            <End Role="FuelRefillRequests" EntitySet="FuelRefillRequests" />
+            <End Role="FuelTransactions" EntitySet="FuelTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__RolePermi__RoleI__6FE99F9F" Association="Self.FK__RolePermi__RoleI__6FE99F9F">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="RolePermissions" EntitySet="RolePermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Vehicle__BranchI__5CD6CB2B" Association="Self.FK__Vehicle__BranchI__5CD6CB2B">
+            <End Role="Branch" EntitySet="Branch" />
+            <End Role="Vehicle" EntitySet="Vehicle" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Vehicle__CostCen__5DCAEF64" Association="Self.FK__Vehicle__CostCen__5DCAEF64">
+            <End Role="CostCenter" EntitySet="CostCenter" />
+            <End Role="Vehicle" EntitySet="Vehicle" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Vehicle__DriverI__5FB337D6" Association="Self.FK__Vehicle__DriverI__5FB337D6">
+            <End Role="Driver" EntitySet="Driver" />
+            <End Role="Vehicle" EntitySet="Vehicle" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Vehicle__FuelTyp__60A75C0F" Association="Self.FK__Vehicle__FuelTyp__60A75C0F">
+            <End Role="FuelTypes" EntitySet="FuelTypes" />
+            <End Role="Vehicle" EntitySet="Vehicle" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Vehicle__Vehicle__5EBF139D" Association="Self.FK__Vehicle__Vehicle__5EBF139D">
+            <End Role="VehicleAssignmentType" EntitySet="VehicleAssignmentType" />
+            <End Role="Vehicle" EntitySet="Vehicle" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Department_Department" Association="Self.FK_Department_Department">
+            <End Role="Subprocess" EntitySet="Subprocess" />
+            <End Role="Department" EntitySet="Department" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EcardReplenishmentRequest_EcardReplenishmentRequest" Association="Self.FK_EcardReplenishmentRequest_EcardReplenishmentRequest">
+            <End Role="Ecards" EntitySet="Ecards" />
+            <End Role="EcardReplenishmentRequest" EntitySet="EcardReplenishmentRequest" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RolePermissions_Permissions" Association="Self.FK_RolePermissions_Permissions">
+            <End Role="Permissions" EntitySet="Permissions" />
+            <End Role="RolePermissions" EntitySet="RolePermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Subprocess_Process" Association="Self.FK_Subprocess_Process">
+            <End Role="Process" EntitySet="Process" />
+            <End Role="Subprocess" EntitySet="Subprocess" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRole_Roles" Association="Self.FK_UserRole_Roles">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="UserRole" EntitySet="UserRole" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRole_Users" Association="Self.FK_UserRole_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserRole" EntitySet="UserRole" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Users_Branch" Association="Self.FK_Users_Branch">
+            <End Role="Branch" EntitySet="Branch" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Users_Department" Association="Self.FK_Users_Department">
+            <End Role="Department" EntitySet="Department" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Users_Process" Association="Self.FK_Users_Process">
+            <End Role="Process" EntitySet="Process" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Users_Subprocess" Association="Self.FK_Users_Subprocess">
+            <End Role="Subprocess" EntitySet="Subprocess" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="FuelManagementSystemModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="AuditLog">
+          <Key>
+            <PropertyRef Name="AuditID" />
+          </Key>
+          <Property Name="AuditID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" />
+          <Property Name="Action" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="TableName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="RecordID" Type="Int32" />
+          <Property Name="ActionDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ActionDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="User" Relationship="Self.FK__AuditLogs__UserI__04E4BC85" FromRole="AuditLogs" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Branch">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BranchCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="BranchName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="SubProcess" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Vehicles" Relationship="Self.FK__Vehicle__BranchI__5CD6CB2B" FromRole="Branch" ToRole="Vehicle" />
+          <NavigationProperty Name="Users" Relationship="Self.FK_Users_Branch" FromRole="Branch" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="CostCenter">
+          <Key>
+            <PropertyRef Name="CSID" />
+          </Key>
+          <Property Name="CSID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CostCenterCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CostCenterName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DistrictSapCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Vehicles" Relationship="Self.FK__Vehicle__CostCen__5DCAEF64" FromRole="CostCenter" ToRole="Vehicle" />
+        </EntityType>
+        <EntityType Name="Department">
+          <Key>
+            <PropertyRef Name="department_Id" />
+          </Key>
+          <Property Name="department_Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="department_Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="subprocess_id" Type="Int32" />
+          <NavigationProperty Name="Subprocess" Relationship="Self.FK_Department_Department" FromRole="Department" ToRole="Subprocess" />
+          <NavigationProperty Name="Users" Relationship="Self.FK_Users_Department" FromRole="Department" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Document">
+          <Key>
+            <PropertyRef Name="DocumentID" />
+          </Key>
+          <Property Name="DocumentID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DocumentType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="EntityType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="EntityID" Type="Int32" Nullable="false" />
+          <Property Name="FilePath" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="FileSize" Type="Int32" />
+          <Property Name="FileType" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="UploadedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Driver">
+          <Key>
+            <PropertyRef Name="DriverID" />
+          </Key>
+          <Property Name="DriverID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DriverName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="EmployeeNumber" Type="Int32" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="LicenseNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <NavigationProperty Name="FuelRefillRequests" Relationship="Self.FK__FuelRefil__Drive__6B24EA82" FromRole="Driver" ToRole="FuelRefillRequests" />
+          <NavigationProperty Name="FuelTransactions" Relationship="Self.FK__FuelTrans__Drive__70DDC3D8" FromRole="Driver" ToRole="FuelTransactions" />
+          <NavigationProperty Name="Vehicles" Relationship="Self.FK__Vehicle__DriverI__5FB337D6" FromRole="Driver" ToRole="Vehicle" />
+        </EntityType>
+        <EntityType Name="EcardReplenishmentRequest">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EcardID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="RequestedAmount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="RequestedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RequestedAt" Type="DateTime" Precision="0" />
+          <Property Name="Status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Ecard" Relationship="Self.FK_EcardReplenishmentRequest_EcardReplenishmentRequest" FromRole="EcardReplenishmentRequest" ToRole="Ecards" />
+          <Property Name="CurrentBalance" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="BalanceAfter" Type="Decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="Ecard">
+          <Key>
+            <PropertyRef Name="EcardID" />
+          </Key>
+          <Property Name="EcardID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PlateNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Balance" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Status" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ActivationDateTime" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="EcardReplenishmentRequests" Relationship="Self.FK_EcardReplenishmentRequest_EcardReplenishmentRequest" FromRole="Ecards" ToRole="EcardReplenishmentRequest" />
+          <NavigationProperty Name="Vehicle" Relationship="Self.FK__Ecards__PlateNo__656C112C" FromRole="Ecards" ToRole="Vehicle" />
+        </EntityType>
+        <EntityType Name="FuelRefillRequest">
+          <Key>
+            <PropertyRef Name="RequestID" />
+          </Key>
+          <Property Name="RequestID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PlateNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DriverID" Type="Int32" Nullable="false" />
+          <Property Name="CurrentOdometer" Type="Int32" Nullable="false" />
+          <Property Name="RequestDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ReceiptImage" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="OdometerPhoto" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="DigitalSignature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="MileageDeviation" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="ReviewStatus" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Driver" Relationship="Self.FK__FuelRefil__Drive__6B24EA82" FromRole="FuelRefillRequests" ToRole="Driver" />
+          <NavigationProperty Name="Vehicle" Relationship="Self.FK__FuelRefil__Plate__6A30C649" FromRole="FuelRefillRequests" ToRole="Vehicle" />
+          <NavigationProperty Name="FuelTransactions" Relationship="Self.FK__FuelTrans__Reque__6EF57B66" FromRole="FuelRefillRequests" ToRole="FuelTransactions" />
+        </EntityType>
+        <EntityType Name="FuelStandard">
+          <Key>
+            <PropertyRef Name="StandardID" />
+          </Key>
+          <Property Name="StandardID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="VehicleType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="FuelTypeID" Type="Int32" Nullable="false" />
+          <Property Name="StandardKmPerLiter" Type="Decimal" Precision="5" Scale="2" Nullable="false" />
+          <NavigationProperty Name="FuelType" Relationship="Self.FK__FuelStand__FuelT__73BA3083" FromRole="FuelStandards" ToRole="FuelTypes" />
+        </EntityType>
+        <EntityType Name="FuelTransaction">
+          <Key>
+            <PropertyRef Name="TransactionID" />
+          </Key>
+          <Property Name="TransactionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RequestID" Type="Int32" Nullable="false" />
+          <Property Name="PlateNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DriverID" Type="Int32" Nullable="false" />
+          <Property Name="LitersUsed" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="BegKm" Type="Int32" Nullable="false" />
+          <Property Name="EndKm" Type="Int32" Nullable="false" />
+          <Property Name="D_KM" Type="Int32" Nullable="false" />
+          <Property Name="AvgKmLiter" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="TransactionDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EcardBalanceAfter" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Location" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ReceiptNum" Type="Int32" />
+          <Property Name="Product" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Driver" Relationship="Self.FK__FuelTrans__Drive__70DDC3D8" FromRole="FuelTransactions" ToRole="Driver" />
+          <NavigationProperty Name="FuelRefillRequest" Relationship="Self.FK__FuelTrans__Reque__6EF57B66" FromRole="FuelTransactions" ToRole="FuelRefillRequests" />
+          <NavigationProperty Name="Vehicle" Relationship="Self.FK__FuelTrans__Plate__6FE99F9F" FromRole="FuelTransactions" ToRole="Vehicle" />
+        </EntityType>
+        <EntityType Name="FuelType">
+          <Key>
+            <PropertyRef Name="FuelTypeID" />
+          </Key>
+          <Property Name="FuelTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FuelTypeName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="FuelStandards" Relationship="Self.FK__FuelStand__FuelT__73BA3083" FromRole="FuelTypes" ToRole="FuelStandards" />
+          <NavigationProperty Name="Vehicles" Relationship="Self.FK__Vehicle__FuelTyp__60A75C0F" FromRole="FuelTypes" ToRole="Vehicle" />
+        </EntityType>
+        <EntityType Name="Permission">
+          <Key>
+            <PropertyRef Name="PermissionId" />
+          </Key>
+          <Property Name="PermissionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PermissionName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="RolePermission" Relationship="Self.FK_RolePermissions_Permissions" FromRole="Permissions" ToRole="RolePermissions" />
+        </EntityType>
+        <EntityType Name="Process">
+          <Key>
+            <PropertyRef Name="proces_Id" />
+          </Key>
+          <Property Name="proces_Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="process_name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="process_acrnm" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="chief_name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="chief_acrnm" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Subprocesses" Relationship="Self.FK_Subprocess_Process" FromRole="Process" ToRole="Subprocess" />
+          <NavigationProperty Name="Users" Relationship="Self.FK_Users_Process" FromRole="Process" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="RolePermission">
+          <Key>
+            <PropertyRef Name="RolePermissionId" />
+          </Key>
+          <Property Name="RolePermissionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoleId" Type="Int32" />
+          <Property Name="PermissionId" Type="Int32" />
+          <NavigationProperty Name="Permission" Relationship="Self.FK_RolePermissions_Permissions" FromRole="RolePermissions" ToRole="Permissions" />
+          <NavigationProperty Name="Role" Relationship="Self.FK__RolePermi__RoleI__6FE99F9F" FromRole="RolePermissions" ToRole="Roles" />
+        </EntityType>
+        <EntityType Name="Role">
+          <Key>
+            <PropertyRef Name="role_id" />
+          </Key>
+          <Property Name="role_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="role_name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="RolePermissions" Relationship="Self.FK__RolePermi__RoleI__6FE99F9F" FromRole="Roles" ToRole="RolePermissions" />
+          <NavigationProperty Name="UserRoles" Relationship="Self.FK_UserRole_Roles" FromRole="Roles" ToRole="UserRole" />
+        </EntityType>
+        <EntityType Name="Subprocess">
+          <Key>
+            <PropertyRef Name="subprocess_Id" />
+          </Key>
+          <Property Name="subprocess_Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="subprocess_name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="sunprocess_acrnm" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="senior_name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="senior_acrnm" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="process_Id" Type="Int32" />
+          <NavigationProperty Name="Departments" Relationship="Self.FK_Department_Department" FromRole="Subprocess" ToRole="Department" />
+          <NavigationProperty Name="Process" Relationship="Self.FK_Subprocess_Process" FromRole="Subprocess" ToRole="Process" />
+          <NavigationProperty Name="Users" Relationship="Self.FK_Users_Subprocess" FromRole="Subprocess" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="UserRole">
+          <Key>
+            <PropertyRef Name="UserRoleID" />
+          </Key>
+          <Property Name="UserRoleID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" />
+          <Property Name="RoleID" Type="Int32" />
+          <NavigationProperty Name="Role" Relationship="Self.FK_UserRole_Roles" FromRole="UserRole" ToRole="Roles" />
+          <NavigationProperty Name="User" Relationship="Self.FK_UserRole_Users" FromRole="UserRole" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ADUsername" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FullName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Position" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Process" Type="Int32" />
+          <Property Name="Subprocess" Type="Int32" />
+          <Property Name="Branch" Type="Int32" />
+          <Property Name="Department" Type="Int32" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="AuditLogs" Relationship="Self.FK__AuditLogs__UserI__04E4BC85" FromRole="Users" ToRole="AuditLogs" />
+          <NavigationProperty Name="Branch1" Relationship="Self.FK_Users_Branch" FromRole="Users" ToRole="Branch" />
+          <NavigationProperty Name="Department1" Relationship="Self.FK_Users_Department" FromRole="Users" ToRole="Department" />
+          <NavigationProperty Name="Process1" Relationship="Self.FK_Users_Process" FromRole="Users" ToRole="Process" />
+          <NavigationProperty Name="Subprocess1" Relationship="Self.FK_Users_Subprocess" FromRole="Users" ToRole="Subprocess" />
+          <NavigationProperty Name="UserRoles" Relationship="Self.FK_UserRole_Users" FromRole="Users" ToRole="UserRole" />
+        </EntityType>
+        <EntityType Name="Vehicle">
+          <Key>
+            <PropertyRef Name="PlateNo" />
+          </Key>
+          <Property Name="PlateNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="VehicleType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ChassisNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MakeAndType" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="BranchID" Type="Int32" />
+          <Property Name="CostCenterID" Type="Int32" />
+          <Property Name="VehicleAssignmentType" Type="Int32" />
+          <Property Name="DriverID" Type="Int32" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="Int32" />
+          <Property Name="FuelTypeID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Branch" Relationship="Self.FK__Vehicle__BranchI__5CD6CB2B" FromRole="Vehicle" ToRole="Branch" />
+          <NavigationProperty Name="CostCenter" Relationship="Self.FK__Vehicle__CostCen__5DCAEF64" FromRole="Vehicle" ToRole="CostCenter" />
+          <NavigationProperty Name="Driver" Relationship="Self.FK__Vehicle__DriverI__5FB337D6" FromRole="Vehicle" ToRole="Driver" />
+          <NavigationProperty Name="Ecards" Relationship="Self.FK__Ecards__PlateNo__656C112C" FromRole="Vehicle" ToRole="Ecards" />
+          <NavigationProperty Name="FuelRefillRequests" Relationship="Self.FK__FuelRefil__Plate__6A30C649" FromRole="Vehicle" ToRole="FuelRefillRequests" />
+          <NavigationProperty Name="FuelTransactions" Relationship="Self.FK__FuelTrans__Plate__6FE99F9F" FromRole="Vehicle" ToRole="FuelTransactions" />
+          <NavigationProperty Name="FuelType" Relationship="Self.FK__Vehicle__FuelTyp__60A75C0F" FromRole="Vehicle" ToRole="FuelTypes" />
+          <NavigationProperty Name="VehicleAssignmentType1" Relationship="Self.FK__Vehicle__Vehicle__5EBF139D" FromRole="Vehicle" ToRole="VehicleAssignmentType" />
+        </EntityType>
+        <EntityType Name="VehicleAssignmentType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TypeName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Vehicles" Relationship="Self.FK__Vehicle__Vehicle__5EBF139D" FromRole="VehicleAssignmentType" ToRole="Vehicle" />
+        </EntityType>
+        <Association Name="FK__AuditLogs__UserI__04E4BC85">
+          <End Role="Users" Type="Self.User" Multiplicity="0..1" />
+          <End Role="AuditLogs" Type="Self.AuditLog" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="AuditLogs">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Vehicle__BranchI__5CD6CB2B">
+          <End Role="Branch" Type="Self.Branch" Multiplicity="0..1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Branch">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="BranchID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Users_Branch">
+          <End Role="Branch" Type="Self.Branch" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Branch">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="Branch" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Vehicle__CostCen__5DCAEF64">
+          <End Role="CostCenter" Type="Self.CostCenter" Multiplicity="0..1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CostCenter">
+              <PropertyRef Name="CSID" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="CostCenterID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Department_Department">
+          <End Role="Subprocess" Type="Self.Subprocess" Multiplicity="0..1" />
+          <End Role="Department" Type="Self.Department" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subprocess">
+              <PropertyRef Name="subprocess_Id" />
+            </Principal>
+            <Dependent Role="Department">
+              <PropertyRef Name="subprocess_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Users_Department">
+          <End Role="Department" Type="Self.Department" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Department">
+              <PropertyRef Name="department_Id" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="Department" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__FuelRefil__Drive__6B24EA82">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="1" />
+          <End Role="FuelRefillRequests" Type="Self.FuelRefillRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="DriverID" />
+            </Principal>
+            <Dependent Role="FuelRefillRequests">
+              <PropertyRef Name="DriverID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__FuelTrans__Drive__70DDC3D8">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="1" />
+          <End Role="FuelTransactions" Type="Self.FuelTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="DriverID" />
+            </Principal>
+            <Dependent Role="FuelTransactions">
+              <PropertyRef Name="DriverID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Vehicle__DriverI__5FB337D6">
+          <End Role="Driver" Type="Self.Driver" Multiplicity="0..1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Driver">
+              <PropertyRef Name="DriverID" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="DriverID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EcardReplenishmentRequest_EcardReplenishmentRequest">
+          <End Role="Ecards" Type="Self.Ecard" Multiplicity="0..1" />
+          <End Role="EcardReplenishmentRequest" Type="Self.EcardReplenishmentRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ecards">
+              <PropertyRef Name="EcardID" />
+            </Principal>
+            <Dependent Role="EcardReplenishmentRequest">
+              <PropertyRef Name="EcardID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Ecards__PlateNo__656C112C">
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="Ecards" Type="Self.Ecard" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicle">
+              <PropertyRef Name="PlateNo" />
+            </Principal>
+            <Dependent Role="Ecards">
+              <PropertyRef Name="PlateNo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__FuelRefil__Plate__6A30C649">
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="FuelRefillRequests" Type="Self.FuelRefillRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicle">
+              <PropertyRef Name="PlateNo" />
+            </Principal>
+            <Dependent Role="FuelRefillRequests">
+              <PropertyRef Name="PlateNo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__FuelTrans__Reque__6EF57B66">
+          <End Role="FuelRefillRequests" Type="Self.FuelRefillRequest" Multiplicity="1" />
+          <End Role="FuelTransactions" Type="Self.FuelTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FuelRefillRequests">
+              <PropertyRef Name="RequestID" />
+            </Principal>
+            <Dependent Role="FuelTransactions">
+              <PropertyRef Name="RequestID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__FuelStand__FuelT__73BA3083">
+          <End Role="FuelTypes" Type="Self.FuelType" Multiplicity="1" />
+          <End Role="FuelStandards" Type="Self.FuelStandard" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FuelTypes">
+              <PropertyRef Name="FuelTypeID" />
+            </Principal>
+            <Dependent Role="FuelStandards">
+              <PropertyRef Name="FuelTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__FuelTrans__Plate__6FE99F9F">
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="FuelTransactions" Type="Self.FuelTransaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicle">
+              <PropertyRef Name="PlateNo" />
+            </Principal>
+            <Dependent Role="FuelTransactions">
+              <PropertyRef Name="PlateNo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Vehicle__FuelTyp__60A75C0F">
+          <End Role="FuelTypes" Type="Self.FuelType" Multiplicity="1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FuelTypes">
+              <PropertyRef Name="FuelTypeID" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="FuelTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RolePermissions_Permissions">
+          <End Role="Permissions" Type="Self.Permission" Multiplicity="1" />
+          <End Role="RolePermissions" Type="Self.RolePermission" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Permissions">
+              <PropertyRef Name="PermissionId" />
+            </Principal>
+            <Dependent Role="RolePermissions">
+              <PropertyRef Name="RolePermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Subprocess_Process">
+          <End Role="Process" Type="Self.Process" Multiplicity="0..1" />
+          <End Role="Subprocess" Type="Self.Subprocess" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Process">
+              <PropertyRef Name="proces_Id" />
+            </Principal>
+            <Dependent Role="Subprocess">
+              <PropertyRef Name="process_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Users_Process">
+          <End Role="Process" Type="Self.Process" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Process">
+              <PropertyRef Name="proces_Id" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="Process" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__RolePermi__RoleI__6FE99F9F">
+          <End Role="Roles" Type="Self.Role" Multiplicity="0..1" />
+          <End Role="RolePermissions" Type="Self.RolePermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="role_id" />
+            </Principal>
+            <Dependent Role="RolePermissions">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRole_Roles">
+          <End Role="Roles" Type="Self.Role" Multiplicity="0..1" />
+          <End Role="UserRole" Type="Self.UserRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Roles">
+              <PropertyRef Name="role_id" />
+            </Principal>
+            <Dependent Role="UserRole">
+              <PropertyRef Name="RoleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Users_Subprocess">
+          <End Role="Subprocess" Type="Self.Subprocess" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.User" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subprocess">
+              <PropertyRef Name="subprocess_Id" />
+            </Principal>
+            <Dependent Role="Users">
+              <PropertyRef Name="Subprocess" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRole_Users">
+          <End Role="Users" Type="Self.User" Multiplicity="0..1" />
+          <End Role="UserRole" Type="Self.UserRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="UserRole">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Vehicle__Vehicle__5EBF139D">
+          <End Role="VehicleAssignmentType" Type="Self.VehicleAssignmentType" Multiplicity="0..1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VehicleAssignmentType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="VehicleAssignmentType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="FuelManagementSystemEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AuditLogs" EntityType="Self.AuditLog" />
+          <EntitySet Name="Branches" EntityType="Self.Branch" />
+          <EntitySet Name="CostCenters" EntityType="Self.CostCenter" />
+          <EntitySet Name="Departments" EntityType="Self.Department" />
+          <EntitySet Name="Documents" EntityType="Self.Document" />
+          <EntitySet Name="Drivers" EntityType="Self.Driver" />
+          <EntitySet Name="EcardReplenishmentRequests" EntityType="Self.EcardReplenishmentRequest" />
+          <EntitySet Name="Ecards" EntityType="Self.Ecard" />
+          <EntitySet Name="FuelRefillRequests" EntityType="Self.FuelRefillRequest" />
+          <EntitySet Name="FuelStandards" EntityType="Self.FuelStandard" />
+          <EntitySet Name="FuelTransactions" EntityType="Self.FuelTransaction" />
+          <EntitySet Name="FuelTypes" EntityType="Self.FuelType" />
+          <EntitySet Name="Permissions" EntityType="Self.Permission" />
+          <EntitySet Name="Processes" EntityType="Self.Process" />
+          <EntitySet Name="RolePermissions" EntityType="Self.RolePermission" />
+          <EntitySet Name="Roles" EntityType="Self.Role" />
+          <EntitySet Name="Subprocesses" EntityType="Self.Subprocess" />
+          <EntitySet Name="UserRoles" EntityType="Self.UserRole" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <EntitySet Name="Vehicles" EntityType="Self.Vehicle" />
+          <EntitySet Name="VehicleAssignmentTypes" EntityType="Self.VehicleAssignmentType" />
+          <AssociationSet Name="FK__AuditLogs__UserI__04E4BC85" Association="Self.FK__AuditLogs__UserI__04E4BC85">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="AuditLogs" EntitySet="AuditLogs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Vehicle__BranchI__5CD6CB2B" Association="Self.FK__Vehicle__BranchI__5CD6CB2B">
+            <End Role="Branch" EntitySet="Branches" />
+            <End Role="Vehicle" EntitySet="Vehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Users_Branch" Association="Self.FK_Users_Branch">
+            <End Role="Branch" EntitySet="Branches" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Vehicle__CostCen__5DCAEF64" Association="Self.FK__Vehicle__CostCen__5DCAEF64">
+            <End Role="CostCenter" EntitySet="CostCenters" />
+            <End Role="Vehicle" EntitySet="Vehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Department_Department" Association="Self.FK_Department_Department">
+            <End Role="Subprocess" EntitySet="Subprocesses" />
+            <End Role="Department" EntitySet="Departments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Users_Department" Association="Self.FK_Users_Department">
+            <End Role="Department" EntitySet="Departments" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FuelRefil__Drive__6B24EA82" Association="Self.FK__FuelRefil__Drive__6B24EA82">
+            <End Role="Driver" EntitySet="Drivers" />
+            <End Role="FuelRefillRequests" EntitySet="FuelRefillRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FuelTrans__Drive__70DDC3D8" Association="Self.FK__FuelTrans__Drive__70DDC3D8">
+            <End Role="Driver" EntitySet="Drivers" />
+            <End Role="FuelTransactions" EntitySet="FuelTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Vehicle__DriverI__5FB337D6" Association="Self.FK__Vehicle__DriverI__5FB337D6">
+            <End Role="Driver" EntitySet="Drivers" />
+            <End Role="Vehicle" EntitySet="Vehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EcardReplenishmentRequest_EcardReplenishmentRequest" Association="Self.FK_EcardReplenishmentRequest_EcardReplenishmentRequest">
+            <End Role="Ecards" EntitySet="Ecards" />
+            <End Role="EcardReplenishmentRequest" EntitySet="EcardReplenishmentRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Ecards__PlateNo__656C112C" Association="Self.FK__Ecards__PlateNo__656C112C">
+            <End Role="Vehicle" EntitySet="Vehicles" />
+            <End Role="Ecards" EntitySet="Ecards" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FuelRefil__Plate__6A30C649" Association="Self.FK__FuelRefil__Plate__6A30C649">
+            <End Role="Vehicle" EntitySet="Vehicles" />
+            <End Role="FuelRefillRequests" EntitySet="FuelRefillRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FuelTrans__Reque__6EF57B66" Association="Self.FK__FuelTrans__Reque__6EF57B66">
+            <End Role="FuelRefillRequests" EntitySet="FuelRefillRequests" />
+            <End Role="FuelTransactions" EntitySet="FuelTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FuelStand__FuelT__73BA3083" Association="Self.FK__FuelStand__FuelT__73BA3083">
+            <End Role="FuelTypes" EntitySet="FuelTypes" />
+            <End Role="FuelStandards" EntitySet="FuelStandards" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FuelTrans__Plate__6FE99F9F" Association="Self.FK__FuelTrans__Plate__6FE99F9F">
+            <End Role="Vehicle" EntitySet="Vehicles" />
+            <End Role="FuelTransactions" EntitySet="FuelTransactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Vehicle__FuelTyp__60A75C0F" Association="Self.FK__Vehicle__FuelTyp__60A75C0F">
+            <End Role="FuelTypes" EntitySet="FuelTypes" />
+            <End Role="Vehicle" EntitySet="Vehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RolePermissions_Permissions" Association="Self.FK_RolePermissions_Permissions">
+            <End Role="Permissions" EntitySet="Permissions" />
+            <End Role="RolePermissions" EntitySet="RolePermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Subprocess_Process" Association="Self.FK_Subprocess_Process">
+            <End Role="Process" EntitySet="Processes" />
+            <End Role="Subprocess" EntitySet="Subprocesses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Users_Process" Association="Self.FK_Users_Process">
+            <End Role="Process" EntitySet="Processes" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK__RolePermi__RoleI__6FE99F9F" Association="Self.FK__RolePermi__RoleI__6FE99F9F">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="RolePermissions" EntitySet="RolePermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRole_Roles" Association="Self.FK_UserRole_Roles">
+            <End Role="Roles" EntitySet="Roles" />
+            <End Role="UserRole" EntitySet="UserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Users_Subprocess" Association="Self.FK_Users_Subprocess">
+            <End Role="Subprocess" EntitySet="Subprocesses" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRole_Users" Association="Self.FK_UserRole_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="UserRole" EntitySet="UserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Vehicle__Vehicle__5EBF139D" Association="Self.FK__Vehicle__Vehicle__5EBF139D">
+            <End Role="VehicleAssignmentType" EntitySet="VehicleAssignmentTypes" />
+            <End Role="Vehicle" EntitySet="Vehicles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="FuelManagementSystemModelStoreContainer" CdmEntityContainer="FuelManagementSystemEntities">
+          <EntitySetMapping Name="AuditLogs">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.AuditLog">
+              <MappingFragment StoreEntitySet="AuditLogs">
+                <ScalarProperty Name="AuditID" ColumnName="AuditID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="TableName" ColumnName="TableName" />
+                <ScalarProperty Name="RecordID" ColumnName="RecordID" />
+                <ScalarProperty Name="ActionDetails" ColumnName="ActionDetails" />
+                <ScalarProperty Name="ActionDate" ColumnName="ActionDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Branches">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.Branch">
+              <MappingFragment StoreEntitySet="Branch">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="BranchCode" ColumnName="BranchCode" />
+                <ScalarProperty Name="BranchName" ColumnName="BranchName" />
+                <ScalarProperty Name="SubProcess" ColumnName="SubProcess" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CostCenters">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.CostCenter">
+              <MappingFragment StoreEntitySet="CostCenter">
+                <ScalarProperty Name="CSID" ColumnName="CSID" />
+                <ScalarProperty Name="CostCenterCode" ColumnName="CostCenterCode" />
+                <ScalarProperty Name="CostCenterName" ColumnName="CostCenterName" />
+                <ScalarProperty Name="DistrictSapCode" ColumnName="DistrictSapCode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Departments">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.Department">
+              <MappingFragment StoreEntitySet="Department">
+                <ScalarProperty Name="department_Id" ColumnName="department_Id" />
+                <ScalarProperty Name="department_Name" ColumnName="department_Name" />
+                <ScalarProperty Name="subprocess_id" ColumnName="subprocess_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Documents">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.Document">
+              <MappingFragment StoreEntitySet="Document">
+                <ScalarProperty Name="DocumentID" ColumnName="DocumentID" />
+                <ScalarProperty Name="DocumentType" ColumnName="DocumentType" />
+                <ScalarProperty Name="EntityType" ColumnName="EntityType" />
+                <ScalarProperty Name="EntityID" ColumnName="EntityID" />
+                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
+                <ScalarProperty Name="FileSize" ColumnName="FileSize" />
+                <ScalarProperty Name="FileType" ColumnName="FileType" />
+                <ScalarProperty Name="UploadedBy" ColumnName="UploadedBy" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Drivers">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.Driver">
+              <MappingFragment StoreEntitySet="Driver">
+                <ScalarProperty Name="DriverID" ColumnName="DriverID" />
+                <ScalarProperty Name="DriverName" ColumnName="DriverName" />
+                <ScalarProperty Name="EmployeeNumber" ColumnName="EmployeeNumber" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="LicenseNumber" ColumnName="LicenseNumber" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EcardReplenishmentRequests">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.EcardReplenishmentRequest">
+              <MappingFragment StoreEntitySet="EcardReplenishmentRequest">
+                <ScalarProperty Name="BalanceAfter" ColumnName="BalanceAfter" />
+                <ScalarProperty Name="CurrentBalance" ColumnName="CurrentBalance" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EcardID" ColumnName="EcardID" />
+                <ScalarProperty Name="RequestedAmount" ColumnName="RequestedAmount" />
+                <ScalarProperty Name="RequestedBy" ColumnName="RequestedBy" />
+                <ScalarProperty Name="RequestedAt" ColumnName="RequestedAt" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Note" ColumnName="Note" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Ecards">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.Ecard">
+              <MappingFragment StoreEntitySet="Ecards">
+                <ScalarProperty Name="EcardID" ColumnName="EcardID" />
+                <ScalarProperty Name="PlateNo" ColumnName="PlateNo" />
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="ActivationDateTime" ColumnName="ActivationDateTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FuelRefillRequests">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.FuelRefillRequest">
+              <MappingFragment StoreEntitySet="FuelRefillRequests">
+                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
+                <ScalarProperty Name="PlateNo" ColumnName="PlateNo" />
+                <ScalarProperty Name="DriverID" ColumnName="DriverID" />
+                <ScalarProperty Name="CurrentOdometer" ColumnName="CurrentOdometer" />
+                <ScalarProperty Name="RequestDateTime" ColumnName="RequestDateTime" />
+                <ScalarProperty Name="ReceiptImage" ColumnName="ReceiptImage" />
+                <ScalarProperty Name="OdometerPhoto" ColumnName="OdometerPhoto" />
+                <ScalarProperty Name="DigitalSignature" ColumnName="DigitalSignature" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="MileageDeviation" ColumnName="MileageDeviation" />
+                <ScalarProperty Name="ReviewStatus" ColumnName="ReviewStatus" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FuelStandards">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.FuelStandard">
+              <MappingFragment StoreEntitySet="FuelStandards">
+                <ScalarProperty Name="StandardID" ColumnName="StandardID" />
+                <ScalarProperty Name="VehicleType" ColumnName="VehicleType" />
+                <ScalarProperty Name="FuelTypeID" ColumnName="FuelTypeID" />
+                <ScalarProperty Name="StandardKmPerLiter" ColumnName="StandardKmPerLiter" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FuelTransactions">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.FuelTransaction">
+              <MappingFragment StoreEntitySet="FuelTransactions">
+                <ScalarProperty Name="TransactionID" ColumnName="TransactionID" />
+                <ScalarProperty Name="RequestID" ColumnName="RequestID" />
+                <ScalarProperty Name="PlateNo" ColumnName="PlateNo" />
+                <ScalarProperty Name="DriverID" ColumnName="DriverID" />
+                <ScalarProperty Name="LitersUsed" ColumnName="LitersUsed" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="BegKm" ColumnName="BegKm" />
+                <ScalarProperty Name="EndKm" ColumnName="EndKm" />
+                <ScalarProperty Name="D_KM" ColumnName="D_KM" />
+                <ScalarProperty Name="AvgKmLiter" ColumnName="AvgKmLiter" />
+                <ScalarProperty Name="TransactionDateTime" ColumnName="TransactionDateTime" />
+                <ScalarProperty Name="EcardBalanceAfter" ColumnName="EcardBalanceAfter" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="ReceiptNum" ColumnName="ReceiptNum" />
+                <ScalarProperty Name="Product" ColumnName="Product" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FuelTypes">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.FuelType">
+              <MappingFragment StoreEntitySet="FuelTypes">
+                <ScalarProperty Name="FuelTypeID" ColumnName="FuelTypeID" />
+                <ScalarProperty Name="FuelTypeName" ColumnName="FuelTypeName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Permissions">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.Permission">
+              <MappingFragment StoreEntitySet="Permissions">
+                <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
+                <ScalarProperty Name="PermissionName" ColumnName="PermissionName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Processes">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.Process">
+              <MappingFragment StoreEntitySet="Process">
+                <ScalarProperty Name="proces_Id" ColumnName="proces_Id" />
+                <ScalarProperty Name="process_name" ColumnName="process_name" />
+                <ScalarProperty Name="process_acrnm" ColumnName="process_acrnm" />
+                <ScalarProperty Name="chief_name" ColumnName="chief_name" />
+                <ScalarProperty Name="chief_acrnm" ColumnName="chief_acrnm" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RolePermissions">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.RolePermission">
+              <MappingFragment StoreEntitySet="RolePermissions">
+                <ScalarProperty Name="RolePermissionId" ColumnName="RolePermissionId" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="PermissionId" ColumnName="PermissionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Roles">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.Role">
+              <MappingFragment StoreEntitySet="Roles">
+                <ScalarProperty Name="role_id" ColumnName="role_id" />
+                <ScalarProperty Name="role_name" ColumnName="role_name" />
+                <ScalarProperty Name="description" ColumnName="description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Subprocesses">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.Subprocess">
+              <MappingFragment StoreEntitySet="Subprocess">
+                <ScalarProperty Name="subprocess_Id" ColumnName="subprocess_Id" />
+                <ScalarProperty Name="subprocess_name" ColumnName="subprocess_name" />
+                <ScalarProperty Name="sunprocess_acrnm" ColumnName="sunprocess_acrnm" />
+                <ScalarProperty Name="senior_name" ColumnName="senior_name" />
+                <ScalarProperty Name="senior_acrnm" ColumnName="senior_acrnm" />
+                <ScalarProperty Name="process_Id" ColumnName="process_Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserRoles">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.UserRole">
+              <MappingFragment StoreEntitySet="UserRole">
+                <ScalarProperty Name="UserRoleID" ColumnName="UserRoleID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="RoleID" ColumnName="RoleID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ADUsername" ColumnName="ADUsername" />
+                <ScalarProperty Name="FullName" ColumnName="FullName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Position" ColumnName="Position" />
+                <ScalarProperty Name="Process" ColumnName="Process" />
+                <ScalarProperty Name="Subprocess" ColumnName="Subprocess" />
+                <ScalarProperty Name="Branch" ColumnName="Branch" />
+                <ScalarProperty Name="Department" ColumnName="Department" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Vehicles">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.Vehicle">
+              <MappingFragment StoreEntitySet="Vehicle">
+                <ScalarProperty Name="PlateNo" ColumnName="PlateNo" />
+                <ScalarProperty Name="VehicleType" ColumnName="VehicleType" />
+                <ScalarProperty Name="ChassisNo" ColumnName="ChassisNo" />
+                <ScalarProperty Name="MakeAndType" ColumnName="MakeAndType" />
+                <ScalarProperty Name="BranchID" ColumnName="BranchID" />
+                <ScalarProperty Name="CostCenterID" ColumnName="CostCenterID" />
+                <ScalarProperty Name="VehicleAssignmentType" ColumnName="VehicleAssignmentType" />
+                <ScalarProperty Name="DriverID" ColumnName="DriverID" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="FuelTypeID" ColumnName="FuelTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VehicleAssignmentTypes">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.VehicleAssignmentType">
+              <MappingFragment StoreEntitySet="VehicleAssignmentType">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="TypeName" ColumnName="TypeName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

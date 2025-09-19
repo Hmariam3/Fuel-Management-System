@@ -1,0 +1,80 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Import Transactions";
+}
+
+<h2>Import Transactions</h2>
+
+@if (!string.IsNullOrEmpty(ViewBag.Error))
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+else if (!string.IsNullOrEmpty(ViewBag.Warning))
+{
+    <div class="alert alert-warning">@ViewBag.Warning</div>
+}
+else if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div class="alert alert-success">@ViewBag.Message</div>
+}
+
+<!-- Preview Form -->
+<form action="@Url.Action("PreviewApiTransactions", "ImportTransactions")" method="post">
+    <div class="form-group">
+        <label for="cardId">Enter Card ID</label>
+        <input type="text" id="cardId" name="cardId" class="form-control"
+               placeholder="e.g. 123456" value="@Request["cardId"]" required />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Preview API Transactions</button>
+</form>
+
+@if (ViewBag.Transactions != null && ((IEnumerable<FuelManagementSystem.Models.ApiTransaction>)ViewBag.Transactions).Any())
+{
+    <hr />
+    <h3>Previewed Transactions</h3>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Card ID</th>
+                <th>Client</th>
+                <th>Location</th>
+                <th>Receipt #</th>
+                <th>Quantity (Liters)</th>
+                <th>Amount</th>
+                <th>Balance</th>
+                <th>Product</th>
+                <th>Currency</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var transaction in (IEnumerable<FuelManagementSystem.Models.ApiTransaction>)ViewBag.Transactions)
+            {
+                <tr>
+                    <td>@transaction.Id</td>
+                    <td>@transaction.IdCarte</td>
+                    <td>@transaction.Client</td>
+                    <td>@transaction.Lieu</td>
+                    <td>@transaction.NoTicket</td>
+                    <td>@transaction.Quantity</td>
+                    <td>@transaction.Amount</td>
+                    <td>@transaction.Solde</td>
+                    <td>@transaction.Product</td>
+                    <td>@transaction.Currency</td>
+                    <td>@transaction.TransactionDateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Import Form (only shown after preview) -->
+    <form action="@Url.Action("ImportFromApi", "ImportTransactions")" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="cardId" value="@Request["cardId"]" />
+        <button type="submit" class="btn btn-success">Import Transactions to Database</button>
+    </form>
+}

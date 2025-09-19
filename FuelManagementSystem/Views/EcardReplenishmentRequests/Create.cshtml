@@ -1,0 +1,24 @@
+﻿@model FuelManagementSystem.Models.EcardReplenishmentRequest
+@{
+    ViewBag.Title = "Request Replenishment";
+}
+
+<h2>Request Replenishment</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        @Html.LabelFor(m => m.EcardID)
+        @Html.DropDownList("EcardID", null, "Select Card", new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.RequestedAmount)
+        @Html.TextBoxFor(m => m.RequestedAmount, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Note)
+        @Html.TextAreaFor(m => m.Note, new { @class = "form-control" })
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Request</button>
+}

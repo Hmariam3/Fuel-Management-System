@@ -1,0 +1,236 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>FMS - Login</title>
+    <link rel="stylesheet" href="~/dist/css/adminlte.min.css" />
+    <link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(40, 232, 249, 0.3);
+            background: #00ADEF;
+            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+            /* Infinity Sign Background */
+            body::before {
+                content: '∞';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 150vw; /* Increase until it fully covers */
+                color: rgba(255, 255, 255, 0.5);
+                z-index: -1;
+                font-family: Arial, sans-serif;
+                font-weight: bold;
+                opacity: 0.4;
+                line-height: 1;
+                white-space: nowrap;
+            }
+
+
+        .login-container {
+            max-width: 1000px;
+            width: 95%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            display: flex;
+            flex-direction: row;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-image-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(45deg, #2563eb, #1e40af);
+        }
+
+        .login-image {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            min-height: 350px;
+            opacity: 0.9;
+            transition: transform 0.5s ease;
+        }
+
+        .login-image:hover {
+            transform: scale(1.05);
+        }
+
+        .login-form {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #ffffff;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: #00ADEF;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background: linear-gradient(90deg, #00ADEF, #00ADEF);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+            }
+
+        .form-label {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 25px;
+            background: #fee2e2;
+            color: #991b1b;
+            border: none;
+        }
+
+        h2 {
+            color: #1f2937;
+            font-weight: 700;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            text-align: center;
+            letter-spacing: -0.025em;
+        }
+
+        @@media (max-width: 767px) {
+            .login-container {
+                flex-direction: column;
+                width: 90%;
+            }
+
+            .login-image-container {
+                flex: 1 1 100%;
+                max-height: 250px;
+            }
+
+            .login-image {
+                height: 100%;
+                object-position: center;
+            }
+
+            .login-form {
+                padding: 25px;
+            }
+
+            body::before {
+                background-size: 20px 20px;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .login-container {
+                width: 100%;
+                border-radius: 12px;
+            }
+
+            .login-form {
+                padding: 20px;
+            }
+
+            .btn-primary {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <!-- Image Section -->
+        <div class="login-image-container">
+            <img src="/dist/assets/img/Fuel-Management-Solutions.jpg" alt="FMS Logo" class="login-image" />
+        </div>
+        <!-- Form Section -->
+        <div class="login-form">
+            <h2>Fuel Management Solution</h2>
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @ViewBag.Error
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    @Html.Label("username", "Username", new { @class = "form-label" })
+                    @Html.TextBox("username", null, new { @class = "form-control", required = "required" })
+                </div>
+                <div class="mb-3">
+                    @Html.Label("password", "Password", new { @class = "form-label" })
+                    @Html.Password("password", null, new { @class = "form-control", required = "required" })
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Log In</button>
+            }
+        </div>
+    </div>
+    <script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

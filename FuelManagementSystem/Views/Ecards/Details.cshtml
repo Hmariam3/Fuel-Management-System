@@ -1,0 +1,61 @@
+﻿@model FuelManagementSystem.Models.Ecard
+@{
+    ViewBag.Title = "E-Card Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="app-main">
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">E-Card Details</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Ecards")">E-Cards</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Details</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="row g-4">
+                <div class="col-md-12">
+                    <!--begin::Details Card-->
+                    <div class="card card-info card-outline mb-4">
+                        <div class="card-header">
+                            <div class="card-title">E-Card Information</div>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">E-Card ID</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.EcardID)</dd>
+                                <dt class="col-sm-4">Vehicle</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Vehicle.MakeAndType) (@Html.DisplayFor(model => model.PlateNo))</dd>
+                                <dt class="col-sm-4">Balance (ETB)</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Balance)</dd>
+                                <dt class="col-sm-4">Status</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Status)</dd>
+                                <dt class="col-sm-4">Activation Date</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.ActivationDateTime)</dd>
+                            </dl>
+                        </div>
+                        <div class="card-footer">
+                            <a href="@Url.Action("Edit", "Ecards", new { id = Model.EcardID })" class="btn btn-warning me-2">Edit</a>
+                            <a href="@Url.Action("Index", "Ecards")" class="btn btn-secondary">Back to List</a>
+                        </div>
+                    </div>
+                    <!--end::Details Card-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content-->
+</main>
