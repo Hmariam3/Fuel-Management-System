@@ -52,6 +52,7 @@
         <AssociationConnector Association="FuelManagementSystemModel.FK_Vehicle_UserOrgan" ManuallyRouted="false" />
         <AssociationConnector Association="FuelManagementSystemModel.FK_UserRole_Users" ManuallyRouted="false" />
         <AssociationConnector Association="FuelManagementSystemModel.FK__Vehicle__Vehicle__5EBF139D" ManuallyRouted="false" />
+        <AssociationConnector Association="FuelManagementSystemModel.FK_Driver_Users" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -1,0 +1,185 @@
+﻿@model FuelManagementSystem.Models.Vehicle
+
+@{
+    ViewBag.Title = "Vehicle Details - Plate No " + Model?.PlateNo;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var ecards = ViewBag.Ecards as IEnumerable<FuelManagementSystem.Models.Ecard>;
+}
+
+<main class="app-main">
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Vehicle Details - Plate No ( @Model.PlateNo )</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Vehicles")">Vehicles</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Details</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="row g-4">
+                <div class="col-md-12">
+                    @if (Model == null)
+                    {
+                        <div class="card card-success card-outline mb-4">
+                            <div class="card-body">
+                                <div class="alert alert-danger">
+                                    <p>Error: Vehicle record not found.</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        try
+                        {
+                            <!-- Vehicle Details -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Vehicle Details</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Plate No</strong>
+                                            <p>@Model.PlateNo</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Vehicle Type</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.VehicleType) ? "N/A" : Model.VehicleType)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Chassis No</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.ChassisNo) ? "N/A" : Model.ChassisNo)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Make and Type</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.MakeAndType) ? "N/A" : Model.MakeAndType)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Driver</strong>
+                                            <p>@(Model.Driver?.DriverName ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Fuel Type</strong>
+                                            <p>@(Model.FuelType?.FuelTypeName ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">User Organ</strong>
+                                            <p>@(Model.UserOrgan1?.UserOrgan1 ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Assignment Type</strong>
+                                            <p>@(Model.VehicleAssignmentType1?.TypeName ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Cost Center</strong>
+                                            <p>@(Model.CostCenter?.CostCenterName ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Branch</strong>
+                                            <p>@(Model.Branch?.BranchName ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Created At</strong>
+                                            <p>@(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Updated At</strong>
+                                            <p>@(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Compliance Status</strong>
+                                            @{
+                                                var complianceStatus = Model.CreatedAt.HasValue ? "Active" : "Inactive";
+                                            }
+                                            <p>
+                                                <span class="badge @(complianceStatus == "Active" ? "bg-success" : "bg-danger")">
+                                                    @complianceStatus
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- E-Cards -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Assigned E-Cards</div>
+                                </div>
+                                <div class="card-body">
+                                    @if (ecards != null && ecards.Any())
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped" aria-label="Vehicle E-Cards">
+                                                <thead>
+                                                    <tr>
+                                                        <th>E-Card ID</th>
+                                                        <th>Balance (ETB)</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var ecard in ecards)
+                                                    {
+                                                    <tr>
+                                                        <td>@(string.IsNullOrEmpty(ecard.EcardID) ? "N/A" : ecard.EcardID)</td>
+                                                        <td>@(ecard.Balance == 0 ? "N/A" : ecard.Balance.ToString("N2"))</td>
+                                                        <td>
+                                                            <a href="@Url.Action("Details", "Ecards", new { id = ecard.EcardID })" class="btn btn-sm btn-primary">
+                                                                <i class="bi bi-eye"></i> View
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">No E-Cards assigned to this vehicle.</p>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        catch (Exception ex)
+                        {
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-body">
+                                    <div class="alert alert-danger">
+                                        <p>Error rendering vehicle details: @ex.Message</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                console.error('View rendering error:', '@ex.Message', '@ex.StackTrace');
+                            </script>
+                        }
+                        <!-- Back Button -->
+                        <div class="card card-success card-outline mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-end">
+                                    <a href="@Url.Action("Index", "Vehicles")" class="btn btn-primary">Back to List</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content-->
+</main>

@@ -1,0 +1,130 @@
+﻿@model FuelManagementSystem.Models.FuelTransaction
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>FuelTransaction</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.LitersUsed)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LitersUsed)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Amount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Amount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BegKm)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BegKm)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EndKm)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EndKm)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.D_KM)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.D_KM)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AvgKmLiter)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AvgKmLiter)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TransactionDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TransactionDateTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EcardBalanceAfter)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EcardBalanceAfter)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Location)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Location)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ReceiptNum)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ReceiptNum)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Product)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Product)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Driver.DriverName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Driver.DriverName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FuelRefillRequest.PlateNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FuelRefillRequest.PlateNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Vehicle.VehicleType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Vehicle.VehicleType)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.TransactionID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

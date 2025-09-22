@@ -1,0 +1,239 @@
+﻿@model FuelManagementSystem.Models.Driver
+@{
+    ViewBag.Title = "Driver Details - ID " + Model.DriverID;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var vehicles = ViewBag.Vehicles as IEnumerable<FuelManagementSystem.Models.Vehicle>;
+
+    var documents = ViewBag.Documents as IEnumerable<FuelManagementSystem.Models.Document>;
+}
+<main class="app-main">
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Driver Details - ID @Model.DriverID</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Drivers")">Drivers</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Details</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="row g-4">
+                <div class="col-md-12">
+                    @if (Model == null)
+                    {
+                        <div class="card card-success card-outline mb-4">
+                            <div class="card-body">
+                                <div class="alert alert-danger">
+                                    <p>Error: Driver record not found.</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        try
+                        {
+                            <!-- Driver Details -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Driver Details</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Driver ID</strong>
+                                            <p>@Model.DriverID</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Driver Name</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.DriverName) ? "N/A" : Model.DriverName)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Employee Number</strong>
+                                            <p>@(Model.EmployeeNumber.HasValue ? Model.EmployeeNumber.ToString() : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Phone Number</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.PhoneNumber) ? "N/A" : Model.PhoneNumber)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">License Number</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.LicenseNumber) ? "N/A" : Model.LicenseNumber)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Created By</strong>
+                                            <p>@(Model.User?.ADUsername ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Created At</strong>
+                                            <p>@(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Updated At</strong>
+                                            <p>@(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Compliance Status</strong>
+                                            @{
+                                                var complianceStatus = Model.CreatedAt.HasValue ? "Active" : "Inactive";
+                                            }
+                                            <p>
+                                                <span class="badge @(complianceStatus == "Active" ? "bg-success" : "bg-danger")">
+                                                    @complianceStatus
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Vehicles -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Assigned Vehicles</div>
+                                </div>
+                                <div class="card-body">
+                                    @if (vehicles != null && vehicles.Any())
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped" aria-label="Driver vehicles">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Plate No</th>
+                                                        <th>Vehicle Type</th>
+                                                        <th>Chassis No</th>
+                                                        <th>Branch</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var vehicle in vehicles)
+                                                    {
+                                                        <tr>
+                                                            <td>@(string.IsNullOrEmpty(vehicle.PlateNo) ? "N/A" : vehicle.PlateNo)</td>
+                                                            <td>@(string.IsNullOrEmpty(vehicle.VehicleType) ? "N/A" : vehicle.VehicleType)</td>
+                                                            <td>@(string.IsNullOrEmpty(vehicle.ChassisNo) ? "N/A" : vehicle.ChassisNo)</td>
+                                                            <td>@(vehicle.Branch?.BranchName ?? "N/A")</td>
+                                                            <td>
+                                                                <a href="@Url.Action("Details", "Vehicles", new { id = vehicle.PlateNo })" class="btn btn-sm btn-primary">
+                                                                    <i class="bi bi-eye"></i> View
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">No vehicles assigned to this driver.</p>
+                                    }
+                                </div>
+                            </div>
+                            <!-- Documents -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Documents</div>
+                                </div>
+                                <div class="card-body">
+                                    @if (documents != null && documents.Any())
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped" aria-label="Driver documents">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Document Type</th>
+                                                        <th>File Name</th>
+                                                        <th>File Size (KB)</th>
+                                                        <th>Uploaded On</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var doc in documents)
+                                                    {
+                                                        <tr>
+                                                            <td>@(string.IsNullOrEmpty(doc.DocumentType) ? "N/A" : doc.DocumentType)</td>
+                                                            <td>@(string.IsNullOrEmpty(doc.FilePath) ? "N/A" : System.IO.Path.GetFileName(doc.FilePath))</td>
+                                                            <td>@(doc.FileSize.HasValue ? doc.FileSize.Value.ToString() : "N/A")</td>
+                                                            <td>@(doc.CreatedAt != DateTime.MinValue ? doc.CreatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
+                                                            <td>
+                                                                <a href="@Url.Action("DownloadFile", "Drivers", new { id = doc.DocumentID })" class="btn btn-sm btn-primary">
+                                                                    <i class="bi bi-download"></i> Download
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">No documents available.</p>
+                                    }
+                                </div>
+                            </div>
+                            <!-- Other Related Records -->
+                            @*<div class="card card-success card-outline mb-4">
+                                    <div class="card-header">
+                                        <div class="card-title">Other Related Records</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <strong class="form-label">Bolo Registrations</strong>
+                                                <p>@(Model.BoloRegistrations?.Count ?? 0)</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <strong class="form-label">Insurance Registrations</strong>
+                                                <p>@(Model.InsuranceRegistrations?.Count ?? 0)</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <strong class="form-label">Road Fund Registrations</strong>
+                                                <p>@(Model.RoadFundRegistrations?.Count ?? 0)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>*@
+                        }
+                        catch (Exception ex)
+                        {
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-body">
+                                    <div class="alert alert-danger">
+                                        <p>Error rendering driver details: @ex.Message</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                console.error('View rendering error:', '@ex.Message', '@ex.StackTrace');
+                            </script>
+                        }
+                        <!-- Back Button -->
+                        <div class="card card-success card-outline mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-end">
+                                    <a href="@Url.Action("Index", "Drivers")" class="btn btn-primary">Back to List</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content-->
+</main>

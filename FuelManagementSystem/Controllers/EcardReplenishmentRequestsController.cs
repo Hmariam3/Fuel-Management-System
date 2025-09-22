@@ -188,5 +188,44 @@ namespace FuelManagementSystem.Controllers
                 return File(ms.ToArray(), "application/pdf", "Approved_Replenishment_Requests.pdf");
             }
         }
+
+        // GET: EcardReplenishmentRequests/GetPendingReplenishments
+        public ActionResult GetPendingReplenishments()
+        {
+            try
+            {
+                var pendingCount = db.EcardReplenishmentRequests.Count(r => r.Status == "Pending");
+                return Json(new { count = pendingCount }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new { count = 0 }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        // GET: EcardReplenishmentRequests/GetPendingReplenishments (Detailed for To-Do List)
+        public ActionResult GetPendingReplenishmentsDetails()
+        {
+            try
+            {
+                var pendingReplenishments = db.EcardReplenishmentRequests
+                    .Where(r => r.Status == "Pending")
+                    .OrderBy(r => r.RequestedAt)
+                    .Take(5) // Adjust the number of tasks as needed
+                    .Select(r => new
+                    {
+                        r.Id,
+                        r.EcardID,
+                        r.RequestedAt,
+                        Status = r.Status
+                    })
+                    .ToList();
+                return Json(pendingReplenishments, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new[] { new { Id = 0, EcardID = "N/A", RequestedAt = DateTime.Now, Status = "Pending" } }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }

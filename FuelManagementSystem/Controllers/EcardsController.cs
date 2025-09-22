@@ -158,6 +158,20 @@ namespace FuelManagementSystem.Controllers
             return true; // Mock success
         }
 
+
+        // GET: Ecards/GetActiveEcards
+        public ActionResult GetActiveEcards()
+        {
+            try
+            {
+                var count = db.Ecards.Count(e => e.Status == "Active");
+                return Json(new { count }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new { count = 0 }, JsonRequestBehavior.AllowGet);
+            }
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

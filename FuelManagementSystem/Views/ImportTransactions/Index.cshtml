@@ -72,9 +72,9 @@ else if (!string.IsNullOrEmpty(ViewBag.Message))
     </table>
 
     <!-- Import Form (only shown after preview) -->
-    <form action="@Url.Action("ImportFromApi", "ImportTransactions")" method="post">
+    @*<form action="@Url.Action("ImportFromApi", "ImportTransactions")" method="post">
         @Html.AntiForgeryToken()
         <input type="hidden" name="cardId" value="@Request["cardId"]" />
         <button type="submit" class="btn btn-success">Import Transactions to Database</button>
-    </form>
+    </form>*@
 }

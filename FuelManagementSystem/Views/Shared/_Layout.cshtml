@@ -160,174 +160,203 @@
                         aria-label="Main navigation"
                         data-accordion="false"
                         id="navigation">
+
+                        <!-- System Management -->
                         <li class="nav-header">System Management</li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-box-seam-fill"></i>
+                                <i class="nav-icon bi bi-people-fill"></i>
                                 <p>User Management <i class="nav-arrow bi bi-chevron-right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="~/Users/Create" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
+                                        <i class="bi bi-person-plus-fill"></i>
                                         <p>Create User</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="~/Users/Index" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
+                                        <i class="bi bi-person-gear"></i>
                                         <p>Manage User</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="~/Roles/Index" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
+                                        <i class="bi bi-shield-lock-fill"></i>
                                         <p>Manage Role</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="~/Permissions/Index" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
+                                        <i class="bi bi-key-fill"></i>
                                         <p>Manage Permissions</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
+
+                        <!-- Configuration -->
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-clipboard-fill"></i>
+                                <i class="nav-icon bi bi-gear-fill"></i>
                                 <p>Configuration <i class="nav-arrow bi bi-chevron-right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="~/CostCenters/Index" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>Cost Center</p>
+                                    <a href="~/FuelStandards/Index" class="nav-link">
+                                        <i class="bi bi-fuel-pump-fill"></i>
+                                        <p>Fuel Standard</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="~/VehicleAssignmentTypes/Index" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>Vehicle TypeName </p>
+                                    <a href="~/FuelTypes/Index" class="nav-link">
+                                        <i class="bi bi-droplet-half"></i>
+                                        <p>Fuel Types</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="~/Garages/Index" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>Garage Name </p>
+                                    <a href="~/UserOrgans/Index" class="nav-link">
+                                        <i class="bi bi-building"></i>
+                                        <p>User Organs</p>
                                     </a>
                                 </li>
-
                             </ul>
                         </li>
+
+                        <!-- Refill Process -->
                         <li class="nav-header">Refill Process</li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-car-front-fill"></i>
-                                <p>Card Information<i class="nav-arrow bi bi-chevron-right"></i></p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="~/ImportTransactions/Index" class="nav-link">
-                                        <i class="bi bi-eye"></i>
-                                        <p>View</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-car-front-fill"></i>
-                                <p>Card Replenishment<i class="nav-arrow bi bi-chevron-right"></i></p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="~/EcardReplenishmentRequests/Create" class="nav-link">
-                                        <i class="bi bi-plus-circle"></i>
-                                        <p>Add</p>
-                                    </a>
-                                    <a href="~/EcardReplenishmentRequests/Index" class="nav-link">
-                                        <i class="bi bi-eye"></i>
-                                        <p>View</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-receipt-cutoff"></i>
+                                <i class="nav-icon bi bi-fuel-pump"></i>
                                 <p>Fuel Refill <i class="nav-arrow bi bi-chevron-right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="~/FuelRefillRequests/Create" class="nav-link">
-                                        <i class="bi bi-plus-circle"></i>
+                                        <i class="bi bi-plus-circle-fill"></i>
                                         <p>Add</p>
                                     </a>
+                                </li>
+                                <li class="nav-item">
                                     <a href="~/FuelRefillRequests/Index" class="nav-link">
-                                        <i class="bi bi-eye"></i>
+                                        <i class="bi bi-list-ul"></i>
                                         <p>View</p>
                                     </a>
-                                    @*<a href="~/FuelRefillRequests/Approve" class="nav-link">
-                        <i class="bi bi-eye"></i>
-                        <p>Approve</p>
-                    </a>*@
                                 </li>
                             </ul>
                         </li>
 
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon bi bi-credit-card-2-front-fill"></i>
+                                <p>Card Replenishment <i class="nav-arrow bi bi-chevron-right"></i></p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="~/EcardReplenishmentRequests/Create" class="nav-link">
+                                        <i class="bi bi-plus-circle-fill"></i>
+                                        <p>Add</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="~/EcardReplenishmentRequests/Index" class="nav-link">
+                                        <i class="bi bi-list-check"></i>
+                                        <p>View</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
 
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon bi bi-graph-up"></i>
+                                <p>Fuel Transaction <i class="nav-arrow bi bi-chevron-right"></i></p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="~/FuelTransactions/Index" class="nav-link">
+                                        <i class="bi bi-table"></i>
+                                        <p>View</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
 
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon bi bi-credit-card-fill"></i>
+                                <p>Card Transaction <i class="nav-arrow bi bi-chevron-right"></i></p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="~/ImportTransactions/Index" class="nav-link">
+                                        <i class="bi bi-table"></i>
+                                        <p>View</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Registration -->
                         <li class="nav-header">Registration Process</li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-truck-front-fill"></i>
+                                <i class="nav-icon bi bi-credit-card-2-front-fill"></i>
                                 <p>E-Cards <i class="nav-arrow bi bi-chevron-right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="~/Ecards/Create" class="nav-link">
-                                        <i class="bi bi-plus-circle"></i>
+                                        <i class="bi bi-plus-circle-fill"></i>
                                         <p>Register</p>
                                     </a>
+                                </li>
+                                <li class="nav-item">
                                     <a href="~/Ecards/Index" class="nav-link">
-                                        <i class="bi bi-eye"></i>
+                                        <i class="bi bi-list-ul"></i>
                                         <p>View</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
+
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-truck-front-fill"></i>
+                                <i class="nav-icon bi bi-truck"></i>
                                 <p>Vehicles <i class="nav-arrow bi bi-chevron-right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="~/Vehicles/Create" class="nav-link">
-                                        <i class="bi bi-plus-circle"></i>
+                                        <i class="bi bi-plus-circle-fill"></i>
                                         <p>Register</p>
                                     </a>
+                                </li>
+                                <li class="nav-item">
                                     <a href="~/Vehicles/Index" class="nav-link">
-                                        <i class="bi bi-eye"></i>
+                                        <i class="bi bi-list-ul"></i>
                                         <p>View</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
+
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon bi bi-person-vcard"></i>
+                                <i class="nav-icon bi bi-person-badge-fill"></i>
                                 <p>Drivers <i class="nav-arrow bi bi-chevron-right"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <a href="~/Drivers/Create" class="nav-link">
-                                        <i class="bi bi-plus-circle"></i>
+                                        <i class="bi bi-plus-circle-fill"></i>
                                         <p>Register</p>
                                     </a>
+                                </li>
+                                <li class="nav-item">
                                     <a href="~/Drivers/Index" class="nav-link">
-                                        <i class="bi bi-eye"></i>
+                                        <i class="bi bi-list-ul"></i>
                                         <p>View</p>
                                     </a>
                                 </li>
@@ -336,6 +365,7 @@
                     </ul>
                 </nav>
             </div>
+
             <!--end::Sidebar Wrapper-->
         </aside>
         <!--end::Sidebar-->

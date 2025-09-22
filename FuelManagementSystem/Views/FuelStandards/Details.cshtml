@@ -1,0 +1,42 @@
+﻿@model FuelManagementSystem.Models.FuelStandard
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>FuelStandard</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.VehicleType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.VehicleType)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.StandardKmPerLiter)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StandardKmPerLiter)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FuelType.FuelTypeName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FuelType.FuelTypeName)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.StandardID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -495,6 +495,32 @@ namespace FuelManagementSystem.Controllers
             }
         }
 
+
+        // GET: FuelRefillRequests/GetPendingRefillRequests
+        public ActionResult GetPendingRefillRequests()
+        {
+            try
+            {
+                var pendingRequests = db.FuelRefillRequests
+                    .Where(r => r.Status != "Completed")
+                    .OrderBy(r => r.RequestDateTime)
+                    .Take(5) // Adjust the number of tasks as needed
+                    .Select(r => new
+                    {
+                        r.RequestID,
+                        r.PlateNo,
+                        r.RequestDateTime,
+                        r.Status
+                    })
+                    .ToList();
+                return Json(pendingRequests, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                return Json(new[] { new { RequestID = 0, PlateNo = "N/A", RequestDateTime = DateTime.Now, Status = "Pending" } }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

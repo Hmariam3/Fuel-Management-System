@@ -1,7 +1,7 @@
-﻿@model IEnumerable<FuelManagementSystem.Models.FuelRefillRequest>
+﻿@model IEnumerable<FuelManagementSystem.Models.Vehicle>
 
 @{
-    ViewBag.Title = "Fuel Refill Request Records";
+    ViewBag.Title = "Vehicle Records";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -11,12 +11,12 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <h3 class="mb-0">Fuel Refill Request Records</h3>
+                    <h3 class="mb-0">Vehicle Records</h3>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">
                         <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Fuel Refill Requests</li>
+                        <li class="breadcrumb-item active" aria-current="page">Vehicles</li>
                     </ol>
                 </div>
             </div>
@@ -30,23 +30,23 @@
                 <div class="col-md-12">
                     <div class="card card-success card-outline mb-4">
                         <div class="card-header">
-                            <h3 class="card-title">Fuel Refill Request List</h3>
+                            <h3 class="card-title">Vehicle List</h3>
                             <div class="card-tools">
-                                <a href="@Url.Action("Create", "FuelRefillRequests")" class="btn btn-primary btn-sm">Register New Request</a>
+                                <a href="@Url.Action("Create", "Vehicles")" class="btn btn-primary btn-sm">Register New Vehicle</a>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table id="fuelRefillRequestsTable" class="table table-bordered table-striped" aria-label="Fuel Refill Request records">
+                                <table id="vehiclesTable" class="table table-bordered table-striped" aria-label="Vehicle records">
                                     <thead>
                                         <tr>
                                             <th style="width: 10px">#</th>
-                                            <th>Request ID</th>
-                                            <th>Vehicle</th>
+                                            <th>Plate No</th>
+                                            <th>Vehicle Type</th>
+                                            <th>Chassis No</th>
+                                            <th>Make and Type</th>
                                             <th>Driver</th>
-                                            <th>Odometer (km)</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
+                                            <th style="width: 120px">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -55,29 +55,26 @@
                                             var index = 1;
                                             foreach (var item in Model)
                                             {
+                                                var complianceStatus = item.CreatedAt.HasValue ? "Active" : "Inactive";
                                                 <tr class="align-middle">
                                                     <td>@index</td>
-                                                    <td>@item.RequestID</td>
-                                                    <td>@(item.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(item.PlateNo) ? "N/A" : item.PlateNo))</td>
+                                                    <td>@item.PlateNo</td>
+                                                    <td>@(string.IsNullOrEmpty(item.VehicleType) ? "N/A" : item.VehicleType)</td>
+                                                    <td>@(string.IsNullOrEmpty(item.ChassisNo) ? "N/A" : item.ChassisNo)</td>
+                                                    <td>@(string.IsNullOrEmpty(item.MakeAndType) ? "N/A" : item.MakeAndType)</td>
                                                     <td>@(item.Driver?.DriverName ?? "N/A")</td>
-                                                    <td>@(item.CurrentOdometer.ToString() ?? "N/A")</td>
-                                                    <td>@(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)</td>
                                                     <td>
-                                                        <a href="@Url.Action("Details", new { id = item.RequestID })"
+                                                        <a href="@Url.Action("Details", "Vehicles", new { id = item.PlateNo })"
                                                            class="btn btn-sm btn-info text-white me-1" title="Details">
                                                             <i class="bi bi-eye"></i>
                                                         </a>
-                                                        <a href="@Url.Action("Edit", new { id = item.RequestID })"
+                                                        <a href="@Url.Action("Edit", "Vehicles", new { id = item.PlateNo })"
                                                            class="btn btn-sm btn-warning text-white me-1" title="Edit">
                                                             <i class="bi bi-pencil-square"></i>
                                                         </a>
-                                                        <a href="@Url.Action("Delete", new { id = item.RequestID })"
+                                                        <a href="@Url.Action("Delete", "Vehicles", new { id = item.PlateNo })"
                                                            class="btn btn-sm btn-danger" title="Delete">
                                                             <i class="bi bi-trash"></i>
-                                                        </a>
-                                                        <a href="@Url.Action("Approve", new { id = item.RequestID })"
-                                                           class="btn btn-sm btn-primary" title="Authorize">
-                                                            <i class="bi bi-check-circle"></i>
                                                         </a>
                                                     </td>
                                                 </tr>
@@ -87,7 +84,7 @@
                                         else
                                         {
                                             <tr>
-                                                <td colspan="8" class="text-center">No fuel refill request records found.</td>
+                                                <td colspan="7" class="text-center">No vehicle records found.</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -105,7 +102,7 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#fuelRefillRequestsTable').DataTable({
+            $('#vehiclesTable').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,

@@ -1,0 +1,118 @@
+﻿@model FuelManagementSystem.Models.Driver
+@{
+    ViewBag.Title = "Delete Driver Record";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<main class="app-main">
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Delete Driver Record - ID @Model.DriverID</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Drivers")">Drivers</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Delete</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="row g-4">
+                <div class="col-md-12">
+                    <!--begin::Confirmation Card-->
+                    <div class="card card-danger card-outline mb-4">
+                        <div class="card-header">
+                            <div class="card-title">Confirm Deletion</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-warning">
+                                <h5><i class="icon fas fa-exclamation-triangle"></i> Warning!</h5>
+                                You are about to delete the driver record (ID @Model.DriverID). This action cannot be undone and will also delete any associated documents (e.g., License Attachment). Deletion is only allowed if there are no related records (Accidents, Bolo Registrations, Insurance Registrations, Maintenances, or Road Fund Registrations).
+                            </div>
+                            <!-- Driver Record Details -->
+                            <h5 class="mb-3">Driver Record Details</h5>
+                            <dl class="row">
+                                <dt class="col-sm-4">Driver ID</dt>
+                                <dd class="col-sm-8">@Model.DriverID</dd>
+                                <dt class="col-sm-4">Driver Name</dt>
+                                <dd class="col-sm-8">@(Model.DriverName ?? "N/A")</dd>
+                                <dt class="col-sm-4">Phone Number</dt>
+                                <dd class="col-sm-8">@(Model.PhoneNumber ?? "N/A")</dd>
+                                <dt class="col-sm-4">License Number</dt>
+                                <dd class="col-sm-8">@(Model.LicenseNumber ?? "N/A")</dd>
+                                <dt class="col-sm-4">License Attachment</dt>
+                                <dt class="col-sm-4">Created By</dt>
+                                <dd class="col-sm-8">@(Model.CreatedBy.HasValue ? Model.CreatedBy.ToString() : "N/A")</dd>
+                                <dt class="col-sm-4">Created At</dt>
+                                <dd class="col-sm-8">@(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</dd>
+                                <dt class="col-sm-4">Updated At</dt>
+                                <dd class="col-sm-8">@(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</dd>
+                            </dl>
+                            <!-- Related Records -->
+                            <h5 class="mt-4 mb-3">Related Records</h5>
+                            <dl class="row">
+                                <dt class="col-sm-4">Accidents</dt>
+                                <dd class="col-sm-8">@(Model.Accidents?.Count ?? 0)</dd>
+                                <dt class="col-sm-4">Bolo Registrations</dt>
+                                <dd class="col-sm-8">@(Model.BoloRegistrations?.Count ?? 0)</dd>
+                                <dt class="col-sm-4">Insurance Registrations</dt>
+                                <dd class="col-sm-8">@(Model.InsuranceRegistrations?.Count ?? 0)</dd>
+                                <dt class="col-sm-4">Maintenances</dt>
+                                <dd class="col-sm-8">@(Model.Maintenances?.Count ?? 0)</dd>
+                                <dt class="col-sm-4">Road Fund Registrations</dt>
+                                <dd class="col-sm-8">@(Model.RoadFundRegistrations?.Count ?? 0)</dd>
+                            </dl>
+                            <h5 class="mt-4 mb-3">Associated Documents</h5>
+                            @if (ViewBag.Documents != null && ViewBag.Documents.Count > 0)
+                            {
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Document Type</th>
+                                            <th>File Name</th>
+                                            <th>File Size (KB)</th>
+                                            <th>Uploaded By</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var doc in ViewBag.Documents)
+                                        {
+                                            <tr>
+                                                <td>@doc.DocumentType</td>
+                                                <td>@System.IO.Path.GetFileName(doc.FilePath)</td>
+                                                <td>@doc.FileSize</td>
+                                                <td>@doc.UploadedBy</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <p>No documents associated with this bolo registration.</p>
+                            }
+                        </div>
+                        @using (Html.BeginForm("Delete", "Drivers", new { id = Model.DriverID }, FormMethod.Post, new { @class = "needs-validation", novalidate = true }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-danger me-2" onclick="return confirm('Are you sure you want to delete this driver record and its associated documents? This action cannot be undone.')">Delete</button>
+                                <a href="@Url.Action("Index", "Drivers")" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        }
+                    </div>
+                    <!--end::Confirmation Card-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content-->
+</main>

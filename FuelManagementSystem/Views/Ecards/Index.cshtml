@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<FuelManagementSystem.Models.Ecard>
+
 @{
-    ViewBag.Title = "E-Card List";
+    ViewBag.Title = "E-Card Records";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -10,7 +11,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <h3 class="mb-0">E-Card List</h3>
+                    <h3 class="mb-0">E-Card Records</h3>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">
@@ -25,49 +26,71 @@
     <!--begin::App Content-->
     <div class="app-content">
         <div class="container-fluid">
-            <div class="row g-4">
+            <div class="row">
                 <div class="col-md-12">
-                    <!--begin::Table Card-->
-                    <div class="card card-primary card-outline mb-4">
+                    <div class="card card-success card-outline mb-4">
                         <div class="card-header">
-                            <div class="card-title">All E-Cards</div>
+                            <h3 class="card-title">E-Card List</h3>
                             <div class="card-tools">
-                                <a href="@Url.Action("Create", "Ecards")" class="btn btn-sm btn-success">Create New E-Card</a>
+                                <a href="@Url.Action("Create", "Ecards")" class="btn btn-primary btn-sm">Register New E-Card</a>
                             </div>
                         </div>
                         <div class="card-body">
-                            <table class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>E-Card ID</th>
-                                        <th>Vehicle</th>
-                                        <th>Balance (ETB)</th>
-                                        <th>Status</th>
-                                        <th>Activation Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model)
-                                    {
+                            <div class="table-responsive">
+                                <table id="ecardsTable" class="table table-bordered table-striped" aria-label="E-Card records">
+                                    <thead>
                                         <tr>
-                                            <td>@Html.DisplayFor(modelItem => item.EcardID)</td>
-                                            <td>@Html.DisplayFor(modelItem => item.Vehicle.MakeAndType) (@Html.DisplayFor(modelItem => item.PlateNo))</td>
-                                            <td>@Html.DisplayFor(modelItem => item.Balance)</td>
-                                            <td>@Html.DisplayFor(modelItem => item.Status)</td>
-                                            <td>@Html.DisplayFor(modelItem => item.ActivationDateTime)</td>
+                                            <th style="width: 10px">#</th>
+                                            <th>E-Card ID</th>
+                                            <th>Vehicle</th>
+                                            <th>Balance (ETB)</th>
+                                            <th>Status</th>
+                                            <th>Activation Date</th>
+                                            <th style="width: 120px">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model != null && Model.Any())
+                                        {
+                                            var index = 1;
+                                            foreach (var item in Model)
+                                            {
+                                        <tr class="align-middle">
+                                            <td>@index</td>
+                                            <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : item.EcardID)</td>
+                                            <td>@(item.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(item.PlateNo) ? "N/A" : item.PlateNo))</td>
+                                            <td>@(item.Balance == 0 ? "N/A" : item.Balance.ToString("N2"))</td>
+                                            <td>@(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)</td>
+                                            <td>@(item.ActivationDateTime.HasValue ? item.ActivationDateTime.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
                                             <td>
-                                                <a href="@Url.Action("Details", new { id = item.EcardID })" class="btn btn-sm btn-info">Details</a>
-                                                <a href="@Url.Action("Edit", new { id = item.EcardID })" class="btn btn-sm btn-warning">Edit</a>
-                                                <a href="@Url.Action("Delete", new { id = item.EcardID })" class="btn btn-sm btn-danger">Delete</a>
+                                                <a href="@Url.Action("Details", new { id = item.EcardID })"
+                                                   class="btn btn-sm btn-info text-white me-1" title="Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="@Url.Action("Edit", new { id = item.EcardID })"
+                                                   class="btn btn-sm btn-warning text-white me-1" title="Edit">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <a href="@Url.Action("Delete", new { id = item.EcardID })"
+                                                   class="btn btn-sm btn-danger" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
                                             </td>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
+                                                index++;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="7" class="text-center">No E-Card records found.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    <!--end::Table Card-->
                 </div>
             </div>
         </div>
@@ -75,17 +98,30 @@
     <!--end::App Content-->
 </main>
 
-@section scripts {
+@section Scripts {
     <script>
         $(document).ready(function () {
-            // Initialize DataTables for better table functionality (optional)
-            $('.table').DataTable({
-                "paging": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true
+            $('#ecardsTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                lengthMenu: [5, 10, 25, 50, 100],
+                pageLength: 10,
+                responsive: true,
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search records...",
+                    paginate: {
+                        previous: "&laquo;",
+                        next: "&raquo;"
+                    }
+                },
+                columnDefs: [
+                    { orderable: false, targets: [0, -1] }
+                ],
+                dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
             });
         });
     </script>

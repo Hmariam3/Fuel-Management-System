@@ -1,6 +1,7 @@
 ﻿@model FuelManagementSystem.Models.Ecard
+
 @{
-    ViewBag.Title = "E-Card Details";
+    ViewBag.Title = "E-Card Details - ID " + Model?.EcardID;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -10,7 +11,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <h3 class="mb-0">E-Card Details</h3>
+                    <h3 class="mb-0">E-Card Details - ID @Model.EcardID</h3>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">
@@ -28,31 +29,111 @@
         <div class="container-fluid">
             <div class="row g-4">
                 <div class="col-md-12">
-                    <!--begin::Details Card-->
-                    <div class="card card-info card-outline mb-4">
-                        <div class="card-header">
-                            <div class="card-title">E-Card Information</div>
+                    @if (Model == null)
+                    {
+                        <div class="card card-success card-outline mb-4">
+                            <div class="card-body">
+                                <div class="alert alert-danger">
+                                    <p>Error: E-Card record not found.</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <dl class="row">
-                                <dt class="col-sm-4">E-Card ID</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.EcardID)</dd>
-                                <dt class="col-sm-4">Vehicle</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Vehicle.MakeAndType) (@Html.DisplayFor(model => model.PlateNo))</dd>
-                                <dt class="col-sm-4">Balance (ETB)</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Balance)</dd>
-                                <dt class="col-sm-4">Status</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Status)</dd>
-                                <dt class="col-sm-4">Activation Date</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.ActivationDateTime)</dd>
-                            </dl>
+                    }
+                    else
+                    {
+                        try
+                        {
+                            <!-- E-Card Details -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">E-Card Information</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <strong class="form-label">E-Card ID</strong>
+                                            <p>@Model.EcardID</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Vehicle</strong>
+                                            <p>@(Model.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(Model.PlateNo) ? "N/A" : Model.PlateNo))</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Balance (ETB)</strong>
+                                            <p>@(Model.Balance == 0 ? "N/A" : Model.Balance.ToString("N2"))</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Status</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.Status) ? "N/A" : Model.Status)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Activation Date</strong>
+                                            <p>@(Model.ActivationDateTime.HasValue ? Model.ActivationDateTime.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Replenishment Requests -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Replenishment Requests</div>
+                                </div>
+                                <div class="card-body">
+                                    @if (Model.EcardReplenishmentRequests != null && Model.EcardReplenishmentRequests.Any())
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped" aria-label="E-Card replenishment requests">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Request ID</th>
+                                                        <th>Requested Amount (ETB)</th>
+                                                        <th>Request Date</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var request in Model.EcardReplenishmentRequests)
+                                                    {
+                                                    <tr>
+                                                        <td>@request.Id</td>
+                                                        <td>@(request.RequestedAmount.HasValue ? request.RequestedAmount.Value.ToString("N2") : "N/A")</td>
+                                                        <td>@(request.RequestedAt.HasValue ? request.RequestedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
+                                                        <td>@(string.IsNullOrEmpty(request.Status) ? "N/A" : request.Status)</td>
+                                                    </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">No replenishment requests for this E-Card.</p>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        catch (Exception ex)
+                        {
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-body">
+                                    <div class="alert alert-danger">
+                                        <p>Error rendering E-Card details: @ex.Message</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                console.error('View rendering error:', '@ex.Message', '@ex.StackTrace');
+                            </script>
+                        }
+                        <!-- Back Button -->
+                        <div class="card card-success card-outline mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-end">
+                                    <a href="@Url.Action("Index", "Ecards")" class="btn btn-primary">Back to List</a>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-footer">
-                            <a href="@Url.Action("Edit", "Ecards", new { id = Model.EcardID })" class="btn btn-warning me-2">Edit</a>
-                            <a href="@Url.Action("Index", "Ecards")" class="btn btn-secondary">Back to List</a>
-                        </div>
-                    </div>
-                    <!--end::Details Card-->
+                    }
                 </div>
             </div>
         </div>

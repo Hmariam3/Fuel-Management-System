@@ -1,57 +1,135 @@
 ﻿@model IEnumerable<FuelManagementSystem.Models.EcardReplenishmentRequest>
 @{
-    /**/
-
-    ViewBag.Title = "Replenishment Requests";
+    ViewBag.Title = "E-Card Replenishment Requests";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Replenishment Requests</h2>
-<p>
-    @Html.ActionLink("Export Approved Requests to PDF", "ExportApprovedToPdf", null, new { @class = "btn btn-danger" })
-</p>
+<main class="app-main">
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">E-Card Replenishment Requests</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Replenishment Requests</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-success card-outline mb-4">
+                        <div class="card-header">
+                            <h3 class="card-title">Replenishment Requests</h3>
+                            <div class="card-tools">
+                                @Html.ActionLink("Export Approved Requests to PDF", "ExportApprovedToPdf", null, new { @class = "btn btn-danger" })
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="replenishmentRequestsTable" class="table table-striped table-bordered" aria-label="Replenishment request records">
+                                    <thead>
+                                        <tr>
+                                            <th>Ecard</th>
+                                            <th>Current Balance</th>
+                                            <th>Requested Amount</th>
+                                            <th>Balance After</th>
+                                            <th>Status</th>
+                                            <th>Requested By</th>
+                                            <th>Requested At</th>
+                                            <th style="width: 200px">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model != null && Model.Any())
+                                        {
+                                            foreach (var item in Model)
+                                            {
+                                                <tr class="align-middle">
+                                                    <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : item.EcardID)</td>
+                                                    <td>@(item.CurrentBalance.HasValue ? item.CurrentBalance.Value.ToString("N2") : "N/A")</td>
+                                                    <td>@(item.RequestedAmount.HasValue ? item.RequestedAmount.Value.ToString("N2") : "N/A")</td>
+                                                    <td>@(item.BalanceAfter.HasValue ? item.BalanceAfter.Value.ToString("N2") : "-")</td>
+                                                    <td>@(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)</td>
+                                                    <td>@(string.IsNullOrEmpty(item.RequestedBy) ? "N/A" : item.RequestedBy)</td>
+                                                    <td>@(item.RequestedAt.HasValue ? item.RequestedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
+                                                    <td>
+                                                        @if (item.Status == "Pending")
+                                                        {
+                                                            using (Html.BeginForm("Approve", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post))
+                                                            {
+                                                                @Html.AntiForgeryToken()
+                                                                <button type="submit" class="btn btn-success btn-sm me-1" title="Approve">
+                                                                    <i class="bi bi-check-circle"></i>
+                                                                </button>
+                                                            }
+                                                            using (Html.BeginForm("Reject", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post))
+                                                            {
+                                                                @Html.AntiForgeryToken()
+                                                                <div class="input-group input-group-sm mb-1">
+                                                                    <input type="text" name="note" placeholder="Reason" class="form-control" />
+                                                                    <button type="submit" class="btn btn-danger btn-sm" title="Reject">
+                                                                        <i class="bi bi-x-circle"></i>
+                                                                    </button>
+                                                                </div>
+                                                            }
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="8" class="text-center">No replenishment request records found.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content-->
+</main>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Ecard</th>
-            <th>Current Balance</th>
-            <th>Requested Amount</th>
-            <th>Balance After</th>
-            <th>Status</th>
-            <th>Requested By</th>
-            <th>Requested At</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.EcardID</td>
-                <td>@item.CurrentBalance</td>
-                <td>@item.RequestedAmount</td>
-                <td>@(item.BalanceAfter.HasValue ? item.BalanceAfter.Value.ToString("N2") : "-")</td>
-                <td>@item.Status</td>
-                <td>@item.RequestedBy</td>
-                <td>@item.RequestedAt</td>
-                <td>
-                    @if (item.Status == "Pending")
-                    {
-                        using (Html.BeginForm("Approve", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post))
-                        {
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                        }
-                        using (Html.BeginForm("Reject", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post))
-                        {
-                            @Html.AntiForgeryToken()
-                            <input type="text" name="note" placeholder="Reason" class="form-control input-sm" />
-                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                        }
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#replenishmentRequestsTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                lengthMenu: [5, 10, 25, 50, 100],
+                pageLength: 10,
+                responsive: true,
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search records...",
+                    paginate: {
+                        previous: "&laquo;",
+                        next: "&raquo;"
                     }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
+                },
+                columnDefs: [
+                    { orderable: false, targets: [-1] }
+                ],
+                dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+            });
+        });
+    </script>
+}

@@ -1,6 +1,7 @@
 ﻿@model FuelManagementSystem.Models.FuelRefillRequest
+
 @{
-    ViewBag.Title = "Fuel Refill Request Details";
+    ViewBag.Title = "Fuel Refill Request Details - ID " + Model?.RequestID;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -10,7 +11,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <h3 class="mb-0">Fuel Refill Request Details</h3>
+                    <h3 class="mb-0">Fuel Refill Request Details - ID @Model.RequestID</h3>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">
@@ -28,41 +29,131 @@
         <div class="container-fluid">
             <div class="row g-4">
                 <div class="col-md-12">
-                    <!--begin::Details Card-->
-                    <div class="card card-info card-outline mb-4">
-                        <div class="card-header">
-                            <div class="card-title">Request Information</div>
+                    @if (Model == null)
+                    {
+                        <div class="card card-success card-outline mb-4">
+                            <div class="card-body">
+                                <div class="alert alert-danger">
+                                    <p>Error: Fuel refill request record not found.</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <dl class="row">
-                                <dt class="col-sm-4">Request ID</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.RequestID)</dd>
-                                <dt class="col-sm-4">Vehicle</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Vehicle.MakeAndType) (@Html.DisplayFor(model => model.PlateNo))</dd>
-                                <dt class="col-sm-4">Driver</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Driver.DriverName)</dd>
-                                <dt class="col-sm-4">Odometer (km)</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.CurrentOdometer)</dd>
-                                <dt class="col-sm-4">Request Date</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.RequestDateTime)</dd>
-                                <dt class="col-sm-4">Status</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.Status)</dd>
-                                <dt class="col-sm-4">Digital Signature</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.DigitalSignature)</dd>
-                                <dt class="col-sm-4">Mileage Deviation (%)</dt>
-                                <dd class="col-sm-8">@Html.DisplayFor(model => model.MileageDeviation)</dd>
-                                <dt class="col-sm-4">Odometer Photo</dt>
-                                <dd class="col-sm-8"><a href="@Model.OdometerPhoto" target="_blank">View Photo</a></dd>
-                                <dt class="col-sm-4">Receipt Image</dt>
-                                <dd class="col-sm-8"><a href="@Model.ReceiptImage" target="_blank">View Receipt</a></dd>
-                            </dl>
+                    }
+                    else
+                    {
+                        try
+                        {
+                            <!-- Request Details -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Request Information</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Request ID</strong>
+                                            <p>@Model.RequestID</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Vehicle</strong>
+                                            <p>@(Model.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(Model.PlateNo) ? "N/A" : Model.PlateNo))</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Driver</strong>
+                                            <p>@(Model.Driver?.DriverName ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Odometer (km)</strong>
+                                            <p>@(Model.CurrentOdometer.ToString() ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Request Date</strong>
+                                            <p>@(Model.RequestDateTime.ToString("yyyy-MM-dd HH:mm:ss"))</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Status</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.Status) ? "N/A" : Model.Status)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Mileage Deviation (%)</strong>
+                                            <p>@(Model.MileageDeviation.HasValue ? Model.MileageDeviation.Value.ToString("N2") : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Odometer Photo</strong>
+                                            <p><a href="@Model.OdometerPhoto" target="_blank">View Photo</a></p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Receipt Image</strong>
+                                            <p><a href="@Model.ReceiptImage" target="_blank">View Receipt</a></p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Digital Signature</strong>
+                                            <p><a href="@Model.DigitalSignature" target="_blank">View DigitalSignature</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Fuel Transactions -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Related Fuel Transactions</div>
+                                </div>
+                                <div class="card-body">
+                                    @if (Model.FuelTransactions != null && Model.FuelTransactions.Any())
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped" aria-label="Fuel transactions">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Transaction ID</th>
+                                                        <th>Amount (L)</th>
+                                                        <th>Transaction Date</th>
+                                                        <th>Station</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var transaction in Model.FuelTransactions)
+                                                    {
+                                                        <tr>
+                                                            <td>@transaction.TransactionID</td>
+                                                            <td>@transaction.Amount</td>
+                                                            <td>@transaction.TransactionDateTime</td>
+                                                            <td>@transaction.Location</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">No fuel transactions for this request.</p>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        catch (Exception ex)
+                        {
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-body">
+                                    <div class="alert alert-danger">
+                                        <p>Error rendering fuel refill request details: @ex.Message</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                console.error('View rendering error:', '@ex.Message', '@ex.StackTrace');
+                            </script>
+                        }
+                        <!-- Back Button -->
+                        <div class="card card-success card-outline mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-end">
+                                    <a href="@Url.Action("Index", "FuelRefillRequests")" class="btn btn-primary">Back to List</a>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-footer">
-                            <a href="@Url.Action("Edit", "FuelRefillRequests", new { id = Model.RequestID })" class="btn btn-warning me-2">Edit</a>
-                            <a href="@Url.Action("Index", "FuelRefillRequests")" class="btn btn-secondary">Back to List</a>
-                        </div>
-                    </div>
-                    <!--end::Details Card-->
+                    }
                 </div>
             </div>
         </div>

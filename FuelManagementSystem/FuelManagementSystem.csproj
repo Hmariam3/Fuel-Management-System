@@ -197,13 +197,18 @@
     <Compile Include="Attributes\PermissionAuthorizeAttribute.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\DriversController.cs" />
     <Compile Include="Controllers\EcardReplenishmentRequestsController.cs" />
     <Compile Include="Controllers\EcardsController.cs" />
     <Compile Include="Controllers\FuelRefillRequestsController.cs" />
+    <Compile Include="Controllers\FuelStandardsController.cs" />
+    <Compile Include="Controllers\FuelTransactionsController.cs" />
+    <Compile Include="Controllers\FuelTypesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImportTransactionsController.cs" />
     <Compile Include="Controllers\PermissionsController.cs" />
     <Compile Include="Controllers\UserOrgansController.cs" />
+    <Compile Include="Controllers\VehiclesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -374,11 +379,40 @@
     <Content Include="Views\EcardReplenishmentRequests\Details.cshtml" />
     <Content Include="Views\EcardReplenishmentRequests\Edit.cshtml" />
     <Content Include="Views\EcardReplenishmentRequests\Index.cshtml" />
+    <Content Include="Views\UserOrgans\Create.cshtml" />
+    <Content Include="Views\UserOrgans\Delete.cshtml" />
+    <Content Include="Views\UserOrgans\Details.cshtml" />
+    <Content Include="Views\UserOrgans\Edit.cshtml" />
+    <Content Include="Views\UserOrgans\Index.cshtml" />
+    <Content Include="Views\FuelStandards\Create.cshtml" />
+    <Content Include="Views\FuelStandards\Delete.cshtml" />
+    <Content Include="Views\FuelStandards\Details.cshtml" />
+    <Content Include="Views\FuelStandards\Edit.cshtml" />
+    <Content Include="Views\FuelStandards\Index.cshtml" />
+    <Content Include="Views\FuelTypes\Create.cshtml" />
+    <Content Include="Views\FuelTypes\Delete.cshtml" />
+    <Content Include="Views\FuelTypes\Details.cshtml" />
+    <Content Include="Views\FuelTypes\Edit.cshtml" />
+    <Content Include="Views\FuelTypes\Index.cshtml" />
+    <Content Include="Views\Vehicles\Create.cshtml" />
+    <Content Include="Views\Vehicles\Delete.cshtml" />
+    <Content Include="Views\Vehicles\Details.cshtml" />
+    <Content Include="Views\Vehicles\Edit.cshtml" />
+    <Content Include="Views\Vehicles\Index.cshtml" />
+    <Content Include="Views\Drivers\Create.cshtml" />
+    <Content Include="Views\Drivers\Delete.cshtml" />
+    <Content Include="Views\Drivers\Details.cshtml" />
+    <Content Include="Views\Drivers\Edit.cshtml" />
+    <Content Include="Views\Drivers\Index.cshtml" />
+    <Content Include="Views\FuelTransactions\Create.cshtml" />
+    <Content Include="Views\FuelTransactions\Delete.cshtml" />
+    <Content Include="Views\FuelTransactions\Details.cshtml" />
+    <Content Include="Views\FuelTransactions\Edit.cshtml" />
+    <Content Include="Views\FuelTransactions\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Base\" />
-    <Folder Include="Views\UserOrgans\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

@@ -1,31 +1,338 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@model dynamic
+@{
+    ViewBag.Title = "Fuel Management Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+$(document).ready(function () {
+    // Helper function to fetch JSON data
+    function fetchJson(url, successCallback, errorCallback) {
+        $.getJSON(url)
+            .done(successCallback)
+            .fail(errorCallback);
+    }
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+    // Fetch Total Transactions
+    fetchJson('@Url.Action("GetTotalTransactions", "FuelTransactions")',
+        function (data) { $('#totalTransactions').text(data.count || '0'); },
+        function () { $('#totalTransactions').text('Error'); }
+    );
+
+    // Fetch Active E-Cards
+    fetchJson('@Url.Action("GetActiveEcards", "Ecards")',
+        function (data) { $('#activeEcards').text(data.count || '0'); },
+        function () { $('#activeEcards').text('Error'); }
+    );
+
+    // Fetch Pending Replenishments
+    fetchJson('@Url.Action("GetPendingReplenishments", "EcardReplenishmentRequests")',
+        function (data) { $('#pendingReplenishments').text(data.count || '0'); },
+        function () { $('#pendingReplenishments').text('Error'); }
+    );
+
+    // Fetch Active Vehicles
+    fetchJson('@Url.Action("GetActiveVehicles", "Vehicles")',
+        function (data) { $('#activeVehicles').text(data.count || '0'); },
+        function () { $('#activeVehicles').text('Error'); }
+    );
+
+    // Fetch Recent Transactions
+    fetchJson('@Url.Action("GetRecentTransactions", "FuelTransactions")', function (data) {
+        let html = '';
+        if (data && data.length > 0) {
+            data.forEach(function (transaction) {
+                let detailsUrl = '@Url.Action("Details", "FuelTransactions", new { id = "__id__" })'.replace('__id__', transaction.TransactionID);
+                html += `<tr>
+                    <td>${transaction.TransactionID}</td>
+                    <td>${new Date(transaction.TransactionDateTime).toLocaleDateString()}</td>
+                    <td>${transaction.PlateNo || 'N/A'}</td>
+                    <td>${(transaction.LitersUsed || 0).toFixed(2)}</td>
+                    <td>${(transaction.Amount || 0).toFixed(2)}</td>
+                    <td><a href="${detailsUrl}" class="btn btn-sm btn-primary">Details</a></td>
+                </tr>`;
+            });
+        } else {
+            html = '<tr><td colspan="6">No recent transactions found.</td></tr>';
+        }
+        $('#recentTransactions').html(html);
+    }, function () {
+        $('#recentTransactions').html('<tr><td colspan="6">Error loading transactions.</td></tr>');
+    });
+
+    // Fetch Fuel Usage for Chart
+    fetchJson('@Url.Action("GetFuelUsageDistribution", "FuelTransactions")', function (data) {
+        const ctx = document.getElementById('fuelUsageChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels || ['Gasoline', 'Diesel'],
+                datasets: [{
+                    label: 'Liters Used',
+                    data: data.values || [0, 0],
+                    backgroundColor: ['#007bff', '#28a745']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Liters' } }
+                }
+            }
+        });
+    }, function () {
+        $('#fuelUsageChart').replaceWith('<p>Error loading chart.</p>');
+    });
+
+    // Fetch Pending Refill Requests
+    fetchJson('@Url.Action("GetPendingRefillRequests", "FuelRefillRequests")', function (data) {
+        let html = '';
+        if (data && data.length > 0) {
+            data.forEach(function (request, index) {
+                let detailsUrl = '@Url.Action("Details", "FuelRefillRequests", new { id = "__id__" })'.replace('__id__', request.RequestID);
+                html += `<li>
+                    <span class="handle">
+                        <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
+                    </span>
+                    <div class="icheck-primary d-inline ml-2">
+                        <input type="checkbox" name="refill${index}" id="refillCheck${index}" ${request.Status === 'Completed' ? 'checked' : ''}>
+                        <label for="refillCheck${index}"></label>
+                    </div>
+                    <span class="text">Refill Request for ${request.PlateNo || 'N/A'}</span>
+                    <small class="badge badge-primary"><i class="far fa-clock"></i> ${new Date(request.RequestDateTime).toLocaleDateString()}</small>
+                    <div class="tools">
+                        <a href="${detailsUrl}" class="fas fa-edit"></a>
+                    </div>
+                </li>`;
+            });
+        } else {
+            html += '<li>No pending refill requests.</li>';
+        }
+        $('#refillRequests').html(html);
+    }, function () {
+        $('#refillRequests').html('<li>Error loading refill requests.</li>');
+    });
+
+    // Fetch Pending Replenishments
+    fetchJson('@Url.Action("GetPendingReplenishments", "EcardReplenishmentRequests")', function (data) {
+        let html = '';
+        if (data && data.length > 0) {
+            data.forEach(function (replenishment, index) {
+                let detailsUrl = '@Url.Action("Details", "EcardReplenishmentRequests", new { id = "__id__" })'.replace('__id__', replenishment.Id);
+                html += `<li>
+                    <span class="handle">
+                        <i class="fas fa-ellipsis-v"></i>
+                        <i class="fas fa-ellipsis-v"></i>
+                    </span>
+                    <div class="icheck-primary d-inline ml-2">
+                        <input type="checkbox" name="replenish${index}" id="replenishCheck${index}" ${replenishment.Status === 'Approved' ? 'checked' : ''}>
+                        <label for="replenishCheck${index}"></label>
+                    </div>
+                    <span class="text">Replenish E-Card ${replenishment.EcardID || 'N/A'}</span>
+                    <small class="badge badge-warning"><i class="far fa-clock"></i> ${new Date(replenishment.RequestedAt).toLocaleDateString()}</small>
+                    <div class="tools">
+                        <a href="${detailsUrl}" class="fas fa-edit"></a>
+                    </div>
+                </li>`;
+            });
+        } else {
+            html += '<li>No pending replenishments.</li>';
+        }
+        $('#replenishmentTasks').html(html);
+    }, function () {
+        $('#replenishmentTasks').html('<li>Error loading replenishments.</li>');
+    });
+});
+</script>
+
+<main class="app-main">
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Fuel Management Dashboard</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Total Transactions -->
+                <div class="col-lg-3 col-6">
+                    <div class="small-box text-bg-primary">
+                        <div class="inner">
+                            <h3 id="totalTransactions">Loading...</h3>
+                            <p>Total Transactions</p>
+                        </div>
+                        <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 .75h.008v.008h-.008V11.25z"></path>
+                        </svg>
+                        <a href="@Url.Action("Index", "FuelTransactions")" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                            More info <i class="bi bi-link-45deg"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- Active E-Cards -->
+                <div class="col-lg-3 col-6">
+                    <div class="small-box text-bg-success">
+                        <div class="inner">
+                            <h3 id="activeEcards">Loading...</h3>
+                            <p>Active E-Cards</p>
+                        </div>
+                        <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M19.5 3h-3V1.5H15V3H9V1.5H7.5V3h-3A3.75 3.75 0 00.75 6.75v12A3.75 3.75 0 004.5 22.5h15a3.75 3.75 0 003.75-3.75v-12A3.75 3.75 0 0019.5 3zM21 18.75a1.25 1.25 0 01-1.25 1.25h-15A1.25 1.25 0 013.25 18.75V10.5h17.5v8.25zM3.25 9V6.75A1.25 1.25 0 014.5 5.5h15A1.25 1.25 0 0120.75 6.75V9H3.25z"></path>
+                        </svg>
+                        <a href="@Url.Action("Index", "Ecards")" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                            More info <i class="bi bi-link-45deg"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- Pending Replenishments -->
+                <div class="col-lg-3 col-6">
+                    <div class="small-box text-bg-warning">
+                        <div class="inner">
+                            <h3 id="pendingReplenishments">Loading...</h3>
+                            <p>Pending Replenishments</p>
+                        </div>
+                        <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M12 3.75a.75.75 0 01.75.75V6h7.5a.75.75 0 010 1.5h-7.5v3h4.5a.75.75 0 010 1.5h-4.5v8.25a.75.75 0 01-1.5 0V12h-4.5a.75.75 0 010-1.5h4.5V7.5h-7.5a.75.75 0 010-1.5h7.5V4.5a.75.75 0 01.75-.75z"></path>
+                        </svg>
+                        <a href="@Url.Action("Index", "EcardReplenishmentRequests")" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
+                            More info <i class="bi bi-link-45deg"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- Active Vehicles -->
+                <div class="col-lg-3 col-6">
+                    <div class="small-box text-bg-danger">
+                        <div class="inner">
+                            <h3 id="activeVehicles">Loading...</h3>
+                            <p>Active Vehicles</p>
+                        </div>
+                        <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z"></path>
+                        </svg>
+                        <a href="@Url.Action("Index", "Vehicles")" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                            More info <i class="bi bi-link-45deg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Recent Transactions -->
+                <div class="col-lg-7 connectedSortable">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-exchange-alt mr-1"></i>
+                                Recent Transactions
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Date</th>
+                                        <th>Vehicle</th>
+                                        <th>Liters Used</th>
+                                        <th>Amount</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentTransactions">
+                                    <tr><td colspan="6">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Fuel Usage Chart -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-bar mr-1"></i>
+                                Fuel Usage Distribution
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="fuelUsageChart" style="min-height: 250px; height: 250px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- To-Do List (Refill Requests and Replenishments) -->
+                <div class="col-lg-5 connectedSortable">
+                    <div class="card text-white bg-primary bg-gradient border-primary mb-4">
+                        <div class="card-header border-0">
+                            <h3 class="card-title">
+                                <i class="fas fa-gas-pump mr-1"></i>
+                                Pending Refill Requests
+                            </h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-primary btn-sm" data-lte-toggle="card-collapse">
+                                    <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                                    <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="todo-list" data-widget="todo-list" id="refillRequests">
+                                <li>Loading requests...</li>
+                            </ul>
+                        </div>
+                        <div class="card-footer border-0">
+                            <a href="@Url.Action("Create", "FuelRefillRequests")" class="btn btn-primary float-end">
+                                <i class="fas fa-plus"></i> Add Request
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card text-white bg-warning bg-gradient border-warning mb-4">
+                        <div class="card-header border-0">
+                            <h3 class="card-title">
+                                <i class="fas fa-credit-card mr-1"></i>
+                                Pending Replenishments
+                            </h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-warning btn-sm" data-lte-toggle="card-collapse">
+                                    <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                                    <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="todo-list" data-widget="todo-list" id="replenishmentTasks">
+                                <li>Loading replenishments...</li>
+                            </ul>
+                        </div>
+                        <div class="card-footer border-0">
+                            <a href="@Url.Action("CreateReplenishment", "Ecards")" class="btn btn-warning float-end">
+                                <i class="fas fa-plus"></i> Add Replenishment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
+    <!--end::App Content-->
+</main>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}
