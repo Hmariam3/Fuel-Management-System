@@ -10,7 +10,7 @@ using FuelManagementSystem.Models;
 
 namespace FuelManagementSystem.Controllers
 {
-    public class FuelTransactionsController : Controller
+    public class FuelTransactionsController : BaseController
     {
         private FuelManagementSystemEntities db = new FuelManagementSystemEntities();
 

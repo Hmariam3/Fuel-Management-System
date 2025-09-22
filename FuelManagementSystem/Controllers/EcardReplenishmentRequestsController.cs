@@ -11,7 +11,7 @@ using iTextSharp.text.pdf;
 
 namespace FuelManagementSystem.Controllers
 {
-    public class EcardReplenishmentRequestsController : Controller
+    public class EcardReplenishmentRequestsController : BaseController
     {
         private FuelManagementSystemEntities db = new FuelManagementSystemEntities();
         private readonly TotalCardService totalCardService;

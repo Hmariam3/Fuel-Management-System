@@ -6,7 +6,7 @@ using System.Data.Entity;
 
 namespace FuelManagementSystem.Controllers
 {
-    public class VehiclesController : Controller
+    public class VehiclesController : BaseController
     {
         private FuelManagementSystemEntities db = new FuelManagementSystemEntities();
 
