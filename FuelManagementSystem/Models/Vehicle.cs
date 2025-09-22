@@ -26,14 +26,15 @@ namespace FuelManagementSystem.Models
         public string VehicleType { get; set; }
         public string ChassisNo { get; set; }
         public string MakeAndType { get; set; }
-        public Nullable<int> BranchID { get; set; }
-        public Nullable<int> CostCenterID { get; set; }
-        public Nullable<int> VehicleAssignmentType { get; set; }
         public Nullable<int> DriverID { get; set; }
+        public int FuelTypeID { get; set; }
+        public Nullable<int> UserOrgan { get; set; }
         public Nullable<System.DateTime> CreatedAt { get; set; }
         public Nullable<System.DateTime> UpdatedAt { get; set; }
         public Nullable<int> CreatedBy { get; set; }
-        public int FuelTypeID { get; set; }
+        public Nullable<int> VehicleAssignmentType { get; set; }
+        public Nullable<int> CostCenterID { get; set; }
+        public Nullable<int> BranchID { get; set; }
     
         public virtual Branch Branch { get; set; }
         public virtual CostCenter CostCenter { get; set; }
@@ -45,6 +46,7 @@ namespace FuelManagementSystem.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FuelTransaction> FuelTransactions { get; set; }
         public virtual FuelType FuelType { get; set; }
+        public virtual UserOrgan UserOrgan1 { get; set; }
         public virtual VehicleAssignmentType VehicleAssignmentType1 { get; set; }
     }
 }

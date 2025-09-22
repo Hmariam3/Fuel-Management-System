@@ -203,6 +203,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImportTransactionsController.cs" />
     <Compile Include="Controllers\PermissionsController.cs" />
+    <Compile Include="Controllers\UserOrgansController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -278,6 +279,9 @@
     </Compile>
     <Compile Include="Models\TransactionCsvRecord.cs" />
     <Compile Include="Models\User.cs">
+      <DependentUpon>Fuel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UserOrgan.cs">
       <DependentUpon>Fuel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\UserRole.cs">
@@ -374,6 +378,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Base\" />
+    <Folder Include="Views\UserOrgans\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

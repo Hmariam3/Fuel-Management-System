@@ -73,6 +73,12 @@ namespace FuelManagementSystem.Controllers
             if (ModelState.IsValid)
             {
                 var vehicle = db.Vehicles.FirstOrDefault(v => v.PlateNo == fuelRefillRequest.PlateNo);
+                var ecard = db.Ecards.FirstOrDefault(e => e.PlateNo == vehicle.PlateNo && e.Status == "Active");
+                var apiResponse = await totalCardService.GetApiTransactionsAsync(
+                                    ecard.EcardID,
+                                    DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd"),
+                                    DateTime.Now.ToString("yyyy-MM-dd"));
+
                 if (vehicle == null)
                 {
                     ModelState.AddModelError("PlateNo", "Invalid vehicle.");
@@ -84,17 +90,13 @@ namespace FuelManagementSystem.Controllers
                 else
                 {
                     // 🔎 Check balance from API
-                    var ecard = db.Ecards.FirstOrDefault(e => e.PlateNo == vehicle.PlateNo && e.Status == "Active");
+
                     if (ecard != null)
                     {
                         try
                         {
                             if (await totalCardService.LoginAsync("ETH02542", "H8KJ8PZH")) // TODO: replace with secure credentials
                             {
-                                var apiResponse = await totalCardService.GetApiTransactionsAsync(
-                                    ecard.EcardID,
-                                    DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd"),
-                                    DateTime.Now.ToString("yyyy-MM-dd"));
 
                                 var balance = (decimal?)(apiResponse?.Data?
                                     .OrderByDescending(t => t.TransactionDateTime)
@@ -129,7 +131,10 @@ namespace FuelManagementSystem.Controllers
 
                     if (fuelStandard != null && distance > 0)
                     {
-                        decimal actualLiters = litersUsed ?? 50m;
+                        //decimal actualLiters = litersUsed ?? 50m;
+                        decimal actualLiters = (decimal?)(apiResponse?.Data?
+                                                .OrderByDescending(t => t.TransactionDateTime)
+                                                .FirstOrDefault()?.Quantity) ?? 0m;
                         var expectedLiters = (decimal)distance / fuelStandard.StandardKmPerLiter;
                         fuelRefillRequest.MileageDeviation = ((actualLiters - expectedLiters) / expectedLiters) * 100;
                         fuelRefillRequest.ReviewStatus = Math.Abs((double)fuelRefillRequest.MileageDeviation) > 5 ? "PendingReview" : null;
@@ -441,6 +446,12 @@ namespace FuelManagementSystem.Controllers
                         .FirstOrDefault();
 
                     var distance = fuelRefillRequest.CurrentOdometer - (lastTransaction?.EndKm ?? 0);
+                    var txDate = lastApiTx.TransactionDateTime;
+                    var receiptNo = lastApiTx.NoTicket;
+                    var product = lastApiTx.Product;
+                    var location = lastApiTx.Lieu;
+
+                    if (txDate == default(DateTime)) txDate = DateTime.Now; // optional fallback
 
                     // Record FuelTransaction
                     var fuelTransaction = new FuelTransaction
@@ -454,8 +465,11 @@ namespace FuelManagementSystem.Controllers
                         EndKm = fuelRefillRequest.CurrentOdometer,
                         D_KM = distance,
                         AvgKmLiter = liters > 0 ? distance / liters : 0,
-                        //TransactionDateTime = lastApiTx.TransactionDateTime ?? DateTime.Now,
-                        EcardBalanceAfter = cardBalanceAfter
+                        TransactionDateTime = txDate,
+                        EcardBalanceAfter = cardBalanceAfter,
+                        Location = location,
+                        ReceiptNum = (int)receiptNo,
+                        Product = product
                     };
                     db.FuelTransactions.Add(fuelTransaction);
 

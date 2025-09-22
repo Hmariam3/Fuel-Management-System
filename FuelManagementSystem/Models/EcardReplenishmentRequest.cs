@@ -16,13 +16,13 @@ namespace FuelManagementSystem.Models
     {
         public int Id { get; set; }
         public string EcardID { get; set; }
+        public Nullable<decimal> CurrentBalance { get; set; }
         public Nullable<decimal> RequestedAmount { get; set; }
+        public Nullable<decimal> BalanceAfter { get; set; }
         public string RequestedBy { get; set; }
         public Nullable<System.DateTime> RequestedAt { get; set; }
         public string Status { get; set; }
         public string Note { get; set; }
-        public Nullable<decimal> CurrentBalance { get; set; }
-        public Nullable<decimal> BalanceAfter { get; set; }
     
         public virtual Ecard Ecard { get; set; }
     }

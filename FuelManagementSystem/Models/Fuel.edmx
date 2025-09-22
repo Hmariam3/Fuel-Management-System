@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="FuelManagementSystemModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="FuelManagementSystemModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AuditLogs">
           <Key>
             <PropertyRef Name="AuditID" />
@@ -136,9 +136,9 @@
           <Property Name="AvgKmLiter" Type="decimal" Precision="10" Scale="2" />
           <Property Name="TransactionDateTime" Type="datetime" Nullable="false" />
           <Property Name="EcardBalanceAfter" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="Location" Type="varchar" MaxLength="100" />
+          <Property Name="Location" Type="nvarchar(max)" />
           <Property Name="ReceiptNum" Type="int" />
-          <Property Name="Product" Type="varchar" MaxLength="50" />
+          <Property Name="Product" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="FuelTypes">
           <Key>
@@ -192,6 +192,13 @@
           <Property Name="senior_acrnm" Type="nvarchar" MaxLength="50" />
           <Property Name="process_Id" Type="int" />
         </EntityType>
+        <EntityType Name="UserOrgan">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserOrgan" Type="nvarchar(max)" />
+        </EntityType>
         <EntityType Name="UserRole">
           <Key>
             <PropertyRef Name="UserRoleID" />
@@ -221,17 +228,18 @@
             <PropertyRef Name="PlateNo" />
           </Key>
           <Property Name="PlateNo" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="VehicleType" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="ChassisNo" Type="varchar" MaxLength="50" />
-          <Property Name="MakeAndType" Type="varchar" MaxLength="100" />
-          <Property Name="BranchID" Type="int" />
-          <Property Name="CostCenterID" Type="int" />
-          <Property Name="VehicleAssignmentType" Type="int" />
+          <Property Name="VehicleType" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ChassisNo" Type="nvarchar(max)" />
+          <Property Name="MakeAndType" Type="nvarchar(max)" />
           <Property Name="DriverID" Type="int" />
+          <Property Name="FuelTypeID" Type="int" Nullable="false" />
+          <Property Name="UserOrgan" Type="int" />
           <Property Name="CreatedAt" Type="datetime" />
           <Property Name="UpdatedAt" Type="datetime" />
           <Property Name="CreatedBy" Type="int" />
-          <Property Name="FuelTypeID" Type="int" Nullable="false" />
+          <Property Name="VehicleAssignmentType" Type="int" />
+          <Property Name="CostCenterID" Type="int" />
+          <Property Name="BranchID" Type="int" />
         </EntityType>
         <EntityType Name="VehicleAssignmentType">
           <Key>
@@ -528,6 +536,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Vehicle_UserOrgan">
+          <End Role="UserOrgan" Type="Self.UserOrgan" Multiplicity="0..1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserOrgan">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="UserOrgan" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="FuelManagementSystemModelStoreContainer">
           <EntitySet Name="AuditLogs" EntityType="Self.AuditLogs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Branch" EntityType="Self.Branch" Schema="dbo" store:Type="Tables" />
@@ -546,6 +566,7 @@
           <EntitySet Name="RolePermissions" EntityType="Self.RolePermissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subprocess" EntityType="Self.Subprocess" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserOrgan" EntityType="Self.UserOrgan" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserRole" EntityType="Self.UserRole" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Vehicle" EntityType="Self.Vehicle" Schema="dbo" store:Type="Tables" />
@@ -646,8 +667,13 @@
             <End Role="Subprocess" EntitySet="Subprocess" />
             <End Role="Users" EntitySet="Users" />
           </AssociationSet>
+          <AssociationSet Name="FK_Vehicle_UserOrgan" Association="Self.FK_Vehicle_UserOrgan">
+            <End Role="UserOrgan" EntitySet="UserOrgan" />
+            <End Role="Vehicle" EntitySet="Vehicle" />
+          </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="FuelManagementSystemModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -732,14 +758,14 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="EcardID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CurrentBalance" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="RequestedAmount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="BalanceAfter" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="RequestedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="RequestedAt" Type="DateTime" Precision="0" />
           <Property Name="Status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Ecard" Relationship="Self.FK_EcardReplenishmentRequest_EcardReplenishmentRequest" FromRole="EcardReplenishmentRequest" ToRole="Ecards" />
-          <Property Name="CurrentBalance" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="BalanceAfter" Type="Decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="Ecard">
           <Key>
@@ -798,9 +824,9 @@
           <Property Name="AvgKmLiter" Type="Decimal" Precision="10" Scale="2" />
           <Property Name="TransactionDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="EcardBalanceAfter" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="Location" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Location" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ReceiptNum" Type="Int32" />
-          <Property Name="Product" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Product" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Driver" Relationship="Self.FK__FuelTrans__Drive__70DDC3D8" FromRole="FuelTransactions" ToRole="Driver" />
           <NavigationProperty Name="FuelRefillRequest" Relationship="Self.FK__FuelTrans__Reque__6EF57B66" FromRole="FuelTransactions" ToRole="FuelRefillRequests" />
           <NavigationProperty Name="Vehicle" Relationship="Self.FK__FuelTrans__Plate__6FE99F9F" FromRole="FuelTransactions" ToRole="Vehicle" />
@@ -869,6 +895,14 @@
           <NavigationProperty Name="Process" Relationship="Self.FK_Subprocess_Process" FromRole="Subprocess" ToRole="Process" />
           <NavigationProperty Name="Users" Relationship="Self.FK_Users_Subprocess" FromRole="Subprocess" ToRole="Users" />
         </EntityType>
+        <EntityType Name="UserOrgan">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserOrgan1" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Vehicles" Relationship="Self.FK_Vehicle_UserOrgan" FromRole="UserOrgan" ToRole="Vehicle" />
+        </EntityType>
         <EntityType Name="UserRole">
           <Key>
             <PropertyRef Name="UserRoleID" />
@@ -906,17 +940,18 @@
             <PropertyRef Name="PlateNo" />
           </Key>
           <Property Name="PlateNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="VehicleType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="ChassisNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="MakeAndType" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="BranchID" Type="Int32" />
-          <Property Name="CostCenterID" Type="Int32" />
-          <Property Name="VehicleAssignmentType" Type="Int32" />
+          <Property Name="VehicleType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ChassisNo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="MakeAndType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DriverID" Type="Int32" />
+          <Property Name="FuelTypeID" Type="Int32" Nullable="false" />
+          <Property Name="UserOrgan" Type="Int32" />
           <Property Name="CreatedAt" Type="DateTime" Precision="3" />
           <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="Int32" />
-          <Property Name="FuelTypeID" Type="Int32" Nullable="false" />
+          <Property Name="VehicleAssignmentType" Type="Int32" />
+          <Property Name="CostCenterID" Type="Int32" />
+          <Property Name="BranchID" Type="Int32" />
           <NavigationProperty Name="Branch" Relationship="Self.FK__Vehicle__BranchI__5CD6CB2B" FromRole="Vehicle" ToRole="Branch" />
           <NavigationProperty Name="CostCenter" Relationship="Self.FK__Vehicle__CostCen__5DCAEF64" FromRole="Vehicle" ToRole="CostCenter" />
           <NavigationProperty Name="Driver" Relationship="Self.FK__Vehicle__DriverI__5FB337D6" FromRole="Vehicle" ToRole="Driver" />
@@ -924,6 +959,7 @@
           <NavigationProperty Name="FuelRefillRequests" Relationship="Self.FK__FuelRefil__Plate__6A30C649" FromRole="Vehicle" ToRole="FuelRefillRequests" />
           <NavigationProperty Name="FuelTransactions" Relationship="Self.FK__FuelTrans__Plate__6FE99F9F" FromRole="Vehicle" ToRole="FuelTransactions" />
           <NavigationProperty Name="FuelType" Relationship="Self.FK__Vehicle__FuelTyp__60A75C0F" FromRole="Vehicle" ToRole="FuelTypes" />
+          <NavigationProperty Name="UserOrgan1" Relationship="Self.FK_Vehicle_UserOrgan" FromRole="Vehicle" ToRole="UserOrgan" />
           <NavigationProperty Name="VehicleAssignmentType1" Relationship="Self.FK__Vehicle__Vehicle__5EBF139D" FromRole="Vehicle" ToRole="VehicleAssignmentType" />
         </EntityType>
         <EntityType Name="VehicleAssignmentType">
@@ -1198,6 +1234,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Vehicle_UserOrgan">
+          <End Role="UserOrgan" Type="Self.UserOrgan" Multiplicity="0..1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserOrgan">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="UserOrgan" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_UserRole_Users">
           <End Role="Users" Type="Self.User" Multiplicity="0..1" />
           <End Role="UserRole" Type="Self.UserRole" Multiplicity="*" />
@@ -1240,6 +1288,7 @@
           <EntitySet Name="RolePermissions" EntityType="Self.RolePermission" />
           <EntitySet Name="Roles" EntityType="Self.Role" />
           <EntitySet Name="Subprocesses" EntityType="Self.Subprocess" />
+          <EntitySet Name="UserOrgans" EntityType="Self.UserOrgan" />
           <EntitySet Name="UserRoles" EntityType="Self.UserRole" />
           <EntitySet Name="Users" EntityType="Self.User" />
           <EntitySet Name="Vehicles" EntityType="Self.Vehicle" />
@@ -1332,6 +1381,10 @@
             <End Role="Subprocess" EntitySet="Subprocesses" />
             <End Role="Users" EntitySet="Users" />
           </AssociationSet>
+          <AssociationSet Name="FK_Vehicle_UserOrgan" Association="Self.FK_Vehicle_UserOrgan">
+            <End Role="UserOrgan" EntitySet="UserOrgans" />
+            <End Role="Vehicle" EntitySet="Vehicles" />
+          </AssociationSet>
           <AssociationSet Name="FK_UserRole_Users" Association="Self.FK_UserRole_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="UserRole" EntitySet="UserRoles" />
@@ -1422,11 +1475,11 @@
           <EntitySetMapping Name="EcardReplenishmentRequests">
             <EntityTypeMapping TypeName="FuelManagementSystemModel.EcardReplenishmentRequest">
               <MappingFragment StoreEntitySet="EcardReplenishmentRequest">
-                <ScalarProperty Name="BalanceAfter" ColumnName="BalanceAfter" />
-                <ScalarProperty Name="CurrentBalance" ColumnName="CurrentBalance" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="EcardID" ColumnName="EcardID" />
+                <ScalarProperty Name="CurrentBalance" ColumnName="CurrentBalance" />
                 <ScalarProperty Name="RequestedAmount" ColumnName="RequestedAmount" />
+                <ScalarProperty Name="BalanceAfter" ColumnName="BalanceAfter" />
                 <ScalarProperty Name="RequestedBy" ColumnName="RequestedBy" />
                 <ScalarProperty Name="RequestedAt" ColumnName="RequestedAt" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
@@ -1551,6 +1604,14 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="UserOrgans">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.UserOrgan">
+              <MappingFragment StoreEntitySet="UserOrgan">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="UserOrgan1" ColumnName="UserOrgan" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="UserRoles">
             <EntityTypeMapping TypeName="FuelManagementSystemModel.UserRole">
               <MappingFragment StoreEntitySet="UserRole">
@@ -1584,14 +1645,15 @@
                 <ScalarProperty Name="VehicleType" ColumnName="VehicleType" />
                 <ScalarProperty Name="ChassisNo" ColumnName="ChassisNo" />
                 <ScalarProperty Name="MakeAndType" ColumnName="MakeAndType" />
-                <ScalarProperty Name="BranchID" ColumnName="BranchID" />
-                <ScalarProperty Name="CostCenterID" ColumnName="CostCenterID" />
-                <ScalarProperty Name="VehicleAssignmentType" ColumnName="VehicleAssignmentType" />
                 <ScalarProperty Name="DriverID" ColumnName="DriverID" />
+                <ScalarProperty Name="FuelTypeID" ColumnName="FuelTypeID" />
+                <ScalarProperty Name="UserOrgan" ColumnName="UserOrgan" />
                 <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
                 <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="FuelTypeID" ColumnName="FuelTypeID" />
+                <ScalarProperty Name="VehicleAssignmentType" ColumnName="VehicleAssignmentType" />
+                <ScalarProperty Name="CostCenterID" ColumnName="CostCenterID" />
+                <ScalarProperty Name="BranchID" ColumnName="BranchID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

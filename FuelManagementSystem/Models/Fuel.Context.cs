@@ -42,6 +42,7 @@ namespace FuelManagementSystem.Models
         public virtual DbSet<RolePermission> RolePermissions { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Subprocess> Subprocesses { get; set; }
+        public virtual DbSet<UserOrgan> UserOrgans { get; set; }
         public virtual DbSet<UserRole> UserRoles { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Vehicle> Vehicles { get; set; }
