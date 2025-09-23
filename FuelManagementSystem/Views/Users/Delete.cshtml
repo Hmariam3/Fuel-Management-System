@@ -1,0 +1,104 @@
+﻿@model FuelManagementSystem.Models.User
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>User</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ADUsername)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ADUsername)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FullName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FullName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Position)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Position)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedBy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedBy)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Branch1.BranchCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Branch1.BranchCode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Department1.department_Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Department1.department_Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Process1.process_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Process1.process_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Subprocess1.subprocess_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Subprocess1.subprocess_name)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

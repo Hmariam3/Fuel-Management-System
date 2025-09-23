@@ -1,0 +1,236 @@
+﻿@model FuelManagementSystem.Models.User
+
+@{
+    ViewBag.Title = "Create User";
+}
+
+<div class="container mt-4">
+    <h3>Create New User</h3>
+    <div class="row">
+        <!-- Left side: AD Search -->
+        <div class="col-md-6">
+            <label for="adUserSearch">Search AD User</label>
+            <input type="text" id="adUserSearch" placeholder="Search AD user..." class="form-control" autocomplete="off" />
+            <ul id="searchResults" class="list-group" style="margin-top: 5px; display: none; position: absolute; z-index: 1000;"></ul>
+
+            <div id="userDetails" style="margin-top: 15px; display: none;">
+                <p><strong>Full Name:</strong> <span id="fullName"></span></p>
+                <p><strong>Username:</strong> <span id="userName"></span></p>
+                <p><strong>Email:</strong> <span id="email"></span></p>
+                <p><strong>Department:</strong> <span id="department"></span></p>
+                <p><strong>Position:</strong> <span id="position"></span></p>
+            </div>
+        </div>
+
+        <!-- Right side: Dropdowns -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="ProcessId">Process</label>
+                <select id="ProcessId" class="form-control">
+                    <option value="">-- Select Process --</option>
+                    @foreach (var item in ViewBag.Processes)
+                    {
+                        <option value="@item.proces_Id">@item.process_name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group mt-3">
+                <label for="SubprocessId">Subprocess</label>
+                <select id="SubprocessId" class="form-control" disabled>
+                    <option value="">-- Select Subprocess --</option>
+                </select>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="BranchId">Branch</label>
+                        <select id="BranchId" class="form-control" disabled>
+                            <option value="">-- Select Branch --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="DepartmentId">Department</label>
+                        <select id="DepartmentId" class="form-control" disabled>
+                            <option value="">-- Select Department --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button id="saveUser" class="btn btn-primary mt-4">Create User</button>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+    let selectedUser = null;
+
+    // Search AD user
+    $('#adUserSearch').on('input', function () {
+        selectedUser = null;
+        $('#userDetails').hide();
+        let keyword = $(this).val().trim();
+        if (keyword.length < 2) {
+            $('#searchResults').hide().empty();
+            return;
+        }
+
+        $.getJSON('@Url.Action("SearchADUsers", "Users")', { keyword: keyword }, function (data) {
+            $('#searchResults').empty();
+
+            if (data.length > 0) {
+                data.forEach(user => {
+                    $('#searchResults').append(`<li class="list-group-item list-group-item-action" data-username="${user.Username}">${user.FullName}</li>`);
+                });
+                $('#searchResults').show();
+            } else {
+                $('#searchResults').hide();
+            }
+        });
+    });
+
+    // On user select
+    $('#searchResults').on('click', 'li', function () {
+        const username = $(this).data('username');
+        $('#adUserSearch').val($(this).text().trim());
+        $('#searchResults').hide();
+
+        $.getJSON('@Url.Action("GetUserByUsername", "Users")', { username: username }, function (user) {
+            if (user) {
+                selectedUser = user;
+                $('#fullName').text(user.FullName);
+                $('#userName').text(user.Username);
+                $('#email').text(user.Email);
+                $('#department').text(user.ADDepartment);
+                $('#position').text(user.Position);
+                $('#userDetails').show();
+            }
+        });
+    });
+
+    // Cascading dropdowns
+    $('#ProcessId').change(function () {
+        const processId = $(this).val();
+        $('#SubprocessId').empty().append('<option value="">-- Select Subprocess --</option>').prop('disabled', true);
+        $('#BranchId').empty().append('<option value="">-- Select Branch --</option>').prop('disabled', true);
+
+        if (processId) {
+            $.getJSON('@Url.Action("GetSubprocessesByProcessId", "Users")', { processId: processId }, function (data) {
+                data.forEach(sub => {
+                    $('#SubprocessId').append(`<option value="${sub.subprocess_Id}">${sub.subprocess_name}</option>`);
+                });
+                $('#SubprocessId').prop('disabled', false);
+            });
+        }
+    });
+
+$('#SubprocessId').change(function () {
+    const subprocessId = $('#SubprocessId').val();
+    const processId = parseInt($('#ProcessId').val()); // make sure this is a number
+
+    // Clear dropdowns
+    $('#BranchId').empty().append('<option value="">-- Select Branch --</option>').prop('disabled', true);
+    $('#DepartmentId').empty().append('<option value="">-- Select Department --</option>').prop('disabled', true);
+
+    if (subprocessId) {
+        // ✅ Always load departments
+        $.getJSON('@Url.Action("GetDepartmentsBySubprocessId", "Users")', { subprocessId: subprocessId }, function (departments) {
+            if (departments.length > 0) {
+                departments.forEach(dep => {
+                    $('#DepartmentId').append(`<option value="${dep.department_Id}">${dep.department_Name}</option>`);
+                });
+                $('#DepartmentId').prop('disabled', false);
+            }
+        });
+
+        // ✅ Only load branches if process ID == 4
+        if (processId === 3) {
+            const subprocessName = $('#SubprocessId option:selected').text();
+            $.getJSON('@Url.Action("GetBranchesBySubprocessId", "Users")', { subprocess: subprocessName }, function (branches) {
+                if (branches.length > 0) {
+                    branches.forEach(branch => {
+                        $('#BranchId').append(`<option value="${branch.ID}">${branch.BranchName}</option>`);
+                    });
+                    $('#BranchId').prop('disabled', false);
+                }
+            });
+        }
+    }
+});
+
+
+
+    // Save user
+    $('#saveUser').click(function () {
+        if (!selectedUser) {
+            alert("Please select an AD user.");
+            return;
+        }
+
+        const userData = {
+            Username: selectedUser.Username,
+            FullName: selectedUser.FullName,
+            Email: selectedUser.Email,
+            Position: selectedUser.Position,
+            Process: parseInt($('#ProcessId').val()) || null,
+            Subprocess: parseInt($('#SubprocessId').val()) || null,
+            Branch: parseInt($('#BranchId').val()) || null,
+            Department: parseInt($('#DepartmentId').val()) || null,
+            CreatedBy: '@Html.Raw(Json.Encode(ViewBag.User))',
+            CreatedDate: new Date()
+        };
+        console.log(userData); // before AJAX
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("SaveUserFromAD", "Users")',
+            data: JSON.stringify(userData),
+            contentType: 'application/json',
+            success: function (response) {
+                alert(response.message || "User created successfully!");
+                // Clear form fields
+                $('#adUserSearch').val('');
+                $('#fullName, #email, #department, #position').text('');
+                $('#userDetails').hide();
+                selectedUser = null;
+
+                $('#ProcessId').val('');
+                $('#SubprocessId').empty().append('<option value="">-- Select Subprocess --</option>').prop('disabled', true);
+                $('#BranchId').empty().append('<option value="">-- Select Branch --</option>').prop('disabled', true);
+                $('#DepartmentId').val('').prop('disabled', true);
+            },
+            error: function (xhr, status, error) {
+                alert("Error: " + error);
+            }
+        });
+
+    });
+
+    // Hide suggestions when clicking outside
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#adUserSearch, #searchResults').length) {
+            $('#searchResults').hide();
+        }
+    });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            const selectIds = ['#BranchId', '#DepartmentId','SubprocessId'];
+            selectIds.forEach(function (id) {
+                $(id).select2({
+                    placeholder: "Select ",
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+        });
+    </script>
+}

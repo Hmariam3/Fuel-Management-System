@@ -25,6 +25,7 @@ namespace FuelManagementSystem.Controllers
         public ActionResult Index()
         {
             var requests = db.EcardReplenishmentRequests
+                .Include(e => e.Ecard.Vehicle.Driver)
                 .OrderByDescending(r => r.RequestedAt)
                 .ToList();
             return View(requests);
@@ -82,7 +83,7 @@ namespace FuelManagementSystem.Controllers
                 // 4. Populate replenishment request
                 request.RequestedAt = DateTime.Now;
                 request.Status = "Pending";
-                request.RequestedBy = User.Identity.Name ?? "Unknown";
+                request.RequestedBy = Session["UserId"] != null ? Session["UserId"].ToString() : null;
                 request.CurrentBalance = currentBalance;
                 request.BalanceAfter = null;
 

@@ -1,0 +1,98 @@
+﻿@model FuelManagementSystem.Models.User
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>User</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ADUsername)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ADUsername)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FullName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FullName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Position)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Position)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedBy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedBy)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Branch1.BranchCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Branch1.BranchCode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Department1.department_Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Department1.department_Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Process1.process_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Process1.process_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Subprocess1.subprocess_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Subprocess1.subprocess_name)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.UserId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

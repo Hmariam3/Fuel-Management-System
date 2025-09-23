@@ -74,10 +74,7 @@ namespace FuelManagementSystem.Controllers
             {
                 var vehicle = db.Vehicles.FirstOrDefault(v => v.PlateNo == fuelRefillRequest.PlateNo);
                 var ecard = db.Ecards.FirstOrDefault(e => e.PlateNo == vehicle.PlateNo && e.Status == "Active");
-                var apiResponse = await totalCardService.GetApiTransactionsAsync(
-                                    ecard.EcardID,
-                                    DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd"),
-                                    DateTime.Now.ToString("yyyy-MM-dd"));
+
 
                 if (vehicle == null)
                 {
@@ -97,7 +94,10 @@ namespace FuelManagementSystem.Controllers
                         {
                             if (await totalCardService.LoginAsync("ETH02542", "H8KJ8PZH")) // TODO: replace with secure credentials
                             {
-
+                                var apiResponse = await totalCardService.GetApiTransactionsAsync(
+                                                    ecard.EcardID,
+                                                    DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd"),
+                                                    DateTime.Now.ToString("yyyy-MM-dd"));
                                 var balance = (decimal?)(apiResponse?.Data?
                                     .OrderByDescending(t => t.TransactionDateTime)
                                     .FirstOrDefault()?.Solde) ?? 0m;
@@ -132,6 +132,10 @@ namespace FuelManagementSystem.Controllers
                     if (fuelStandard != null && distance > 0)
                     {
                         //decimal actualLiters = litersUsed ?? 50m;
+                        var apiResponse = await totalCardService.GetApiTransactionsAsync(
+                                                    ecard.EcardID,
+                                                    DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd"),
+                                                    DateTime.Now.ToString("yyyy-MM-dd"));
                         decimal actualLiters = (decimal?)(apiResponse?.Data?
                                                 .OrderByDescending(t => t.TransactionDateTime)
                                                 .FirstOrDefault()?.Quantity) ?? 0m;
@@ -211,7 +215,10 @@ namespace FuelManagementSystem.Controllers
 
                     db.SaveChanges();
 
-                    return RedirectToAction("Index");
+                    ViewBag.SuccessMessage = "Fuel refill request submitted successfully!";
+                    ModelState.Clear(); // optional, to clear the form
+                    return View(fuelRefillRequest); // stay on the same page
+
                 }
             }
 

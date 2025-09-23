@@ -54,37 +54,37 @@
                                         {
                                             foreach (var item in Model)
                                             {
-                                                <tr class="align-middle">
-                                                    <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : item.EcardID)</td>
-                                                    <td>@(item.CurrentBalance.HasValue ? item.CurrentBalance.Value.ToString("N2") : "N/A")</td>
-                                                    <td>@(item.RequestedAmount.HasValue ? item.RequestedAmount.Value.ToString("N2") : "N/A")</td>
-                                                    <td>@(item.BalanceAfter.HasValue ? item.BalanceAfter.Value.ToString("N2") : "-")</td>
-                                                    <td>@(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)</td>
-                                                    <td>@(string.IsNullOrEmpty(item.RequestedBy) ? "N/A" : item.RequestedBy)</td>
-                                                    <td>@(item.RequestedAt.HasValue ? item.RequestedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
-                                                    <td>
-                                                        @if (item.Status == "Pending")
-                                                        {
-                                                            using (Html.BeginForm("Approve", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post))
-                                                            {
-                                                                @Html.AntiForgeryToken()
-                                                                <button type="submit" class="btn btn-success btn-sm me-1" title="Approve">
-                                                                    <i class="bi bi-check-circle"></i>
-                                                                </button>
-                                                            }
-                                                            using (Html.BeginForm("Reject", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post))
-                                                            {
-                                                                @Html.AntiForgeryToken()
-                                                                <div class="input-group input-group-sm mb-1">
-                                                                    <input type="text" name="note" placeholder="Reason" class="form-control" />
-                                                                    <button type="submit" class="btn btn-danger btn-sm" title="Reject">
-                                                                        <i class="bi bi-x-circle"></i>
-                                                                    </button>
-                                                                </div>
-                                                            }
-                                                        }
-                                                    </td>
-                                                </tr>
+                                        <tr class="align-middle">
+                                            <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : item.EcardID)</td>
+                                            <td>@(item.CurrentBalance.HasValue ? item.CurrentBalance.Value.ToString("N2") : "N/A")</td>
+                                            <td>@(item.RequestedAmount.HasValue ? item.RequestedAmount.Value.ToString("N2") : "N/A")</td>
+                                            <td>@(item.BalanceAfter.HasValue ? item.BalanceAfter.Value.ToString("N2") : "-")</td>
+                                            <td>@(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)</td>
+                                            <td>@(item.Ecard?.Vehicle?.Driver != null ? item.Ecard.Vehicle.Driver.DriverName : "N/A")</td>
+                                            <td>@(item.RequestedAt.HasValue ? item.RequestedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
+                                            <td>
+                                                @if (item.Status == "Pending")
+                                                {
+                                                    using (Html.BeginForm("Approve", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post))
+                                                    {
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-success btn-sm me-1" title="Approve">
+                                                            <i class="bi bi-check-circle"></i>
+                                                        </button>
+                                                    }
+                                                    using (Html.BeginForm("Reject", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post))
+                                                    {
+                                                        @Html.AntiForgeryToken()
+                                                        <div class="input-group input-group-sm mb-1">
+                                                            <input type="text" name="note" placeholder="Reason" class="form-control" />
+                                                            <button type="submit" class="btn btn-danger btn-sm" title="Reject">
+                                                                <i class="bi bi-x-circle"></i>
+                                                            </button>
+                                                        </div>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
                                             }
                                         }
                                         else

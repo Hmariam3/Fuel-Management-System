@@ -1,45 +1,485 @@
 ﻿@model IEnumerable<FuelManagementSystem.Models.Permission>
 
 @{
-    ViewBag.Title = "Index";
+                /**/
+
+                ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Permission Management</h2>
 
+<!-- Create Button -->
 <p>
-    @Html.ActionLink("Create New", "Create")
+    <button class="btn btn-primary" onclick="showCreate()">Create New</button>
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.PermissionName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Description)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.RolePermission.RolePermissionId)
-        </th>
-        <th></th>
-    </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.PermissionName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Description)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.RolePermission.RolePermissionId)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.PermissionId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.PermissionId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.PermissionId })
-        </td>
-    </tr>
-}
-
+<!-- Permissions Table with DataTables -->
+<table id="permissionTable" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.PermissionName)</th>
+            <th>@Html.DisplayNameFor(model => model.Description)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.PermissionName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                    <td>
+                        <button class="btn btn-info btn-sm text-white" onclick="showDetails(@item.PermissionId)">Details</button>
+                        <button class="btn btn-warning btn-sm text-white" onclick="showEdit(@item.PermissionId)">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="showDelete(@item.PermissionId)">Delete</button>
+                        <button class="btn btn-success btn-sm" onclick="showAssignPermissions(@item.PermissionId)">Assign to Roles</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3">No permissions found.</td>
+            </tr>
+        }
+    </tbody>
 </table>
+
+<!-- Create Modal -->
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Create Permission</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createPermissionForm">
+                    <div class="form-group">
+                        <label for="createPermissionName">Permission Name</label>
+                        <input type="text" id="createPermissionName" name="PermissionName" class="form-control" required />
+                        <span class="text-danger" id="createPermissionNameError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="createDescription">Description</label>
+                        <input type="text" id="createDescription" name="Description" class="form-control" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveCreate()">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Permission Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Permission Name:</strong> <span id="detailsPermissionName"></span></p>
+                <p><strong>Description:</strong> <span id="detailsDescription"></span></p>
+                <p><strong>Assigned Roles:</strong> <span id="detailsRoles"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Permission</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editPermissionForm">
+                    <input type="hidden" id="editPermissionId" name="PermissionId" />
+                    <div class="form-group">
+                        <label for="editPermissionName">Permission Name</label>
+                        <input type="text" id="editPermissionName" name="PermissionName" class="form-control" required />
+                        <span class="text-danger" id="editPermissionNameError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Description</label>
+                        <input type="text" id="editDescription" name="Description" class="form-control" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveEdit()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete permission <strong id="deletePermissionName"></strong>?</p>
+                <input type="hidden" id="deletePermissionId" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Permissions Modal -->
+<div class="modal fade" id="assignPermissionsModal" tabindex="-1" role="dialog" aria-labelledby="assignPermissionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignPermissionsModalLabel">Assign Permissions to Role</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="assignPermissionId" />
+                <p>Permission: <strong id="assignPermissionName"></strong></p>
+                <div class="form-group mb-3">
+                    <label class="form-label">Select Roles</label>
+                    <input type="text" id="roleFilter" class="form-control mb-2" placeholder="Filter roles...">
+                    <div id="roleCheckboxes" class="role-checkbox-container border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                        <!-- Roles populated via JavaScript -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="savePermissionsButton" onclick="savePermissions()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- DataTables JS -->
+
+
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTables
+            $('#permissionTable').DataTable({
+                pageLength: 5,
+                lengthChange: false,
+                searching: true,
+                ordering: true,
+                language: {
+                    paginate: {
+                        next: 'Next',
+                        previous: 'Previous'
+                    }
+                }
+            });
+
+            // Manual modal close handler
+            $('.modal .close, .modal .btn-secondary').click(function () {
+                $(this).closest('.modal').modal('hide');
+            });
+
+            // Load roles for Assign Permissions modal
+            loadRoles();
+
+            // Clear form errors on modal close
+            $('#createModal, #editModal').on('hidden.bs.modal', function () {
+                $(this).find('input').val('');
+                $(this).find('.text-danger').text('');
+            });
+        });
+
+        // Toast Notification
+        function showToast(message, type = 'success') {
+            const toast = $(`<div class="toast" role="alert" style="position: fixed; top: 20px; right: 20px; min-width: 300px;">
+                <div class="toast-header ${type === 'success' ? 'bg-success' : 'bg-danger'} text-white">
+                    <strong class="me-auto">Notification</strong>
+                    <button type="button" class="btn-close" data-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">${message}</div>
+            </div>`);
+            $('body').append(toast);
+            toast.toast({ delay: 5000 }).toast('show');
+        }
+
+        // Create Modal
+        function showCreate() {
+            $('#createModal').modal('show');
+        }
+
+        function saveCreate() {
+            const permissionData = {
+                PermissionName: $('#createPermissionName').val(),
+                Description: $('#createDescription').val()
+            };
+            console.log('Create payload:', permissionData);
+            if (!permissionData.PermissionName) {
+                $('#createPermissionNameError').text('Permission Name is required.');
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateAjax", "Permissions")',
+                data: JSON.stringify(permissionData),
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log('Create response:', response);
+                    if (response.success) {
+                        showToast('Permission created successfully!', 'success');
+                        $('#createModal').modal('hide');
+                        location.reload();
+                    } else {
+                        showToast('Error: ' + response.message, 'danger');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('Create error:', xhr.responseText);
+                    showToast('Error creating permission: ' + error, 'danger');
+                }
+            });
+        }
+
+        // Details Modal
+        function showDetails(id) {
+            $.getJSON('@Url.Action("DetailsAjax", "Permissions")/' + id, function (data) {
+                if (data.success === false) {
+                    showToast(data.message, 'danger');
+                    return;
+                }
+                $('#detailsPermissionName').text(data.PermissionName || 'N/A');
+                $('#detailsDescription').text(data.Description || 'N/A');
+                // Fetch assigned roles
+                $.getJSON('@Url.Action("GetRolePermissions", "Permissions")', { permissionId: id }, function (permissionIds) {
+                    $.getJSON('@Url.Action("GetAllRoles", "Permissions")', function (allRoles) {
+                        const roleNames = allRoles.filter(r => permissionIds.includes(r.role_id)).map(r => r.role_name);
+                        $('#detailsRoles').text(roleNames.length > 0 ? roleNames.join(', ') : 'None');
+                    });
+                });
+                $('#detailsModal').modal('show');
+            }).fail(function (xhr, status, error) {
+                showToast('Error fetching details: ' + error, 'danger');
+            });
+        }
+
+        // Edit Modal
+        function showEdit(id) {
+            $.getJSON('@Url.Action("DetailsAjax", "Permissions")/' + id, function (data) {
+                if (data.success === false) {
+                    showToast(data.message, 'danger');
+                    return;
+                }
+                $('#editPermissionId').val(data.PermissionId);
+                $('#editPermissionName').val(data.PermissionName);
+                $('#editDescription').val(data.Description);
+                $('#editModal').modal('show');
+            }).fail(function (xhr, status, error) {
+                showToast('Error fetching permission data: ' + error, 'danger');
+            });
+        }
+
+        function saveEdit() {
+            const permissionData = {
+                PermissionId: $('#editPermissionId').val(),
+                PermissionName: $('#editPermissionName').val(),
+                Description: $('#editDescription').val()
+            };
+            console.log('Edit payload:', permissionData);
+            if (!permissionData.PermissionName) {
+                $('#editPermissionNameError').text('Permission Name is required.');
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("EditAjax", "Permissions")',
+                data: JSON.stringify(permissionData),
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log('Edit response:', response);
+                    if (response.success) {
+                        showToast('Permission updated successfully!', 'success');
+                        $('#editModal').modal('hide');
+                        location.reload();
+                    } else {
+                        showToast('Error: ' + response.message, 'danger');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('Edit error:', xhr.responseText);
+                    showToast('Error updating permission: ' + error, 'danger');
+                }
+            });
+        }
+
+        // Delete Modal
+        function showDelete(id) {
+            $.getJSON('@Url.Action("DetailsAjax", "Permissions")/' + id, function (data) {
+                if (data.success === false) {
+                    showToast(data.message, 'danger');
+                    return;
+                }
+                $('#deletePermissionId').val(data.PermissionId);
+                $('#deletePermissionName').text(data.PermissionName || 'N/A');
+                $('#deleteModal').modal('show');
+            }).fail(function (xhr, status, error) {
+                showToast('Error fetching permission data: ' + error, 'danger');
+            });
+        }
+
+        function confirmDelete() {
+            const id = $('#deletePermissionId').val();
+            console.log('Delete ID:', id);
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DeleteAjax", "Permissions")/' + id,
+                success: function (response) {
+                    console.log('Delete response:', response);
+                    if (response.success) {
+                        showToast('Permission deleted successfully!', 'success');
+                        $('#deleteModal').modal('hide');
+                        location.reload();
+                    } else {
+                        showToast('Error: ' + response.message, 'danger');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('Delete error:', xhr.responseText);
+                    showToast('Error deleting permission: ' + error, 'danger');
+                }
+            });
+        }
+
+        // Assign Permissions
+        let allRoles = [];
+
+        function loadRoles() {
+            $.getJSON('@Url.Action("GetAllRoles", "Permissions")', function (roles) {
+                allRoles = roles;
+            }).fail(function (xhr, status, error) {
+                showToast('Error loading roles: ' + error, 'danger');
+            });
+        }
+
+        function showAssignPermissions(id) {
+            $.getJSON('@Url.Action("DetailsAjax", "Permissions")/' + id, function (data) {
+                if (data.success === false) {
+                    showToast(data.message, 'danger');
+                    return;
+                }
+                $('#assignPermissionId').val(data.PermissionId);
+                $('#assignPermissionName').text(data.PermissionName || 'N/A');
+
+                $.getJSON('@Url.Action("GetRolePermissions", "Permissions")', { permissionId: id }, function (assignedRoleIds) {
+                    const container = $('#roleCheckboxes');
+                    container.empty();
+                    allRoles.forEach(role => {
+                        const isChecked = assignedRoleIds.includes(role.role_id);
+                        container.append(`
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input role-checkbox" id="role_${role.role_id}" value="${role.role_id}" ${isChecked ? 'checked' : ''}>
+                                <label class="form-check-label" for="role_${role.role_id}">${role.role_name}</label>
+                            </div>
+                        `);
+                    });
+                    $('#roleFilter').val('');
+                    $('.form-check').show();
+                    $('#savePermissionsButton').prop('disabled', false);
+                    $('#assignPermissionsModal').modal('show');
+                }).fail(function (xhr, status, error) {
+                    showToast('Error fetching role permissions: ' + error, 'danger');
+                });
+            }).fail(function (xhr, status, error) {
+                showToast('Error fetching permission data: ' + error, 'danger');
+            });
+        }
+
+        $('#roleFilter').on('input', function () {
+            const filter = $(this).val().toLowerCase();
+            $('.form-check').each(function () {
+                const roleName = $(this).find('label').text().toLowerCase();
+                $(this).toggle(roleName.includes(filter));
+            });
+        });
+
+        function savePermissions() {
+            const permissionId = $('#assignPermissionId').val();
+            const roleIds = $('.role-checkbox:checked').map((_, el) => +el.value).get();
+            console.log('Assign Permissions payload:', { permissionId, roleIds });
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AssignPermissionsToRoleAjax", "Permissions")',
+                data: {
+                    permissionId,
+                    roleIds
+                },
+                traditional: true,
+                success: function (res) {
+                    console.log('Assign Permissions response:', res);
+                    if (res.success) {
+                        showToast('Permissions assigned successfully!', 'success');
+                        $('#assignPermissionsModal').modal('hide');
+                    } else {
+                        showToast('Error: ' + res.message, 'danger');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('Assign Permissions error:', xhr.responseText);
+                    showToast('Error assigning permissions: ' + error, 'danger');
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .role-checkbox-container {
+            background-color: #f8f9fa;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+            .role-checkbox-container::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .role-checkbox-container::-webkit-scrollbar-thumb {
+                background-color: #6c757d;
+                border-radius: 4px;
+            }
+
+            .role-checkbox-container::-webkit-scrollbar-track {
+                background-color: #e9ecef;
+            }
+
+        .form-check {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+}

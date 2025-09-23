@@ -75,11 +75,14 @@
                                                            class="btn btn-sm btn-danger" title="Delete">
                                                             <i class="bi bi-trash"></i>
                                                         </a>
-                                                        <a href="@Url.Action("Approve", new { id = item.RequestID })"
-                                                           class="btn btn-sm btn-primary" title="Authorize">
-                                                            <i class="bi bi-check-circle"></i>
-                                                        </a>
-                                                    </td>
+                                                        @if (item.Status == "Pending")
+                                                        {
+                                                            <a href="@Url.Action("Approve", new { id = item.RequestID })"
+                                                               class="btn btn-sm btn-primary" title="Authorize">
+                                                                <i class="bi bi-check-circle"></i>
+                                                            </a>
+                                                        }
+                                                        </td>
                                                 </tr>
                                                 index++;
                                             }

@@ -1,79 +1,221 @@
 ﻿@model FuelManagementSystem.Models.FuelRefillRequest
 
 @{
-    ViewBag.Title = "Approve Fuel Refill Request";
+    ViewBag.Title = "Fuel Refill Request Details - ID " + @Model.RequestID;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Approve Fuel Refill Request</h2>
-
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger">
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    </div>
-}
-
-<div class="row">
-    <div class="col-md-6">
-        <h4>Request Details</h4>
-        <dl class="dl-horizontal">
-            <dt>Request ID</dt>
-            <dd>@Model.RequestID</dd>
-            <dt>Plate Number</dt>
-            <dd>@Model.Vehicle.PlateNo</dd>
-            <dt>Driver</dt>
-            <dd>@Model.Driver.DriverName</dd>
-            <dt>Current Odometer</dt>
-            <dd>@Model.CurrentOdometer km</dd>
-            <dt>Request Date</dt>
-            <dd>@Model.RequestDateTime</dd>
-            <dt>Status</dt>
-            <dd>@Model.Status</dd>
-            <dt>Mileage Deviation</dt>
-            <dd>@Model.MileageDeviation%</dd>
-        </dl>
-    </div>
-    <div class="col-md-6">
-        <h4>Documents</h4>
-        @if (!string.IsNullOrEmpty(Model.OdometerPhoto))
-        {
-            <p><strong>Odometer Photo:</strong> <a href="@Model.OdometerPhoto" target="_blank">View</a></p>
-        }
-        @if (!string.IsNullOrEmpty(Model.ReceiptImage))
-        {
-            <p><strong>Receipt Image:</strong> <a href="@Model.ReceiptImage" target="_blank">View</a></p>
-        }
-        @if (!string.IsNullOrEmpty(Model.DigitalSignature))
-        {
-            <p><strong>Digital Signature:</strong> <a href="@Model.DigitalSignature" target="_blank">View</a></p>
-        }
-    </div>
-</div>
-
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-
-    <div class="form-horizontal">
-        <h4>Approval Details</h4>
-        <hr />
-        <div class="form-group">
-            @*@Html.LabelFor(model => model.LitersUsed, htmlAttributes: new { @class = "control-label col-md-2" })*@
-            <div class="col-md-10">
-                @*@Html.EditorFor(model => model.LitersUsed, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter liters used (optional)" } })
-                @Html.ValidationMessageFor(model => model.LitersUsed, "", new { @class = "text-danger" })
-                <input text/>*@
-                <p class="text-muted">Leave blank to use the latest recorded quantity from the API (default 50L if none).</p>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Approve" class="btn btn-primary" />
-                @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default" })
+<main class="app-main">
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Fuel Refill Request Details - ID @Model.RequestID</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "FuelRefillRequests")">Fuel Refill Requests</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Details</li>
+                    </ol>
+                </div>
             </div>
         </div>
     </div>
-}
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="row g-4">
+                <div class="col-md-12">
+                    @if (Model == null)
+                    {
+                        <div class="card card-success card-outline mb-4">
+                            <div class="card-body">
+                                <div class="alert alert-danger">
+                                    <p>Error: Fuel refill request record not found.</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        try
+                        {
+                            <!-- Request Details -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Request Information</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Request ID</strong>
+                                            <p>@Model.RequestID</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Vehicle</strong>
+                                            <p>@(Model.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(Model.PlateNo) ? "N/A" : Model.PlateNo))</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Driver</strong>
+                                            <p>@(Model.Driver?.DriverName ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Odometer (km)</strong>
+                                            <p>@(Model.CurrentOdometer.ToString() ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Request Date</strong>
+                                            <p>@(Model.RequestDateTime.ToString("yyyy-MM-dd HH:mm:ss"))</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Status</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.Status) ? "N/A" : Model.Status)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Mileage Deviation (%)</strong>
+                                            <p>@(Model.MileageDeviation.HasValue ? Model.MileageDeviation.Value.ToString("N2") : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Review Status</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.ReviewStatus) ? "N/A" : Model.ReviewStatus)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Odometer Photo</strong>
+                                            <p>
+                                                @if (!string.IsNullOrEmpty(Model.OdometerPhoto))
+                                                {
+                                                    <a href="@Model.OdometerPhoto" target="_blank">View Photo</a>
+                                                }
+                                                else
+                                                {
+                                                    <span>N/A</span>
+                                                }
+                                            </p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Receipt Image</strong>
+                                            <p>
+                                                @if (!string.IsNullOrEmpty(Model.ReceiptImage))
+                                                {
+                                                    <a href="@Model.ReceiptImage" target="_blank">View Receipt</a>
+                                                }
+                                                else
+                                                {
+                                                    <span>N/A</span>
+                                                }
+                                            </p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Digital Signature</strong>
+                                            <p>
+                                                @if (!string.IsNullOrEmpty(Model.DigitalSignature))
+                                                {
+                                                    <a href="@Model.DigitalSignature" target="_blank">View Signature</a>
+                                                }
+                                                else
+                                                {
+                                                    <span>N/A</span>
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Related Fuel Transactions -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Related Fuel Transactions</div>
+                                </div>
+                                <div class="card-body">
+                                    @if (Model.FuelTransactions != null && Model.FuelTransactions.Any())
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped" aria-label="Fuel transactions">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Transaction ID</th>
+                                                        <th>Amount (L)</th>
+                                                        <th>Transaction Date</th>
+                                                        <th>Station</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var transaction in Model.FuelTransactions)
+                                                    {
+                                                        <tr>
+                                                            <td>@transaction.TransactionID</td>
+                                                            <td>@transaction.LitersUsed</td> <!-- Corrected to LitersUsed -->
+                                                            <td>@transaction.TransactionDateTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                                            <td>@(string.IsNullOrEmpty(transaction.Location) ? "N/A" : transaction.Location)</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">No fuel transactions for this request.</p>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Approval Form -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Approval Details</div>
+                                </div>
+                                <div class="card-body">
+                                    @using (Html.BeginForm("Approve", "FuelRefillRequests", FormMethod.Post, new { @class = "form-horizontal" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+
+                                        if (!ViewData.ModelState.IsValid)
+                                        {
+                                            <div class="alert alert-danger">
+                                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                            </div>
+                                        }
+
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <p class="text-muted">Leave blank to use the latest recorded quantity from the API (default 50L if none).</p>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12 text-end">
+                                                <input type="submit" value="Approve" class="btn btn-primary" />
+                                                @Html.ActionLink("Back to List", "Index", "FuelRefillRequests", null, new { @class = "btn btn-secondary ms-2" })
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        catch (Exception ex)
+                        {
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-body">
+                                    <div class="alert alert-danger">
+                                        <p>Error rendering fuel refill request details: @ex.Message</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                console.error('View rendering error:', '@ex.Message', '@ex.StackTrace');
+                            </script>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content-->
+</main>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

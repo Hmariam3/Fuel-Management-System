@@ -1,0 +1,583 @@
+﻿@model IEnumerable<FuelManagementSystem.Models.User>
+@{
+    ViewBag.Title = "User Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Make the Actions column sticky */
+    .sticky-column {
+        position: sticky;
+        right: 0;
+        background-color: #fff; /* Or match table row background */
+        z-index: 5; /* Make sure it stays above other columns */
+        min-width: 180px; /* Adjust depending on number of buttons */
+        text-align: center;
+    }
+</style>
+<main class="app-main">
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">User Management</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Users</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-success card-outline mb-4">
+                        <div class="card-header">
+                            <h3 class="card-title">User List</h3>
+                            <div class="card-tools">
+                                <a href="@Url.Action("Create", "Users")" class="btn btn-primary btn-sm">Create New User</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="userTable" class="table table-bordered table-striped" aria-label="User management records">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 10px">#</th>
+                                            <th>@Html.DisplayNameFor(model => model.ADUsername)</th>
+                                            <th>@Html.DisplayNameFor(model => model.FullName)</th>
+                                            <th>Process</th>
+                                            <th>Sub Process</th>
+                                            <th>Department/Branch</th>
+                                            <th>@Html.DisplayNameFor(model => model.Position)</th>
+                                            <th>@Html.DisplayNameFor(model => model.CreatedBy)</th>
+                                            <th class="sticky-column text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model != null && Model.Any())
+                                        {
+                                            var index = 1;
+                                            foreach (var item in Model)
+                                            {
+                                                <tr class="align-middle">
+                                                    <td>@index</td>
+                                                    <td>@Html.DisplayFor(modelItem => item.ADUsername)</td>
+                                                    <td class="wrap-text">@Html.DisplayFor(modelItem => item.FullName)</td>
+                                                    <td class="wrap-text">@(item.Process1?.process_name ?? "N/A")</td>
+                                                    <td class="wrap-text">@(item.Subprocess1?.subprocess_name ?? "N/A")</td>
+                                                    <td class="wrap-text">
+                                                        @(item.Department1?.department_Name ?? "N/A")
+                                                        @(item.Branch1 != null ? (string.IsNullOrEmpty(item.Department1?.department_Name) ? "" : " / ") + item.Branch1.BranchName : "")
+                                                    </td>
+                                                    <td class="wrap-text">@Html.DisplayFor(modelItem => item.Position)</td>
+                                                    <td>@Html.DisplayFor(modelItem => item.CreatedBy)</td>
+                                                    <td class="sticky-column">
+                                                        <div class="d-flex gap-1 flex-wrap">
+                                                            <button class="btn btn-info btn-sm text-white me-1" onclick="showDetails(@item.UserId)" title="Details">
+                                                                <i class="bi bi-eye"></i>
+                                                            </button>
+
+                                                            <button class="btn btn-warning btn-sm text-white me-1" onclick="showEdit(@item.UserId)" title="Edit">
+                                                                <i class="bi bi-pencil-square"></i>
+                                                            </button>
+
+                                                            <button class="btn btn-danger btn-sm" onclick="showDelete(@item.UserId)" title="Delete">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+
+                                                            <button class="btn btn-success btn-sm" onclick="showAssignRoles(@item.UserId)" title="Assign Roles">
+                                                                <i class="bi bi-person-badge"></i>Assign Roles
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                index++;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="9" class="text-center">No users found.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content-->
+</main>
+
+<!-- Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">User Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></i></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Username:</strong> <span id="detailsUsername"></span></p>
+                <p><strong>Full Name:</strong> <span id="detailsFullName"></span></p>
+                <p><strong>Email:</strong> <span id="detailsEmail"></span></p>
+                <p><strong>Position:</strong> <span id="detailsPosition"></span></p>
+                <p><strong>Process:</strong> <span id="detailsProcess"></span></p>
+                <p><strong>Subprocess:</strong> <span id="detailsSubprocess"></span></p>
+                <p><strong>Branch:</strong> <span id="detailsBranch"></span></p>
+                <p><strong>Department:</strong> <span id="detailsDepartment"></span></p>
+                <p><strong>Roles:</strong> <span id="detailsRoles"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="editUserId" name="UserId" />
+                    <div class="mb-3">
+                        <label for="editADUsername" class="form-label">Username</label>
+                        <input type="text" id="editADUsername" name="ADUsername" class="form-control" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFullName" class="form-label">Full Name</label>
+                        <input type="text" id="editFullName" name="FullName" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email</label>
+                        <input type="email" id="editEmail" name="Email" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPosition" class="form-label">Position</label>
+                        <input type="text" id="editPosition" name="Position" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="editProcessId" class="form-label">Process</label>
+                        <select id="editProcessId" name="Process" class="form-control">
+                            <option value="">-- Select Process --</option>
+                            @if (ViewBag.Processes != null)
+                            {
+                                foreach (var item in ViewBag.Processes)
+                                {
+                                    <option value="@item.proces_Id">@item.process_name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSubprocessId" class="form-label">Subprocess</label>
+                        <select id="editSubprocessId" name="Subprocess" class="form-control" disabled>
+                            <option value="">-- Select Subprocess --</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editBranchId" class="form-label">Branch</label>
+                        <select id="editBranchId" name="Branch" class="form-control" disabled>
+                            <option value="">-- Select Branch --</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDepartmentId" class="form-label">Department</label>
+                        <select id="editDepartmentId" name="Department" class="form-control" disabled>
+                            <option value="">-- Select Department --</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveEdit()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete user <strong id="deleteUserName"></strong>?</p>
+                <input type="hidden" id="deleteUserId" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Roles Modal -->
+<div class="modal fade" id="assignRolesModal" tabindex="-1" aria-labelledby="assignRolesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignRolesModalLabel">Assign Roles to User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="assignUserId" />
+                <p>User: <strong id="assignUserName"></strong></p>
+                <div class="mb-3">
+                    <label class="form-label">Select Roles</label>
+                    <input type="text" id="roleFilter" class="form-control mb-2" placeholder="Filter roles...">
+                    <div id="roleCheckboxes" class="role-checkbox-container border rounded p-3">
+                        <!-- Roles populated via JavaScript -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveRolesButton" onclick="saveRoles()">Save Roles</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTables
+            $('#userTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                lengthMenu: [5, 10, 25, 50, 100],
+                pageLength: 10,
+                responsive: true,
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search records...",
+                    paginate: {
+                        previous: "&laquo;",
+                        next: "&raquo;"
+                    }
+                },
+                columnDefs: [
+                    { orderable: false, targets: [0, -1] } // Disable sorting on "#" and "Actions" columns
+                ],
+                dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                     "<'row'<'col-sm-12'tr>>" +
+                     "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+            });
+
+            // Load roles for Assign Roles modal
+            loadRoles();
+        });
+
+        // Details Modal
+        function showDetails(id) {
+            $.getJSON('@Url.Action("Details", "Users")/' + id, function (data) {
+                if (data.success === false) {
+                    alert(data.message);
+                    return;
+                }
+                $('#detailsUsername').text(data.ADUsername || 'N/A');
+                $('#detailsFullName').text(data.FullName || 'N/A');
+                $('#detailsEmail').text(data.Email || 'N/A');
+                $('#detailsPosition').text(data.Position || 'N/A');
+                $('#detailsProcess').text(data.ProcessName || 'N/A');
+                $('#detailsSubprocess').text(data.SubprocessName || 'N/A');
+                $('#detailsBranch').text(data.BranchName || 'N/A');
+                $('#detailsDepartment').text(data.DepartmentName || 'N/A');
+                // Fetch roles
+                $.getJSON('@Url.Action("GetUserRoles", "Roles")', { userId: id }, function (roleIds) {
+                    $.getJSON('@Url.Action("GetAllRoles", "Roles")', function (allRoles) {
+                        const roleNames = allRoles.filter(r => roleIds.includes(r.role_id)).map(r => r.role_name);
+                        $('#detailsRoles').text(roleNames.length > 0 ? roleNames.join(', ') : 'None');
+                    });
+                });
+                $('#detailsModal').modal('show');
+            }).fail(function (xhr, status, error) {
+                alert('Error fetching details: ' + error);
+            });
+        }
+
+        // Edit Modal
+        function showEdit(id) {
+            $.getJSON('@Url.Action("Details", "Users")/' + id, function (data) {
+                if (data.success === false) {
+                    alert(data.message);
+                    return;
+                }
+                $('#editUserId').val(data.UserId);
+                $('#editADUsername').val(data.ADUsername);
+                $('#editFullName').val(data.FullName);
+                $('#editEmail').val(data.Email);
+                $('#editPosition').val(data.Position);
+                $('#editProcessId').val(data.Process || '');
+                $('#editSubprocessId').empty().append('<option value="">-- Select Subprocess --</option>').prop('disabled', true);
+                $('#editBranchId').empty().append('<option value="">-- Select Branch --</option>').prop('disabled', true);
+                $('#editDepartmentId').empty().append('<option value="">-- Select Department --</option>').prop('disabled', true);
+
+                if (data.Process) {
+                    $.getJSON('@Url.Action("GetSubprocessesByProcessId", "Users")', { processId: data.Process }, function (subprocesses) {
+                        subprocesses.forEach(sub => {
+                            $('#editSubprocessId').append(`<option value="${sub.subprocess_Id}" ${sub.subprocess_Id == data.Subprocess ? 'selected' : ''}>${sub.subprocess_name}</option>`);
+                        });
+                        $('#editSubprocessId').prop('disabled', false);
+
+                        if (data.Subprocess) {
+                            $.getJSON('@Url.Action("GetDepartmentsBySubprocessId", "Users")', { subprocessId: data.Subprocess }, function (departments) {
+                                departments.forEach(dep => {
+                                    $('#editDepartmentId').append(`<option value="${dep.department_Id}" ${dep.department_Id == data.Department ? 'selected' : ''}>${dep.department_Name}</option>`);
+                                });
+                                $('#editDepartmentId').prop('disabled', false);
+                            }).fail(function (xhr, status, error) {
+                                console.error('Error fetching departments: ' + error);
+                            });
+
+                            if (data.Process == 3) {
+                                const subprocessName = $('#editSubprocessId option:selected').text() || data.SubprocessName;
+                                $.getJSON('@Url.Action("GetBranchesBySubprocessId", "Users")', { subprocess: subprocessName }, function (branches) {
+                                    branches.forEach(branch => {
+                                        $('#editBranchId').append(`<option value="${branch.ID}" ${branch.ID == data.Branch ? 'selected' : ''}>${branch.BranchName}</option>`);
+                                    });
+                                    $('#editBranchId').prop('disabled', false);
+                                }).fail(function (xhr, status, error) {
+                                    console.error('Error fetching branches: ' + error);
+                                });
+                            }
+                        }
+                    }).fail(function (xhr, status, error) {
+                        console.error('Error fetching subprocesses: ' + error);
+                    });
+                }
+                $('#editModal').modal('show');
+            }).fail(function (xhr, status, error) {
+                alert('Error fetching user data: ' + error);
+            });
+        }
+
+        // Cascading dropdowns for Edit
+        $('#editProcessId').change(function () {
+            const processId = $(this).val();
+            $('#editSubprocessId').empty().append('<option value="">-- Select Subprocess --</option>').prop('disabled', true);
+            $('#editBranchId').empty().append('<option value="">-- Select Branch --</option>').prop('disabled', true);
+            $('#editDepartmentId').empty().append('<option value="">-- Select Department --</option>').prop('disabled', true);
+
+            if (processId) {
+                $.getJSON('@Url.Action("GetSubprocessesByProcessId", "Users")', { processId: processId }, function (data) {
+                    data.forEach(sub => {
+                        $('#editSubprocessId').append(`<option value="${sub.subprocess_Id}">${sub.subprocess_name}</option>`);
+                    });
+                    $('#editSubprocessId').prop('disabled', false);
+                }).fail(function (xhr, status, error) {
+                    console.error('Error fetching subprocesses: ' + error);
+                });
+            }
+        });
+
+        $('#editSubprocessId').change(function () {
+            const subprocessId = $('#editSubprocessId').val();
+            const processId = parseInt($('#editProcessId').val());
+
+            $('#editBranchId').empty().append('<option value="">-- Select Branch --</option>').prop('disabled', true);
+            $('#editDepartmentId').empty().append('<option value="">-- Select Department --</option>').prop('disabled', true);
+
+            if (subprocessId) {
+                $.getJSON('@Url.Action("GetDepartmentsBySubprocessId", "Users")', { subprocessId: subprocessId }, function (departments) {
+                    departments.forEach(dep => {
+                        $('#editDepartmentId').append(`<option value="${dep.department_Id}">${dep.department_Name}</option>`);
+                    });
+                    $('#editDepartmentId').prop('disabled', false);
+                }).fail(function (xhr, status, error) {
+                    console.error('Error fetching departments: ' + error);
+                });
+
+                if (processId === 3) {
+                    const subprocessName = $('#editSubprocessId option:selected').text();
+                    $.getJSON('@Url.Action("GetBranchesBySubprocessId", "Users")', { subprocess: subprocessName }, function (branches) {
+                        branches.forEach(branch => {
+                            $('#editBranchId').append(`<option value="${branch.ID}">${branch.BranchName}</option>`);
+                        });
+                        $('#editBranchId').prop('disabled', false);
+                    }).fail(function (xhr, status, error) {
+                        console.error('Error fetching branches: ' + error);
+                    });
+                }
+            }
+        });
+
+        function saveEdit() {
+            const userData = {
+                UserId: $('#editUserId').val(),
+                ADUsername: $('#editADUsername').val(),
+                FullName: $('#editFullName').val(),
+                Email: $('#editEmail').val(),
+                Position: $('#editPosition').val(),
+                Process: parseInt($('#editProcessId').val()) || null,
+                Subprocess: parseInt($('#editSubprocessId').val()) || null,
+                Branch: parseInt($('#editBranchId').val()) || null,
+                Department: parseInt($('#editDepartmentId').val()) || null
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Edit", "Users")',
+                data: JSON.stringify(userData),
+                contentType: 'application/json',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert('User updated successfully!');
+                        $('#editModal').modal('hide');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Error updating user: ' + error);
+                }
+            });
+        }
+
+        // Delete Modal
+        function showDelete(id) {
+            $.getJSON('@Url.Action("Details", "Users")/' + id, function (data) {
+                if (data.success === false) {
+                    alert(data.message);
+                    return;
+                }
+                $('#deleteUserId').val(data.UserId);
+                $('#deleteUserName').text(data.FullName || 'N/A');
+                $('#deleteModal').modal('show');
+            }).fail(function (xhr, status, error) {
+                alert('Error fetching user data: ' + error);
+            });
+        }
+
+        function confirmDelete() {
+            const id = $('#deleteUserId').val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Delete", "Users")/' + id,
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert('User deleted successfully!');
+                        $('#deleteModal').modal('hide');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Error deleting user: ' + error);
+                }
+            });
+        }
+
+        // Assign Roles
+        let allRoles = [];
+
+        function loadRoles() {
+            $.getJSON('@Url.Action("GetAllRoles", "Roles")', function (roles) {
+                allRoles = roles;
+            }).fail(function (xhr, status, error) {
+                alert('Error loading roles: ' + error);
+            });
+        }
+
+        function showAssignRoles(id) {
+            $.getJSON('@Url.Action("Details", "Users")/' + id, function (data) {
+                if (data.success === false) {
+                    alert(data.message);
+                    return;
+                }
+                $('#assignUserId').val(data.UserId);
+                $('#assignUserName').text(data.FullName || 'N/A');
+
+                $.getJSON('@Url.Action("GetUserRoles", "Roles")', { userId: id }, function (assignedRoleIds) {
+                    const container = $('#roleCheckboxes');
+                    container.empty();
+                    allRoles.forEach(role => {
+                        const isChecked = assignedRoleIds.includes(role.role_id);
+                        container.append(`
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input role-checkbox" id="role_${role.role_id}" value="${role.role_id}" ${isChecked ? 'checked' : ''}>
+                                <label class="form-check-label" for="role_${role.role_id}">${role.role_name}</label>
+                            </div>
+                        `);
+                    });
+                    $('#roleFilter').val('');
+                    $('.form-check').show();
+                    $('#saveRolesButton').prop('disabled', false);
+                    $('#assignRolesModal').modal('show');
+                }).fail(function (xhr, status, error) {
+                    alert('Error fetching user roles: ' + error);
+                });
+            }).fail(function (xhr, status, error) {
+                alert('Error fetching user data: ' + error);
+            });
+        }
+
+        $('#roleFilter').on('input', function () {
+            const filter = $(this).val().toLowerCase();
+            $('.form-check').each(function () {
+                const roleName = $(this).find('label').text().toLowerCase();
+                $(this).toggle(roleName.includes(filter));
+            });
+        });
+
+        function saveRoles() {
+            const userId = $('#assignUserId').val();
+            const roleIds = $('.role-checkbox:checked').map((_, el) => +el.value).get();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AssignRolesToUserAjax", "Roles")',
+                data: {
+                    userId,
+                    roleIds,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                traditional: true,
+                success: function (res) {
+                    if (res.success) {
+                        alert('Roles assigned successfully!');
+                        $('#assignRolesModal').modal('hide');
+                    } else {
+                        alert('Error: ' + res.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Error assigning roles: ' + error);
+                }
+            });
+        }
+    </script>
+}

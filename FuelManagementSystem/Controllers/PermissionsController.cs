@@ -1,124 +1,218 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using FuelManagementSystem.Models;
 
 namespace FuelManagementSystem.Controllers
 {
-    public class PermissionsController : Controller
+    public class PermissionsController : BaseController
     {
         private FuelManagementSystemEntities db = new FuelManagementSystemEntities();
 
         // GET: Permissions
+        //[PermissionAuthorize("View Permission")]
         public ActionResult Index()
         {
-            var permissions = db.Permissions.Include(p => p.RolePermission);
-            return View(permissions.ToList());
+            ViewBag.User = Session["username"];
+            ViewBag.Fullname = Session["Fullname"];
+            ViewBag.email = Session["email"];
+            return View(db.Permissions.ToList());
         }
 
-        // GET: Permissions/Details/5
-        public ActionResult Details(int? id)
+        // AJAX: Get Permission Details
+        public JsonResult DetailsAjax(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Permission permission = db.Permissions.Find(id);
+            var permission = db.Permissions.Find(id);
             if (permission == null)
             {
-                return HttpNotFound();
+                return Json(new { success = false, message = "Permission not found" }, JsonRequestBehavior.AllowGet);
             }
-            return View(permission);
-        }
-
-        // GET: Permissions/Create
-        public ActionResult Create()
-        {
-            ViewBag.PermissionId = new SelectList(db.RolePermissions, "RolePermissionId", "RolePermissionId");
-            return View();
-        }
-
-        // POST: Permissions/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "PermissionId,PermissionName,Description")] Permission permission)
-        {
-            if (ModelState.IsValid)
+            return Json(new
             {
+                success = true,
+                PermissionId = permission.PermissionId,
+                PermissionName = permission.PermissionName,
+                Description = permission.Description
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        // AJAX: Create Permission
+        [HttpPost]
+        //[PermissionAuthorize("Create Permission")]
+        public JsonResult CreateAjax([Bind(Include = "PermissionName,Description")] Permission permission)
+        {
+            try
+            {
+                if (permission == null)
+                {
+                    return Json(new { success = false, message = "Permission data is null" });
+                }
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    return Json(new { success = false, message = "Validation errors: " + string.Join(", ", errors) });
+                }
+                if (db.Permissions.Any(p => p.PermissionName == permission.PermissionName))
+                {
+                    return Json(new { success = false, message = "Permission name already exists" });
+                }
                 db.Permissions.Add(permission);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return Json(new { success = true, message = "Permission created successfully" });
             }
-
-            ViewBag.PermissionId = new SelectList(db.RolePermissions, "RolePermissionId", "RolePermissionId", permission.PermissionId);
-            return View(permission);
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Server error: {ex.Message}" });
+            }
         }
 
-        // GET: Permissions/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Permission permission = db.Permissions.Find(id);
-            if (permission == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.PermissionId = new SelectList(db.RolePermissions, "RolePermissionId", "RolePermissionId", permission.PermissionId);
-            return View(permission);
-        }
-
-        // POST: Permissions/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        // AJAX: Edit Permission
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "PermissionId,PermissionName,Description")] Permission permission)
+        //[PermissionAuthorize("Edit Permission")]
+        public JsonResult EditAjax([Bind(Include = "PermissionId,PermissionName,Description")] Permission permission)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.Entry(permission).State = EntityState.Modified;
+                if (permission == null || permission.PermissionId <= 0)
+                {
+                    return Json(new { success = false, message = "Invalid permission ID" });
+                }
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                    return Json(new { success = false, message = "Validation errors: " + string.Join(", ", errors) });
+                }
+                var existing = db.Permissions.Find(permission.PermissionId);
+                if (existing == null)
+                {
+                    return Json(new { success = false, message = "Permission not found" });
+                }
+                if (db.Permissions.Any(p => p.PermissionName == permission.PermissionName && p.PermissionId != permission.PermissionId))
+                {
+                    return Json(new { success = false, message = "Permission name already exists" });
+                }
+                existing.PermissionName = permission.PermissionName;
+                existing.Description = permission.Description;
+                db.Entry(existing).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return Json(new { success = true, message = "Permission updated successfully" });
             }
-            ViewBag.PermissionId = new SelectList(db.RolePermissions, "RolePermissionId", "RolePermissionId", permission.PermissionId);
-            return View(permission);
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Server error: {ex.Message}" });
+            }
         }
 
-        // GET: Permissions/Delete/5
-        public ActionResult Delete(int? id)
+        // AJAX: Delete Permission
+        [HttpPost]
+        //[PermissionAuthorize("Delete Permission")]
+        public JsonResult DeleteAjax(int id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                var permission = db.Permissions.Find(id);
+                if (permission == null)
+                {
+                    return Json(new { success = false, message = "Permission not found" });
+                }
+                var rolePermissions = db.RolePermissions.Where(rp => rp.PermissionId == id).ToList();
+                db.RolePermissions.RemoveRange(rolePermissions);
+                db.Permissions.Remove(permission);
+                db.SaveChanges();
+                return Json(new { success = true, message = "Permission deleted successfully" });
             }
-            Permission permission = db.Permissions.Find(id);
-            if (permission == null)
+            catch (Exception ex)
             {
-                return HttpNotFound();
+                return Json(new { success = false, message = $"Server error: {ex.Message}" });
             }
-            return View(permission);
         }
 
-        // POST: Permissions/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        // AJAX: Get All Roles
+        public JsonResult GetAllRoles()
         {
-            Permission permission = db.Permissions.Find(id);
-            db.Permissions.Remove(permission);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            var roles = db.Roles.Select(r => new { r.role_id, r.role_name }).ToList();
+            return Json(roles, JsonRequestBehavior.AllowGet);
         }
+
+        // AJAX: Get Role Permissions for a Permission
+        public JsonResult GetRolePermissions(int permissionId)
+        {
+            var roleIds = db.RolePermissions
+                .Where(rp => rp.PermissionId == permissionId)
+                .Select(rp => rp.RoleId)
+                .ToList();
+            return Json(roleIds, JsonRequestBehavior.AllowGet);
+        }
+
+        // AJAX: Assign Permissions to Role
+        [HttpPost]
+        //[PermissionAuthorize("Assign to Role")]
+        public JsonResult AssignPermissionsToRoleAjax(int permissionId, List<int> roleIds)
+        {
+            try
+            {
+                var permission = db.Permissions.FirstOrDefault(p => p.PermissionId == permissionId);
+                if (permission == null)
+                {
+                    return Json(new { success = false, message = "Permission not found" });
+                }
+                if (roleIds != null && roleIds.Any())
+                {
+                    var validRoleIds = db.Roles.Select(r => r.role_id).ToList();
+                    if (roleIds.Any(rid => !validRoleIds.Contains(rid)))
+                    {
+                        return Json(new { success = false, message = "One or more role IDs are invalid" });
+                    }
+                }
+                var existingPermissions = db.RolePermissions.Where(rp => rp.PermissionId == permissionId).ToList();
+                if (existingPermissions.Any())
+                {
+                    db.RolePermissions.RemoveRange(existingPermissions);
+                }
+                if (roleIds != null && roleIds.Any())
+                {
+                    foreach (var roleId in roleIds)
+                    {
+                        db.RolePermissions.Add(new RolePermission { PermissionId = permissionId, RoleId = roleId });
+                    }
+                }
+                db.SaveChanges();
+                return Json(new { success = true, message = "Permissions assigned successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Server error: {ex.Message}" });
+            }
+        }
+
+        //public ActionResult SeedPermissions()
+        //{
+        //    var permissions = new List<Permission>
+        //    {
+        //        new Permission { PermissionName = "View Documents" },
+        //        new Permission { PermissionName = "Edit Documents" },
+        //        new Permission { PermissionName = "Delete Documents" },
+        //        new Permission { PermissionName = "Submit Documents" },
+        //        new Permission { PermissionName = "Manage Users" },
+        //        new Permission { PermissionName = "Assign Roles" },
+        //        new Permission { PermissionName = "Generate Reports" }
+        //    };
+
+        //    foreach (var perm in permissions)
+        //    {
+        //        if (!db.Permissions.Any(p => p.PermissionName == perm.PermissionName))
+        //        {
+        //            db.Permissions.Add(perm);
+        //        }
+        //    }
+        //    db.SaveChanges();
+        //    return Content("Permissions seeded successfully.");
+        //}
+
+
 
         protected override void Dispose(bool disposing)
         {

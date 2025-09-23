@@ -79,6 +79,10 @@
                                             <p>@(Model.MileageDeviation.HasValue ? Model.MileageDeviation.Value.ToString("N2") : "N/A")</p>
                                         </div>
                                         <div class="col-md-4">
+                                            <strong class="form-label">Review Status</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.ReviewStatus) ? "N/A" : Model.ReviewStatus)</p>
+                                        </div>
+                                        <div class="col-md-4">
                                             <strong class="form-label">Odometer Photo</strong>
                                             <p><a href="@Model.OdometerPhoto" target="_blank">View Photo</a></p>
                                         </div>

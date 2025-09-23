@@ -1,10 +1,10 @@
 ﻿@model dynamic
 
 @{
-    ViewBag.Title = "Import Transactions";
+    ViewBag.Title = "Card Transactions";
 }
 
-<h2>Import Transactions</h2>
+<h2>Card Transactions</h2>
 
 @if (!string.IsNullOrEmpty(ViewBag.Error))
 {
@@ -24,7 +24,7 @@ else if (!string.IsNullOrEmpty(ViewBag.Message))
     <div class="form-group">
         <label for="cardId">Enter Card ID</label>
         <input type="text" id="cardId" name="cardId" class="form-control"
-               placeholder="e.g. 123456" value="@Request["cardId"]" required />
+               placeholder="" value="@Request["cardId"]" required />
     </div>
     <br />
     <button type="submit" class="btn btn-primary">Preview API Transactions</button>

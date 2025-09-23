@@ -46,7 +46,8 @@ $(document).ready(function () {
                 let detailsUrl = '@Url.Action("Details", "FuelTransactions", new { id = "__id__" })'.replace('__id__', transaction.TransactionID);
                 html += `<tr>
                     <td>${transaction.TransactionID}</td>
-                    <td>${new Date(transaction.TransactionDateTime).toLocaleDateString()}</td>
+<td>${new Date(transaction.TransactionDateTime).toLocaleDateString()}</td>
+
                     <td>${transaction.PlateNo || 'N/A'}</td>
                     <td>${(transaction.LitersUsed || 0).toFixed(2)}</td>
                     <td>${(transaction.Amount || 0).toFixed(2)}</td>
