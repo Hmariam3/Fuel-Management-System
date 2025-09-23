@@ -45,6 +45,7 @@
                                             <th>Vehicle</th>
                                             <th>Driver</th>
                                             <th>Odometer (km)</th>
+                                            <th>Mileage Deviation</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -61,6 +62,7 @@
                                                     <td>@(item.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(item.PlateNo) ? "N/A" : item.PlateNo))</td>
                                                     <td>@(item.Driver?.DriverName ?? "N/A")</td>
                                                     <td>@(item.CurrentOdometer.ToString() ?? "N/A")</td>
+                                                    <td>@(item.MileageDeviation.ToString() ?? "N/A")</td>
                                                     <td>@(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)</td>
                                                     <td>
                                                         <a href="@Url.Action("Details", new { id = item.RequestID })"

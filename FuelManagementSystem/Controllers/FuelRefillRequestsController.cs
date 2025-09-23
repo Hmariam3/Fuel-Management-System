@@ -215,10 +215,7 @@ namespace FuelManagementSystem.Controllers
 
                     db.SaveChanges();
 
-                    ViewBag.SuccessMessage = "Fuel refill request submitted successfully!";
-                    ModelState.Clear(); // optional, to clear the form
-                    return View(fuelRefillRequest); // stay on the same page
-
+                    return RedirectToAction("Index");
                 }
             }
 
