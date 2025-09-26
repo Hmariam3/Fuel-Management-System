@@ -27,6 +27,7 @@ namespace FuelManagementSystem.Models
     
         public virtual DbSet<AuditLog> AuditLogs { get; set; }
         public virtual DbSet<Branch> Branches { get; set; }
+        public virtual DbSet<CardAssignmentHistory> CardAssignmentHistories { get; set; }
         public virtual DbSet<CostCenter> CostCenters { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<Document> Documents { get; set; }

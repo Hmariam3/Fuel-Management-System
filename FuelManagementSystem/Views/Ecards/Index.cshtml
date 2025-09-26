@@ -42,11 +42,12 @@
                                         <tr>
                                             <th style="width: 10px">#</th>
                                             <th>E-Card ID</th>
+                                            <th>Card Type</th>
                                             <th>Vehicle</th>
                                             <th>Balance (ETB)</th>
                                             <th>Status</th>
                                             <th>Activation Date</th>
-                                            <th style="width: 120px">Actions</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -58,24 +59,84 @@
                                         <tr class="align-middle">
                                             <td>@index</td>
                                             <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : item.EcardID)</td>
+                                            <td>@item.CardType</td>
                                             <td>@(item.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(item.PlateNo) ? "N/A" : item.PlateNo))</td>
-                                            <td>@(item.Balance == 0 ? "N/A" : item.Balance.ToString("N2"))</td>
+                                            <td>@item.Balance</td>
                                             <td>@(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)</td>
                                             <td>@(item.ActivationDateTime.HasValue ? item.ActivationDateTime.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
                                             <td>
+                                                <!-- Details always first -->
                                                 <a href="@Url.Action("Details", new { id = item.EcardID })"
                                                    class="btn btn-sm btn-info text-white me-1" title="Details">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-                                                <a href="@Url.Action("Edit", new { id = item.EcardID })"
-                                                   class="btn btn-sm btn-warning text-white me-1" title="Edit">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </a>
-                                                <a href="@Url.Action("Delete", new { id = item.EcardID })"
-                                                   class="btn btn-sm btn-danger" title="Delete">
-                                                    <i class="bi bi-trash"></i>
-                                                </a>
+
+                                                @* Normal Cards *@
+                                                @if (item.CardType == "Normal")
+                                                {
+                                                    if (item.Status == "Lost")
+                                                    {
+                                                        <!-- Restore Lost Card -->
+                                                        using (Html.BeginForm("RestoreLostCard", "Ecards", FormMethod.Post, new { @style = "display:inline;" }))
+                                                        {
+                                                            @Html.AntiForgeryToken()
+                                                            @Html.Hidden("ecardId", item.EcardID)
+                                                            <button type="submit" class="btn btn-sm btn-success me-1" title="Restore Lost Card">
+                                                                <i class="bi bi-arrow-repeat"></i>
+                                                            </button>
+                                                        }
+                                                    }
+                                                    else if (item.Status == "Active")
+                                                    {
+                                                        <!-- Mark as Lost -->
+                                                        using (Html.BeginForm("MarkAsLost", "Ecards", FormMethod.Post, new { @style = "display:inline;" }))
+                                                        {
+                                                            @Html.AntiForgeryToken()
+                                                            @Html.Hidden("ecardId", item.EcardID)
+                                                            <button type="submit" class="btn btn-sm btn-dark me-1" title="Mark as Lost">
+                                                                <i class="bi bi-exclamation-triangle"></i>
+                                                            </button>
+                                                        }
+
+                                                        <!-- Normal Edit/Delete -->
+                                                        <a href="@Url.Action("Edit", new { id = item.EcardID })"
+                                                           class="btn btn-sm btn-warning text-white me-1" title="Edit">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                        </a>
+                                                        <a href="@Url.Action("Delete", new { id = item.EcardID })"
+                                                           class="btn btn-sm btn-danger" title="Delete">
+                                                            <i class="bi bi-trash"></i>
+                                                        </a>
+                                                    }
+                                                }
+
+                                                @* Reserved Cards *@
+                                                else if (item.CardType == "Reserved")
+                                                {
+                                                    if (string.IsNullOrEmpty(item.PlateNo))
+                                                    {
+                                                        <!-- Assign Reserved -->
+                                                        <a href="@Url.Action("AssignReservedCard", new { ecardid = item.EcardID })"
+                                                           class="btn btn-sm btn-success me-1" title="Assign Reserved Card">
+                                                            <i class="bi bi-link-45deg"></i>
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <!-- Release Reserved -->
+                                                        using (Html.BeginForm("ReleaseReservedCard", "Ecards", FormMethod.Post, new { @style = "display:inline;" }))
+                                                        {
+                                                            @Html.AntiForgeryToken()
+                                                            @Html.Hidden("ecardId", item.EcardID)
+                                                            <button type="submit" class="btn btn-sm btn-danger me-1" title="Release Reserved Card">
+                                                                <i class="bi bi-arrow-left-circle"></i>
+                                                            </button>
+                                                        }
+                                                    }
+                                                }
                                             </td>
+
+
                                         </tr>
                                                 index++;
                                             }

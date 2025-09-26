@@ -55,7 +55,7 @@ namespace FuelManagementSystem.Controllers
                 }
 
                 // 2. Fetch real-time balance from API
-                decimal currentBalance = ecard.Balance; // fallback to DB balance
+                decimal currentBalance = ecard.Balance ?? 0; // fallback to DB balance
                 try
                 {
                     if (await totalCardService.LoginAsync("ETH02542", "H8KJ8PZH")) // TODO: secure credentials

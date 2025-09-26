@@ -77,28 +77,37 @@
                         @using (Html.BeginForm("Create", "Ecards", FormMethod.Post, new { @class = "needs-validation", novalidate = true }))
                         {
                             @Html.AntiForgeryToken()
-                            <div class="card-body">
-                                <h5 class="mb-3">E-Card Details</h5>
-                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="card-body">
+                            <h5 class="mb-3">E-Card Details</h5>
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label for="EcardID" class="form-label">E-Card ID *</label>
-                                        @Html.EditorFor(model => model.EcardID, new { htmlAttributes = new { @class = "form-control", required = true } })
-                                        @Html.ValidationMessageFor(model => model.EcardID, "", new { @class = "invalid-feedback" })
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="PlateNo" class="form-label">Vehicle *</label>
-                                        @Html.DropDownListFor(model => model.PlateNo, ViewBag.PlateNo as SelectList, "Select Vehicle", new { @class = "form-select select2", data_placeholder = "Select Vehicle", required = true })
-                                        @Html.ValidationMessageFor(model => model.PlateNo, "", new { @class = "invalid-feedback" })
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="Balance" class="form-label">Balance (ETB) *</label>
-                                        @Html.EditorFor(model => model.Balance, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "50000", max = "100000", required = true } })
-                                        @Html.ValidationMessageFor(model => model.Balance, "", new { @class = "invalid-feedback" })
-                                    </div>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="EcardID" class="form-label">E-Card ID *</label>
+                                    @Html.EditorFor(model => model.EcardID, new { htmlAttributes = new { @class = "form-control", required = true } })
+                                    @Html.ValidationMessageFor(model => model.EcardID, "", new { @class = "invalid-feedback" })
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="CardType" class="form-label">Card Type *</label>
+                                    @Html.DropDownListFor(model => model.CardType,
+                                        new SelectList(new[] { "Normal", "Reserved" }),
+                                        "Select Card Type",
+                                        new { @class = "form-select select2", required = true })
+                                    @Html.ValidationMessageFor(model => model.CardType, "", new { @class = "invalid-feedback" })
+                                </div>
+                                <div class="col-md-4" id="vehicleField">
+                                    <label for="PlateNo" class="form-label">Vehicle *</label>
+                                    @Html.DropDownListFor(model => model.PlateNo, ViewBag.PlateNo as SelectList, "Select Vehicle", new { @class = "form-select select2" })
+                                    @Html.ValidationMessageFor(model => model.PlateNo, "", new { @class = "invalid-feedback" })
+                                </div>
+                                <div class="col-md-4" id="balanceField">
+                                    <label for="Balance" class="form-label">Balance (ETB) *</label>
+                                    @Html.EditorFor(model => model.Balance, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "50000", max = "100000" } })
+                                    @Html.ValidationMessageFor(model => model.Balance, "", new { @class = "invalid-feedback" })
                                 </div>
                             </div>
+
+                        </div>
                             <div class="card-footer">
                                 @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
                                 <button type="submit" class="btn btn-primary me-2">Create</button>
@@ -125,6 +134,20 @@
                 allowClear: true,
                 width: '100%'
             });
+
+
+            function toggleFields() {
+                const type = $('#CardType').val();
+                if (type === "Reserved") {
+                    $('#vehicleField').hide();
+                    $('#balanceField').hide();
+                } else {
+                    $('#vehicleField').show();
+                    $('#balanceField').show();
+                }
+            }
+            $('#CardType').change(toggleFields);
+            toggleFields(); // Initial call
 
             // Bootstrap 5 validation
             const forms = document.querySelectorAll('.needs-validation');
@@ -157,7 +180,7 @@
                 if (isNaN(value) || value < 50000 || value > 100000) {
                     $(this).addClass('is-invalid');
                     $(this).next('.invalid-feedback').remove();
-                    $(this).after('<div class="invalid-feedback">Balance must be between 50,000 and 100,000 ETB.</div>');
+                    $(this).after('<div class="invalid-feedback">Balance must be either 50,000 and 100,000 ETB.</div>');
                 } else {
                     $(this).removeClass('is-invalid');
                     $(this).next('.invalid-feedback').remove();

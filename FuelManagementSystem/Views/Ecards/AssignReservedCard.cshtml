@@ -1,0 +1,41 @@
+﻿@model FuelManagementSystem.Models.Ecard
+
+@{
+    ViewBag.Title = "Assign Reserved Card";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Assign Reserved Card</h3>
+
+@if (Model == null)
+{
+    <div class="alert alert-warning">Reserved card not found or unavailable.</div>
+}
+else
+{
+    <div class="card card-success card-outline mb-4">
+        <div class="card-header">
+            <h5 class="card-title">Reserved Card: @Model.EcardID</h5>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("AssignReservedCard", "Ecards", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("ecardId", Model.EcardID)
+
+                <div class="mb-3">
+                    <label for="vehiclePlateNo" class="form-label">Select Vehicle</label>
+                    @Html.DropDownList("vehiclePlateNo", ViewBag.VehiclePlateNo as SelectList,
+                        "Select Vehicle",
+                        new { @class = "form-select select2", style = "width:300px;" })
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i> Assign
+                </button>
+                <a href="@Url.Action("Index", "Ecards")" class="btn btn-secondary">Cancel</a>
+            }
+        </div>
+    </div>
+}
+

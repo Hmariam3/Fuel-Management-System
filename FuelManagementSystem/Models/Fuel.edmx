@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="FuelManagementSystemModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="FuelManagementSystemModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AuditLogs">
           <Key>
             <PropertyRef Name="AuditID" />
@@ -25,6 +25,17 @@
           <Property Name="BranchCode" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="BranchName" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="SubProcess" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="CardAssignmentHistory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EcardID" Type="nvarchar(max)" />
+          <Property Name="PlateNo" Type="nvarchar(max)" />
+          <Property Name="AssignedAt" Type="date" />
+          <Property Name="ReleasedAt" Type="date" />
+          <Property Name="Action" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="CostCenter">
           <Key>
@@ -90,9 +101,10 @@
             <PropertyRef Name="EcardID" />
           </Key>
           <Property Name="EcardID" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="PlateNo" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="Balance" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="Status" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="PlateNo" Type="varchar" MaxLength="20" />
+          <Property Name="CardType" Type="nvarchar(max)" />
+          <Property Name="Status" Type="varchar" MaxLength="10" />
+          <Property Name="Balance" Type="decimal" Precision="18" Scale="2" />
           <Property Name="ActivationDateTime" Type="datetime" />
         </EntityType>
         <EntityType Name="FuelRefillRequests">
@@ -261,7 +273,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK__Ecards__PlateNo__656C112C">
-          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="0..1" />
           <End Role="Ecards" Type="Self.Ecards" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Vehicle">
@@ -563,6 +575,7 @@
         <EntityContainer Name="FuelManagementSystemModelStoreContainer">
           <EntitySet Name="AuditLogs" EntityType="Self.AuditLogs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Branch" EntityType="Self.Branch" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CardAssignmentHistory" EntityType="Self.CardAssignmentHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CostCenter" EntityType="Self.CostCenter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Department" EntityType="Self.Department" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Document" EntityType="Self.Document" Schema="dbo" store:Type="Tables" />
@@ -688,7 +701,8 @@
             <End Role="Vehicle" EntitySet="Vehicle" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="FuelManagementSystemModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -715,6 +729,17 @@
           <Property Name="SubProcess" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Vehicles" Relationship="Self.FK__Vehicle__BranchI__5CD6CB2B" FromRole="Branch" ToRole="Vehicle" />
           <NavigationProperty Name="Users" Relationship="Self.FK_Users_Branch" FromRole="Branch" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="CardAssignmentHistory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EcardID" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PlateNo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="AssignedAt" Type="DateTime" Precision="0" />
+          <Property Name="ReleasedAt" Type="DateTime" Precision="0" />
+          <Property Name="Action" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="CostCenter">
           <Key>
@@ -766,7 +791,7 @@
           <NavigationProperty Name="FuelRefillRequests" Relationship="Self.FK__FuelRefil__Drive__6B24EA82" FromRole="Driver" ToRole="FuelRefillRequests" />
           <NavigationProperty Name="FuelTransactions" Relationship="Self.FK__FuelTrans__Drive__70DDC3D8" FromRole="Driver" ToRole="FuelTransactions" />
           <NavigationProperty Name="Vehicles" Relationship="Self.FK__Vehicle__DriverI__5FB337D6" FromRole="Driver" ToRole="Vehicle" />
-          <NavigationProperty Name="User" Relationship="FuelManagementSystemModel.FK_Driver_Users" FromRole="Driver" ToRole="User" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Driver_Users" FromRole="Driver" ToRole="Users" />
         </EntityType>
         <EntityType Name="EcardReplenishmentRequest">
           <Key>
@@ -788,9 +813,10 @@
             <PropertyRef Name="EcardID" />
           </Key>
           <Property Name="EcardID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="PlateNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Balance" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="Status" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PlateNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="CardType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Balance" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="ActivationDateTime" Type="DateTime" Precision="3" />
           <NavigationProperty Name="EcardReplenishmentRequests" Relationship="Self.FK_EcardReplenishmentRequest_EcardReplenishmentRequest" FromRole="Ecards" ToRole="EcardReplenishmentRequest" />
           <NavigationProperty Name="Vehicle" Relationship="Self.FK__Ecards__PlateNo__656C112C" FromRole="Ecards" ToRole="Vehicle" />
@@ -947,10 +973,10 @@
           <NavigationProperty Name="AuditLogs" Relationship="Self.FK__AuditLogs__UserI__04E4BC85" FromRole="Users" ToRole="AuditLogs" />
           <NavigationProperty Name="Branch1" Relationship="Self.FK_Users_Branch" FromRole="Users" ToRole="Branch" />
           <NavigationProperty Name="Department1" Relationship="Self.FK_Users_Department" FromRole="Users" ToRole="Department" />
+          <NavigationProperty Name="Drivers" Relationship="Self.FK_Driver_Users" FromRole="Users" ToRole="Driver" />
           <NavigationProperty Name="Process1" Relationship="Self.FK_Users_Process" FromRole="Users" ToRole="Process" />
           <NavigationProperty Name="Subprocess1" Relationship="Self.FK_Users_Subprocess" FromRole="Users" ToRole="Subprocess" />
           <NavigationProperty Name="UserRoles" Relationship="Self.FK_UserRole_Users" FromRole="Users" ToRole="UserRole" />
-          <NavigationProperty Name="Drivers" Relationship="FuelManagementSystemModel.FK_Driver_Users" FromRole="User" ToRole="Driver" />
         </EntityType>
         <EntityType Name="Vehicle">
           <Key>
@@ -1095,6 +1121,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Driver_Users">
+          <End Role="Users" Type="Self.User" Multiplicity="0..1" />
+          <End Role="Driver" Type="Self.Driver" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Driver">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_EcardReplenishmentRequest_EcardReplenishmentRequest">
           <End Role="Ecards" Type="Self.Ecard" Multiplicity="0..1" />
           <End Role="EcardReplenishmentRequest" Type="Self.EcardReplenishmentRequest" Multiplicity="*" />
@@ -1108,7 +1146,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK__Ecards__PlateNo__656C112C">
-          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1" />
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="0..1" />
           <End Role="Ecards" Type="Self.Ecard" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Vehicle">
@@ -1290,6 +1328,7 @@
         <EntityContainer Name="FuelManagementSystemEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="AuditLogs" EntityType="Self.AuditLog" />
           <EntitySet Name="Branches" EntityType="Self.Branch" />
+          <EntitySet Name="CardAssignmentHistories" EntityType="Self.CardAssignmentHistory" />
           <EntitySet Name="CostCenters" EntityType="Self.CostCenter" />
           <EntitySet Name="Departments" EntityType="Self.Department" />
           <EntitySet Name="Documents" EntityType="Self.Document" />
@@ -1345,6 +1384,10 @@
           <AssociationSet Name="FK__Vehicle__DriverI__5FB337D6" Association="Self.FK__Vehicle__DriverI__5FB337D6">
             <End Role="Driver" EntitySet="Drivers" />
             <End Role="Vehicle" EntitySet="Vehicles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Driver_Users" Association="Self.FK_Driver_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Driver" EntitySet="Drivers" />
           </AssociationSet>
           <AssociationSet Name="FK_EcardReplenishmentRequest_EcardReplenishmentRequest" Association="Self.FK_EcardReplenishmentRequest_EcardReplenishmentRequest">
             <End Role="Ecards" EntitySet="Ecards" />
@@ -1410,23 +1453,7 @@
             <End Role="VehicleAssignmentType" EntitySet="VehicleAssignmentTypes" />
             <End Role="Vehicle" EntitySet="Vehicles" />
           </AssociationSet>
-          <AssociationSet Name="FK_Driver_Users" Association="FuelManagementSystemModel.FK_Driver_Users">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Driver" EntitySet="Drivers" />
-          </AssociationSet>
         </EntityContainer>
-        <Association Name="FK_Driver_Users">
-          <End Type="FuelManagementSystemModel.User" Role="User" Multiplicity="0..1" />
-          <End Type="FuelManagementSystemModel.Driver" Role="Driver" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="UserId" />
-            </Principal>
-            <Dependent Role="Driver">
-              <PropertyRef Name="CreatedBy" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1453,6 +1480,18 @@
                 <ScalarProperty Name="BranchCode" ColumnName="BranchCode" />
                 <ScalarProperty Name="BranchName" ColumnName="BranchName" />
                 <ScalarProperty Name="SubProcess" ColumnName="SubProcess" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CardAssignmentHistories">
+            <EntityTypeMapping TypeName="FuelManagementSystemModel.CardAssignmentHistory">
+              <MappingFragment StoreEntitySet="CardAssignmentHistory">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EcardID" ColumnName="EcardID" />
+                <ScalarProperty Name="PlateNo" ColumnName="PlateNo" />
+                <ScalarProperty Name="AssignedAt" ColumnName="AssignedAt" />
+                <ScalarProperty Name="ReleasedAt" ColumnName="ReleasedAt" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1525,8 +1564,9 @@
               <MappingFragment StoreEntitySet="Ecards">
                 <ScalarProperty Name="EcardID" ColumnName="EcardID" />
                 <ScalarProperty Name="PlateNo" ColumnName="PlateNo" />
-                <ScalarProperty Name="Balance" ColumnName="Balance" />
+                <ScalarProperty Name="CardType" ColumnName="CardType" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
                 <ScalarProperty Name="ActivationDateTime" ColumnName="ActivationDateTime" />
               </MappingFragment>
             </EntityTypeMapping>

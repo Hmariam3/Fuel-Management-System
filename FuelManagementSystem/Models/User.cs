@@ -18,8 +18,8 @@ namespace FuelManagementSystem.Models
         public User()
         {
             this.AuditLogs = new HashSet<AuditLog>();
-            this.UserRoles = new HashSet<UserRole>();
             this.Drivers = new HashSet<Driver>();
+            this.UserRoles = new HashSet<UserRole>();
         }
     
         public int UserId { get; set; }
@@ -38,11 +38,11 @@ namespace FuelManagementSystem.Models
         public virtual ICollection<AuditLog> AuditLogs { get; set; }
         public virtual Branch Branch1 { get; set; }
         public virtual Department Department1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Driver> Drivers { get; set; }
         public virtual Process Process1 { get; set; }
         public virtual Subprocess Subprocess1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserRole> UserRoles { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Driver> Drivers { get; set; }
     }
 }
