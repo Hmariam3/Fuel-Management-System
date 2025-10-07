@@ -29,6 +29,7 @@ namespace FuelManagementSystem.Models
         public string Location { get; set; }
         public Nullable<int> ReceiptNum { get; set; }
         public string Product { get; set; }
+        public Nullable<decimal> ExpectedRangeKm { get; set; }
     
         public virtual Driver Driver { get; set; }
         public virtual FuelRefillRequest FuelRefillRequest { get; set; }

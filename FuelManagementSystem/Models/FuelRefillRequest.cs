@@ -25,11 +25,17 @@ namespace FuelManagementSystem.Models
         public int DriverID { get; set; }
         public int CurrentOdometer { get; set; }
         public System.DateTime RequestDateTime { get; set; }
+        public Nullable<decimal> LittersBought { get; set; }
+        public Nullable<decimal> AmountPaid { get; set; }
+        public Nullable<decimal> UnitPrice { get; set; }
+        public string Location { get; set; }
+        public Nullable<int> ReceiptNum { get; set; }
         public string ReceiptImage { get; set; }
         public string OdometerPhoto { get; set; }
         public string DigitalSignature { get; set; }
         public string Status { get; set; }
         public Nullable<decimal> MileageDeviation { get; set; }
+        public Nullable<bool> IsEarlyRefill { get; set; }
         public string ReviewStatus { get; set; }
     
         public virtual Driver Driver { get; set; }

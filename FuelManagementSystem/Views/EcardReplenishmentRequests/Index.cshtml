@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<FuelManagementSystem.Models.EcardReplenishmentRequest>
+
 @{
     ViewBag.Title = "E-Card Replenishment Requests";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,15 +9,20 @@
     <!--begin::App Content Header-->
     <div class="app-content-header">
         <div class="container-fluid">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-sm-6">
                     <h3 class="mb-0">E-Card Replenishment Requests</h3>
                 </div>
                 <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Replenishment Requests</li>
-                    </ol>
+                    <div class="d-flex justify-content-end align-items-center gap-2">
+                        <div class="input-group input-group-sm" style="width: 250px;">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0" placeholder="Search records..." aria-label="Search" id="searchInput">
+                        </div>
+                        <a href="@Url.Action("ExportApprovedToPdf", "EcardReplenishmentRequests")" class="btn btn-danger btn-sm">Export Approved to PDF</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -27,70 +33,73 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card card-success card-outline mb-4">
-                        <div class="card-header">
-                            <h3 class="card-title">Replenishment Requests</h3>
-                            <div class="card-tools">
-                                @Html.ActionLink("Export Approved Requests to PDF", "ExportApprovedToPdf", null, new { @class = "btn btn-danger" })
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="replenishmentRequestsTable" class="table table-striped table-bordered" aria-label="Replenishment request records">
-                                    <thead>
+                    <div class="card card-outline card-success mb-4 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="table-responsive" style="max-height: 70vh; overflow-x: auto;">
+                                <table id="replenishmentRequestsTable" class="table table-bordered table-striped table-hover" aria-label="Replenishment request records">
+                                    <thead class="table-light">
                                         <tr>
-                                            <th>Ecard</th>
-                                            <th>Current Balance</th>
-                                            <th>Requested Amount</th>
-                                            <th>Balance After</th>
-                                            <th>Status</th>
-                                            <th>Requested By</th>
-                                            <th>Requested At</th>
-                                            <th style="width: 200px">Actions</th>
+                                            <th style="width: 50px; font-weight: bold;">#</th>
+                                            <th style="min-width: 100px; font-weight: bold;">Ecard</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Current Balance</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Requested Amount</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Balance After</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Status</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Requested By</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Requested At</th>
+                                            <th style="min-width: 200px; font-weight: bold; position: sticky; right: 0; background-color: #fff; z-index: 1;">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @if (Model != null && Model.Any())
                                         {
+                                            var index = 1;
                                             foreach (var item in Model)
                                             {
-                                        <tr class="align-middle">
-                                            <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : item.EcardID)</td>
-                                            <td>@(item.CurrentBalance.HasValue ? item.CurrentBalance.Value.ToString("N2") : "N/A")</td>
-                                            <td>@(item.RequestedAmount.HasValue ? item.RequestedAmount.Value.ToString("N2") : "N/A")</td>
-                                            <td>@(item.BalanceAfter.HasValue ? item.BalanceAfter.Value.ToString("N2") : "-")</td>
-                                            <td>@(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)</td>
-                                            <td>@(item.Ecard?.Vehicle?.Driver != null ? item.Ecard.Vehicle.Driver.DriverName : "N/A")</td>
-                                            <td>@(item.RequestedAt.HasValue ? item.RequestedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
-                                            <td>
-                                                @if (item.Status == "Pending")
-                                                {
-                                                    using (Html.BeginForm("Approve", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post))
-                                                    {
-                                                        @Html.AntiForgeryToken()
-                                                        <button type="submit" class="btn btn-success btn-sm me-1" title="Approve">
-                                                            <i class="bi bi-check-circle"></i>
-                                                        </button>
-                                                    }
-                                                    using (Html.BeginForm("Reject", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post))
-                                                    {
-                                                        @Html.AntiForgeryToken()
-                                                        <div class="input-group input-group-sm mb-1">
-                                                            <input type="text" name="note" placeholder="Reason" class="form-control" />
-                                                            <button type="submit" class="btn btn-danger btn-sm" title="Reject">
-                                                                <i class="bi bi-x-circle"></i>
-                                                            </button>
-                                                        </div>
-                                                    }
-                                                }
-                                            </td>
-                                        </tr>
+                                                <tr class="align-middle">
+                                                    <td>@index</td>
+                                                    <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : item.EcardID)</td>
+                                                    <td>@(item.CurrentBalance.HasValue ? item.CurrentBalance.Value.ToString("N2") : "N/A")</td>
+                                                    <td>@(item.RequestedAmount.HasValue ? item.RequestedAmount.Value.ToString("N2") : "N/A")</td>
+                                                    <td>@(item.BalanceAfter.HasValue ? item.BalanceAfter.Value.ToString("N2") : "N/A")</td>
+                                                    <td>
+                                                        <span class="badge"
+                                                              style="background-color: @(item.Status == "Pending" ? "#1976d2" : item.Status == "Approved" ? "green" : item.Status == "Rejected" ? "#ff1a1a" : "gray"); color: white; border-radius: 15px; padding: 5px 10px;">
+                                                            @(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)
+                                                        </span>
+                                                    </td>
+                                                    <td>@(item.Ecard?.Vehicle?.Driver != null ? item.Ecard.Vehicle.Driver.DriverName : "N/A")</td>
+                                                    <td>@(item.RequestedAt.HasValue ? item.RequestedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
+                                                    <td style="position: sticky; right: 0; z-index: 1;">
+                                                        @if (item.Status == "Pending")
+                                                        {
+                                                            using (Html.BeginForm("Approve", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post, new { @style = "display:inline;" }))
+                                                            {
+                                                                @Html.AntiForgeryToken()
+                                                                <button type="submit" class="btn btn-sm btn-success me-1" title="Approve">
+                                                                    <i class="bi bi-check-circle"></i>
+                                                                </button>
+                                                            }
+                                                            using (Html.BeginForm("Reject", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post, new { @style = "display:inline;" }))
+                                                            {
+                                                                @Html.AntiForgeryToken()
+                                                                <div class="input-group input-group-sm mb-1">
+                                                                    <input type="text" name="note" placeholder="Reason" class="form-control" style="max-width: 100px;" />
+                                                                    <button type="submit" class="btn btn-sm btn-danger" title="Reject">
+                                                                        <i class="bi bi-x-circle"></i>
+                                                                    </button>
+                                                                </div>
+                                                            }
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                index++;
                                             }
                                         }
                                         else
                                         {
                                             <tr>
-                                                <td colspan="8" class="text-center">No replenishment request records found.</td>
+                                                <td colspan="9" class="text-center">No replenishment request records found.</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -108,27 +117,43 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#replenishmentRequestsTable').DataTable({
+            const table = $('#replenishmentRequestsTable').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
-                lengthMenu: [5, 10, 25, 50, 100],
-                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                pageLength: 5,
                 responsive: true,
                 language: {
-                    search: "_INPUT_",
+                    search: "",
                     searchPlaceholder: "Search records...",
                     paginate: {
                         previous: "&laquo;",
                         next: "&raquo;"
-                    }
+                    },
+                    emptyTable: "No replenishment request records found."
                 },
                 columnDefs: [
-                    { orderable: false, targets: [-1] }
+                    { orderable: false, targets: [0, -1] },
+                    { width: "50px", targets: 0 },
+                    { width: "100px", targets: 1 },
+                    { width: "120px", targets: 2 },
+                    { width: "120px", targets: 3 },
+                    { width: "120px", targets: 4 },
+                    { width: "120px", targets: 5 },
+                    { width: "150px", targets: 6 },
+                    { width: "150px", targets: 7 },
+                    { width: "200px", targets: 8 }
                 ],
                 dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
                     "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                scrollX: true
+            });
+
+            // Custom search input binding
+            $('#searchInput').on('keyup', function () {
+                table.search(this.value).draw();
             });
         });
     </script>

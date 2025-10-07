@@ -116,11 +116,17 @@
           <Property Name="DriverID" Type="int" Nullable="false" />
           <Property Name="CurrentOdometer" Type="int" Nullable="false" />
           <Property Name="RequestDateTime" Type="datetime" Nullable="false" />
+          <Property Name="LittersBought" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AmountPaid" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="UnitPrice" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="Location" Type="nvarchar(max)" />
+          <Property Name="ReceiptNum" Type="int" />
           <Property Name="ReceiptImage" Type="varchar" MaxLength="255" />
           <Property Name="OdometerPhoto" Type="varchar" MaxLength="255" />
           <Property Name="DigitalSignature" Type="varchar" MaxLength="255" />
           <Property Name="Status" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="MileageDeviation" Type="decimal" Precision="10" Scale="2" />
+          <Property Name="IsEarlyRefill" Type="bit" />
           <Property Name="ReviewStatus" Type="varchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="FuelStandards">
@@ -151,6 +157,7 @@
           <Property Name="Location" Type="nvarchar(max)" />
           <Property Name="ReceiptNum" Type="int" />
           <Property Name="Product" Type="nvarchar(max)" />
+          <Property Name="ExpectedRangeKm" Type="decimal" Precision="10" Scale="2" />
         </EntityType>
         <EntityType Name="FuelTypes">
           <Key>
@@ -830,11 +837,17 @@
           <Property Name="DriverID" Type="Int32" Nullable="false" />
           <Property Name="CurrentOdometer" Type="Int32" Nullable="false" />
           <Property Name="RequestDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LittersBought" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AmountPaid" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="UnitPrice" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="Location" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ReceiptNum" Type="Int32" />
           <Property Name="ReceiptImage" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="OdometerPhoto" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="DigitalSignature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="MileageDeviation" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="IsEarlyRefill" Type="Boolean" />
           <Property Name="ReviewStatus" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Driver" Relationship="Self.FK__FuelRefil__Drive__6B24EA82" FromRole="FuelRefillRequests" ToRole="Driver" />
           <NavigationProperty Name="Vehicle" Relationship="Self.FK__FuelRefil__Plate__6A30C649" FromRole="FuelRefillRequests" ToRole="Vehicle" />
@@ -869,6 +882,7 @@
           <Property Name="Location" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ReceiptNum" Type="Int32" />
           <Property Name="Product" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ExpectedRangeKm" Type="Decimal" Precision="10" Scale="2" />
           <NavigationProperty Name="Driver" Relationship="Self.FK__FuelTrans__Drive__70DDC3D8" FromRole="FuelTransactions" ToRole="Driver" />
           <NavigationProperty Name="FuelRefillRequest" Relationship="Self.FK__FuelTrans__Reque__6EF57B66" FromRole="FuelTransactions" ToRole="FuelRefillRequests" />
           <NavigationProperty Name="Vehicle" Relationship="Self.FK__FuelTrans__Plate__6FE99F9F" FromRole="FuelTransactions" ToRole="Vehicle" />
@@ -1579,11 +1593,17 @@
                 <ScalarProperty Name="DriverID" ColumnName="DriverID" />
                 <ScalarProperty Name="CurrentOdometer" ColumnName="CurrentOdometer" />
                 <ScalarProperty Name="RequestDateTime" ColumnName="RequestDateTime" />
+                <ScalarProperty Name="LittersBought" ColumnName="LittersBought" />
+                <ScalarProperty Name="AmountPaid" ColumnName="AmountPaid" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="Location" ColumnName="Location" />
+                <ScalarProperty Name="ReceiptNum" ColumnName="ReceiptNum" />
                 <ScalarProperty Name="ReceiptImage" ColumnName="ReceiptImage" />
                 <ScalarProperty Name="OdometerPhoto" ColumnName="OdometerPhoto" />
                 <ScalarProperty Name="DigitalSignature" ColumnName="DigitalSignature" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="MileageDeviation" ColumnName="MileageDeviation" />
+                <ScalarProperty Name="IsEarlyRefill" ColumnName="IsEarlyRefill" />
                 <ScalarProperty Name="ReviewStatus" ColumnName="ReviewStatus" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -1616,6 +1636,7 @@
                 <ScalarProperty Name="Location" ColumnName="Location" />
                 <ScalarProperty Name="ReceiptNum" ColumnName="ReceiptNum" />
                 <ScalarProperty Name="Product" ColumnName="Product" />
+                <ScalarProperty Name="ExpectedRangeKm" ColumnName="ExpectedRangeKm" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

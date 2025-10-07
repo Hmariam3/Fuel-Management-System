@@ -9,15 +9,20 @@
     <!--begin::App Content Header-->
     <div class="app-content-header">
         <div class="container-fluid">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-sm-6">
                     <h3 class="mb-0">Fuel Refill Request Records</h3>
                 </div>
                 <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Fuel Refill Requests</li>
-                    </ol>
+                    <div class="d-flex justify-content-end align-items-center gap-2">
+                        <div class="input-group input-group-sm" style="width: 250px;">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0" placeholder="Search records..." aria-label="Search" id="searchInput">
+                        </div>
+                        <a href="@Url.Action("Create", "FuelRefillRequests")" class="btn btn-primary btn-sm">Register New Request</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -28,26 +33,22 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card card-success card-outline mb-4">
-                        <div class="card-header">
-                            <h3 class="card-title">Fuel Refill Request List</h3>
-                            <div class="card-tools">
-                                <a href="@Url.Action("Create", "FuelRefillRequests")" class="btn btn-primary btn-sm">Register New Request</a>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="fuelRefillRequestsTable" class="table table-bordered table-striped" aria-label="Fuel Refill Request records">
-                                    <thead>
+                    <div class="card card-outline card-success mb-4 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="table-responsive" style="max-height: 70vh; overflow-x: auto;">
+                                <table id="fuelRefillRequestsTable" class="table table-bordered table-striped table-hover" aria-label="Fuel Refill Request records">
+                                    <thead class="table-light">
                                         <tr>
-                                            <th style="width: 10px">#</th>
-                                            <th>Request ID</th>
-                                            <th>Vehicle</th>
-                                            <th>Driver</th>
-                                            <th>Odometer (km)</th>
-                                            <th>Mileage Deviation</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
+                                            <th style="width: 50px; font-weight: bold;">#</th>
+                                            <th style="min-width: 100px; font-weight: bold;">Request ID</th>
+                                            <th style="min-width: 200px; font-weight: bold;">Vehicle</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Driver</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Odometer (km)</th>
+                                            <th style="min-width: 200px; font-weight: bold;">Mileage Deviation</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Early Refill</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Status</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Review Status</th>
+                                            <th style="min-width: 170px; font-weight: bold; position: sticky; right: 0; background-color: #fff; z-index: 1;">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -56,15 +57,74 @@
                                             var index = 1;
                                             foreach (var item in Model)
                                             {
+                                                // Deviation color logic
+                                                string deviationColor = "text-muted";
+                                                if (item.MileageDeviation.HasValue)
+                                                {
+                                                    if (item.MileageDeviation < -5)
+                                                    {
+                                                        deviationColor = "text-danger fw-bold";
+                                                    }
+                                                    else if (item.MileageDeviation < 0)
+                                                    {
+                                                        deviationColor = "text-warning fw-semibold";
+                                                    }
+                                                    else
+                                                    {
+                                                        deviationColor = "text-success fw-semibold";
+                                                    }
+
+                                                }
+
                                                 <tr class="align-middle">
                                                     <td>@index</td>
                                                     <td>@item.RequestID</td>
                                                     <td>@(item.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(item.PlateNo) ? "N/A" : item.PlateNo))</td>
                                                     <td>@(item.Driver?.DriverName ?? "N/A")</td>
-                                                    <td>@(item.CurrentOdometer.ToString() ?? "N/A")</td>
-                                                    <td>@(item.MileageDeviation.ToString() ?? "N/A")</td>
-                                                    <td>@(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)</td>
+                                                    <td>@item.CurrentOdometer</td>
+                                                    <td class="@deviationColor">
+                                                        @if (item.MileageDeviation.HasValue)
+                                                        {
+                                                            @($"{item.MileageDeviation.Value:F2}%")
+                                                        }
+                                                        else
+                                                        {
+                                                            @("N/A")
+                                                        }
+                                                    </td>
                                                     <td>
+                                                        @if (item.IsEarlyRefill == true)
+                                                        {
+                                                            <span class="badge bg-warning text-dark">
+                                                                <i class="bi bi-exclamation-triangle-fill me-1"></i> Early
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-success">
+                                                                <i class="bi bi-check-circle-fill me-1"></i> Normal
+                                                            </span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge"
+                                                              style="background-color: @(item.Status == "Pending" ? "#1976d2" : item.Status == "Approved" ? "green" : item.Status == "Rejected" ? "#ff1a1a" : "gray"); color: white; border-radius: 15px; padding: 5px 10px;">
+                                                            @(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(item.ReviewStatus))
+                                                        {
+                                                            <span class="badge bg-danger">
+                                                                <i class="bi bi-flag-fill me-1"></i> @item.ReviewStatus
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-secondary">—</span>
+                                                        }
+                                                    </td>
+                                                    <td style="position: sticky; right: 0;  z-index: 1;">
                                                         <a href="@Url.Action("Details", new { id = item.RequestID })"
                                                            class="btn btn-sm btn-info text-white me-1" title="Details">
                                                             <i class="bi bi-eye"></i>
@@ -74,7 +134,7 @@
                                                             <i class="bi bi-pencil-square"></i>
                                                         </a>
                                                         <a href="@Url.Action("Delete", new { id = item.RequestID })"
-                                                           class="btn btn-sm btn-danger" title="Delete">
+                                                           class="btn btn-sm btn-danger me-1" title="Delete">
                                                             <i class="bi bi-trash"></i>
                                                         </a>
                                                         @if (item.Status == "Pending")
@@ -84,7 +144,7 @@
                                                                 <i class="bi bi-check-circle"></i>
                                                             </a>
                                                         }
-                                                        </td>
+                                                    </td>
                                                 </tr>
                                                 index++;
                                             }
@@ -110,27 +170,42 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#fuelRefillRequestsTable').DataTable({
+            const table = $('#fuelRefillRequestsTable').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
-                lengthMenu: [5, 10, 25, 50, 100],
-                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                pageLength: 5,
                 responsive: true,
                 language: {
-                    search: "_INPUT_",
+                    search: "",
                     searchPlaceholder: "Search records...",
                     paginate: {
                         previous: "&laquo;",
                         next: "&raquo;"
-                    }
+                    },
+                    emptyTable: "No fuel refill request records found."
                 },
                 columnDefs: [
-                    { orderable: false, targets: [0, -1] }
+                    { orderable: false, targets: [0, -1] },
+                    { width: "50px", targets: 0 },
+                    { width: "100px", targets: 1 },
+                    { width: "200px", targets: 2 },
+                    { width: "150px", targets: 3 },
+                    { width: "120px", targets: 4 },
+                    { width: "120px", targets: 5 },
+                    { width: "120px", targets: 6 },
+                    { width: "170px", targets: 7 }
                 ],
                 dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
                     "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                scrollX: true
+            });
+
+            // Custom search input binding
+            $('#searchInput').on('keyup', function () {
+                table.search(this.value).draw();
             });
         });
     </script>

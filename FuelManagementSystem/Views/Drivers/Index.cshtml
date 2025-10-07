@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<FuelManagementSystem.Models.Driver>
+
 @{
     ViewBag.Title = "Driver Records";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,15 +9,20 @@
     <!--begin::App Content Header-->
     <div class="app-content-header">
         <div class="container-fluid">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-sm-6">
                     <h3 class="mb-0">Driver Records</h3>
                 </div>
                 <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Drivers</li>
-                    </ol>
+                    <div class="d-flex justify-content-end align-items-center gap-2">
+                        <div class="input-group input-group-sm" style="width: 250px;">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0" placeholder="Search records..." aria-label="Search" id="searchInput">
+                        </div>
+                        <a href="@Url.Action("Create", "Drivers")" class="btn btn-primary btn-sm">Register New Driver</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -27,25 +33,20 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card card-success card-outline mb-4">
-                        <div class="card-header">
-                            <h3 class="card-title">Driver List</h3>
-                            <div class="card-tools">
-                                <a href="@Url.Action("Create", "Drivers")" class="btn btn-primary btn-sm">Register New Driver</a>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="driversTable" class="table table-bordered table-striped" aria-label="Driver records">
-                                    <thead>
+                    <div class="card card-outline card-success mb-4 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="table-responsive" style="max-height: 70vh; overflow-x: auto;">
+                                <table id="driversTable" class="table table-bordered table-striped table-hover" aria-label="Driver records">
+                                    <thead class="table-light">
                                         <tr>
-                                            <th style="width: 10px">#</th>
-                                            <th>Driver ID</th>
-                                            <th>Driver Name</th>
-                                            <th>Phone Number</th>
-                                            <th>License Number</th>
-                                            <th>Compliance Status</th>
-                                            <th style="width: 120px">Actions</th>
+                                            <th style="width: 50px; font-weight: bold;">#</th>
+                                            <th style="min-width: 100px; font-weight: bold;">Driver ID</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Driver Name</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Employee Number</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Phone Number</th>
+                                            <th style="min-width: 150px; font-weight: bold;">License Number</th>
+                                            <th style="font-weight: bold;">Compliance Status</th>
+                                            <th style="min-width: 150px; font-weight: bold; position: sticky; right: 0; background-color: #fff; z-index: 1;">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -55,35 +56,34 @@
                                             foreach (var item in Model)
                                             {
                                                 var complianceStatus = item.CreatedAt.HasValue ? "Active" : "Inactive";
-                                                <tr class="align-middle">
-                                                    <td>@index</td>
-                                                    <td>@item.DriverID</td>
-                                                    <td>@(string.IsNullOrEmpty(item.DriverName) ? "N/A" : item.DriverName)</td>
-                                                    <td>@(string.IsNullOrEmpty(item.PhoneNumber) ? "N/A" : item.PhoneNumber)</td>
-                                                    <td>@(string.IsNullOrEmpty(item.LicenseNumber) ? "N/A" : item.LicenseNumber)</td>
-                                                    <td>
-                                                        <span class="@(complianceStatus == "Active" ? "badge bg-success" : "badge bg-danger")">
-                                                            @complianceStatus
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <a href="@Url.Action("Details", "Drivers", new { id = item.DriverID })"
-                                                           class="btn btn-sm btn-info text-white me-1" title="Details">
-                                                            <i class="bi bi-eye"></i>
-                                                        </a>
-
-                                                        <a href="@Url.Action("Edit", "Drivers", new { id = item.DriverID })"
-                                                           class="btn btn-sm btn-warning text-white me-1" title="Edit">
-                                                            <i class="bi bi-pencil-square"></i>
-                                                        </a>
-
-                                                        <a href="@Url.Action("Delete", "Drivers", new { id = item.DriverID })"
-                                                           class="btn btn-sm btn-danger" title="Delete">
-                                                            <i class="bi bi-trash"></i>
-                                                        </a>
-
-                                                    </td>
-                                                </tr>
+                                        <tr class="align-middle">
+                                            <td>@index</td>
+                                            <td>@item.DriverID</td>
+                                            <td>@(string.IsNullOrEmpty(item.DriverName) ? "N/A" : item.DriverName)</td>
+                                            <td>@item.EmployeeNumber</td>
+                                            <td>@(string.IsNullOrEmpty(item.PhoneNumber) ? "N/A" : item.PhoneNumber)</td>
+                                            <td>@(string.IsNullOrEmpty(item.LicenseNumber) ? "N/A" : item.LicenseNumber)</td>
+                                            <td>
+                                                <span class="badge"
+                                                      style="background-color: @(complianceStatus == "Active" ? "green" : "gray"); color: white; border-radius: 15px; padding: 5px 10px;">
+                                                    @complianceStatus
+                                                </span>
+                                            </td>
+                                            <td style="position: sticky; right: 0;  z-index: 1;">
+                                                <a href="@Url.Action("Details", "Drivers", new { id = item.DriverID })"
+                                                   class="btn btn-sm btn-info text-white me-1" title="Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="@Url.Action("Edit", "Drivers", new { id = item.DriverID })"
+                                                   class="btn btn-sm btn-warning text-white me-1" title="Edit">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <a href="@Url.Action("Delete", "Drivers", new { id = item.DriverID })"
+                                                   class="btn btn-sm btn-danger" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
                                                 index++;
                                             }
                                         }
@@ -108,27 +108,41 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#driversTable').DataTable({
+            const table = $('#driversTable').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
-                lengthMenu: [5, 10, 25, 50, 100],
-                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                pageLength: 6,
                 responsive: true,
                 language: {
-                    search: "_INPUT_",
+                    search: "",
                     searchPlaceholder: "Search records...",
                     paginate: {
                         previous: "&laquo;",
                         next: "&raquo;"
-                    }
+                    },
+                    emptyTable: "No driver records found."
                 },
                 columnDefs: [
-                    { orderable: false, targets: [0, -1] }
+                    { orderable: false, targets: [0, -1] },
+                    { width: "50px", targets: 0 },
+                    { width: "100px", targets: 1 },
+                    { width: "150px", targets: 2 },
+                    { width: "120px", targets: 3 },
+                    { width: "150px", targets: 4 },
+                    { width: "120px", targets: 5 },
+                    { width: "150px", targets: 6 }
                 ],
                 dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
                     "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                scrollX: true
+            });
+
+            // Custom search input binding
+            $('#searchInput').on('keyup', function () {
+                table.search(this.value).draw();
             });
         });
     </script>

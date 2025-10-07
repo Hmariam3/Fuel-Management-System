@@ -9,15 +9,20 @@
     <!--begin::App Content Header-->
     <div class="app-content-header">
         <div class="container-fluid">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-sm-6">
                     <h3 class="mb-0">E-Card Records</h3>
                 </div>
                 <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">E-Cards</li>
-                    </ol>
+                    <div class="d-flex justify-content-end align-items-center gap-2">
+                        <div class="input-group input-group-sm" style="width: 250px;">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0" placeholder="Search records..." aria-label="Search" id="searchInput">
+                        </div>
+                        <a href="@Url.Action("Create", "Ecards")" class="btn btn-primary btn-sm">Register New E-Card</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -28,26 +33,20 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card card-success card-outline mb-4">
-                        <div class="card-header">
-                            <h3 class="card-title">E-Card List</h3>
-                            <div class="card-tools">
-                                <a href="@Url.Action("Create", "Ecards")" class="btn btn-primary btn-sm">Register New E-Card</a>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="ecardsTable" class="table table-bordered table-striped" aria-label="E-Card records">
-                                    <thead>
+                    <div class="card card-outline card-success mb-4 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="table-responsive" style="max-height: 70vh; overflow-x: auto;">
+                                <table id="ecardsTable" class="table table-bordered table-striped table-hover" aria-label="E-Card records">
+                                    <thead class="table-light">
                                         <tr>
-                                            <th style="width: 10px">#</th>
-                                            <th>E-Card ID</th>
-                                            <th>Card Type</th>
-                                            <th>Vehicle</th>
-                                            <th>Balance (ETB)</th>
-                                            <th>Status</th>
-                                            <th>Activation Date</th>
-                                            <th>Actions</th>
+                                            <th style="width: 50px; font-weight: bold;">#</th>
+                                            <th style="min-width: 100px; font-weight: bold;">E-Card ID</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Card Type</th>
+                                            <th style="min-width: 200px; font-weight: bold;">Vehicle</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Balance (ETB)</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Status</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Activation Date</th>
+                                            <th style="min-width: 170px; font-weight: bold; position: sticky; right: 0; z-index: 1;">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -56,95 +55,101 @@
                                             var index = 1;
                                             foreach (var item in Model)
                                             {
-                                        <tr class="align-middle">
-                                            <td>@index</td>
-                                            <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : item.EcardID)</td>
-                                            <td>@item.CardType</td>
-                                            <td>@(item.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(item.PlateNo) ? "N/A" : item.PlateNo))</td>
-                                            <td>@item.Balance</td>
-                                            <td>@(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)</td>
-                                            <td>@(item.ActivationDateTime.HasValue ? item.ActivationDateTime.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
-                                            <td>
-                                                <!-- Details always first -->
-                                                <a href="@Url.Action("Details", new { id = item.EcardID })"
-                                                   class="btn btn-sm btn-info text-white me-1" title="Details">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
+                                                <tr class="align-middle">
+                                                    <td>@index</td>
+                                                    <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : item.EcardID)</td>
+                                                    <td>
+                                                        <span class="badge"
+                                                              style="background-color: @(item.CardType == "Normal" ? "green" : item.Status == "Reserved" ? "#ff1a1a" : "gray"); color: white; border-radius: 15px; padding: 5px 10px;">
+                                                            @(string.IsNullOrEmpty(item.CardType) ? "N/A" : item.CardType)
+                                                        </span>
+                                                    </td>
 
-                                                @* Normal Cards *@
-                                                @if (item.CardType == "Normal")
-                                                {
-                                                    if (item.Status == "Lost")
-                                                    {
-                                                        <!-- Restore Lost Card -->
-                                                        using (Html.BeginForm("RestoreLostCard", "Ecards", FormMethod.Post, new { @style = "display:inline;" }))
-                                                        {
-                                                            @Html.AntiForgeryToken()
-                                                            @Html.Hidden("ecardId", item.EcardID)
-                                                            <button type="submit" class="btn btn-sm btn-success me-1" title="Restore Lost Card">
-                                                                <i class="bi bi-arrow-repeat"></i>
-                                                            </button>
-                                                        }
-                                                    }
-                                                    else if (item.Status == "Active")
-                                                    {
-                                                        <!-- Mark as Lost -->
-                                                        using (Html.BeginForm("MarkAsLost", "Ecards", FormMethod.Post, new { @style = "display:inline;" }))
-                                                        {
-                                                            @Html.AntiForgeryToken()
-                                                            @Html.Hidden("ecardId", item.EcardID)
-                                                            <button type="submit" class="btn btn-sm btn-dark me-1" title="Mark as Lost">
-                                                                <i class="bi bi-exclamation-triangle"></i>
-                                                            </button>
-                                                        }
-
-                                                        <!-- Normal Edit/Delete -->
-                                                        <a href="@Url.Action("Edit", new { id = item.EcardID })"
-                                                           class="btn btn-sm btn-warning text-white me-1" title="Edit">
-                                                            <i class="bi bi-pencil-square"></i>
+                                                    <td>@(item.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(item.PlateNo) ? "N/A" : item.PlateNo))</td>
+                                                    <td>@item.Balance</td>
+                                                    <td>
+                                                        <span class="badge"
+                                                              style="background-color: @(item.Status == "Active" ? "green" : item.Status == "Lost" ? "#ff1a1a" : "gray"); color: white; border-radius: 15px; padding: 5px 10px;">
+                                                            @(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)
+                                                        </span>
+                                                    </td>
+                                                    <td>@(item.ActivationDateTime.HasValue ? item.ActivationDateTime.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
+                                                    <td style="position: sticky; right: 0; z-index: 1;">
+                                                        <!-- Details -->
+                                                        <a href="@Url.Action("Details", new { id = item.EcardID })"
+                                                           class="btn btn-sm btn-info text-white me-1" title="Details">
+                                                            <i class="bi bi-eye"></i>
                                                         </a>
-                                                        <a href="@Url.Action("Delete", new { id = item.EcardID })"
-                                                           class="btn btn-sm btn-danger" title="Delete">
-                                                            <i class="bi bi-trash"></i>
-                                                        </a>
-                                                    }
-                                                }
 
-                                                @* Reserved Cards *@
-                                                else if (item.CardType == "Reserved")
-                                                {
-                                                    if (string.IsNullOrEmpty(item.PlateNo))
-                                                    {
-                                                        <!-- Assign Reserved -->
-                                                        <a href="@Url.Action("AssignReservedCard", new { ecardid = item.EcardID })"
-                                                           class="btn btn-sm btn-success me-1" title="Assign Reserved Card">
-                                                            <i class="bi bi-link-45deg"></i>
-                                                        </a>
-                                                    }
-                                                    else
-                                                    {
-                                                        <!-- Release Reserved -->
-                                                        using (Html.BeginForm("ReleaseReservedCard", "Ecards", FormMethod.Post, new { @style = "display:inline;" }))
+                                                        @if (item.CardType == "Normal")
                                                         {
-                                                            @Html.AntiForgeryToken()
-                                                            @Html.Hidden("ecardId", item.EcardID)
-                                                            <button type="submit" class="btn btn-sm btn-danger me-1" title="Release Reserved Card">
-                                                                <i class="bi bi-arrow-left-circle"></i>
-                                                            </button>
+                                                            if (item.Status == "Lost")
+                                                            {
+                                                                <!-- Restore Lost Card -->
+                                                                using (Html.BeginForm("RestoreLostCard", "Ecards", FormMethod.Post, new { @style = "display:inline;" }))
+                                                                {
+                                                                    @Html.AntiForgeryToken()
+                                                                    @Html.Hidden("ecardId", item.EcardID)
+                                                                    <button type="submit" class="btn btn-sm btn-success me-1" title="Restore Lost Card">
+                                                                        <i class="bi bi-arrow-repeat"></i>
+                                                                    </button>
+                                                                }
+                                                            }
+                                                            else if (item.Status == "Active")
+                                                            {
+                                                                <!-- Mark as Lost -->
+                                                                using (Html.BeginForm("MarkAsLost", "Ecards", FormMethod.Post, new { @style = "display:inline;" }))
+                                                                {
+                                                                    @Html.AntiForgeryToken()
+                                                                    @Html.Hidden("ecardId", item.EcardID)
+                                                                    <button type="submit" class="btn btn-sm btn-dark me-1" title="Mark as Lost">
+                                                                        <i class="bi bi-exclamation-triangle"></i>
+                                                                    </button>
+                                                                }
+                                                                <!-- Edit -->
+                                                                <a href="@Url.Action("Edit", new { id = item.EcardID })"
+                                                                   class="btn btn-sm btn-warning text-white me-1" title="Edit">
+                                                                    <i class="bi bi-pencil-square"></i>
+                                                                </a>
+                                                                <!-- Delete -->
+                                                                <a href="@Url.Action("Delete", new { id = item.EcardID })"
+                                                                   class="btn btn-sm btn-danger" title="Delete">
+                                                                    <i class="bi bi-trash"></i>
+                                                                </a>
+                                                            }
                                                         }
-                                                    }
-                                                }
-                                            </td>
-
-
-                                        </tr>
+                                                        else if (item.CardType == "Reserved")
+                                                        {
+                                                            if (string.IsNullOrEmpty(item.PlateNo))
+                                                            {
+                                                                <!-- Assign Reserved -->
+                                                                <a href="@Url.Action("AssignReservedCard", new { ecardid = item.EcardID })"
+                                                                   class="btn btn-sm btn-success me-1" title="Assign Reserved Card">
+                                                                    <i class="bi bi-link-45deg"></i>
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <!-- Release Reserved -->
+                                                                using (Html.BeginForm("ReleaseReservedCard", "Ecards", FormMethod.Post, new { @style = "display:inline;" }))
+                                                                {
+                                                                    @Html.AntiForgeryToken()
+                                                                    @Html.Hidden("ecardId", item.EcardID)
+                                                                    <button type="submit" class="btn btn-sm btn-danger me-1" title="Release Reserved Card">
+                                                                        <i class="bi bi-arrow-left-circle"></i>
+                                                                    </button>
+                                                                }
+                                                            }
+                                                        }
+                                                    </td>
+                                                </tr>
                                                 index++;
                                             }
                                         }
                                         else
                                         {
                                             <tr>
-                                                <td colspan="7" class="text-center">No E-Card records found.</td>
+                                                <td colspan="8" class="text-center">No E-Card records found.</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -162,27 +167,42 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#ecardsTable').DataTable({
+            const table = $('#ecardsTable').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
-                lengthMenu: [5, 10, 25, 50, 100],
-                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                pageLength: 8,
                 responsive: true,
                 language: {
-                    search: "_INPUT_",
+                    search: "",
                     searchPlaceholder: "Search records...",
                     paginate: {
                         previous: "&laquo;",
                         next: "&raquo;"
-                    }
+                    },
+                    emptyTable: "No E-Card records found."
                 },
                 columnDefs: [
-                    { orderable: false, targets: [0, -1] }
+                    { orderable: false, targets: [0, -1] },
+                    { width: "50px", targets: 0 },
+                    { width: "100px", targets: 1 },
+                    { width: "150px", targets: 2 },
+                    { width: "200px", targets: 3 },
+                    { width: "120px", targets: 4 },
+                    { width: "120px", targets: 5 },
+                    { width: "150px", targets: 6 },
+                    { width: "150px", targets: 7 }
                 ],
                 dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
                     "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                scrollX: true
+            });
+
+            // Custom search input binding
+            $('#searchInput').on('keyup', function () {
+                table.search(this.value).draw();
             });
         });
     </script>

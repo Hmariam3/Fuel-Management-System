@@ -95,61 +95,93 @@
                         @using (Html.BeginForm("Create", "FuelRefillRequests", FormMethod.Post, new { @class = "needs-validation", novalidate = true, enctype = "multipart/form-data" }))
                         {
                             @Html.AntiForgeryToken()
-                            <div class="card-body">
-                                <h5 class="mb-3">Request Details</h5>
-                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="card-body">
+                            <h5 class="mb-3">Request Details</h5>
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label for="PlateNo" class="form-label">Vehicle *</label>
-                                        @Html.DropDownListFor(model => model.PlateNo, ViewBag.PlateNo as SelectList, "Select Vehicle", new { @class = "form-select select2", data_placeholder = "Select Vehicle", required = true })
-                                        @Html.ValidationMessageFor(model => model.PlateNo, "", new { @class = "invalid-feedback" })
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="DriverID" class="form-label">Driver *</label>
-                                        @Html.DropDownListFor(model => model.DriverID, ViewBag.DriverID as SelectList, "Select Driver", new { @class = "form-select select2", data_placeholder = "Select Driver", required = true })
-                                        @Html.ValidationMessageFor(model => model.DriverID, "", new { @class = "invalid-feedback" })
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="CurrentOdometer" class="form-label">Current Odometer (km) *</label>
-                                        @Html.EditorFor(model => model.CurrentOdometer, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0", required = true } })
-                                        @Html.ValidationMessageFor(model => model.CurrentOdometer, "", new { @class = "invalid-feedback" })
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="odometerPhoto" class="form-label">Odometer Photo *</label>
-                                        <div class="input-group">
-                                            <input type="file" name="odometerPhoto" class="form-control" id="odometerPhoto" accept=".jpg,.jpeg,.png" required />
-                                            <label class="input-group-text" for="odometerPhoto">Upload</label>
-                                        </div>
-                                        <div id="odometerPhotoHelp" class="form-text">Upload odometer photo (JPG/PNG).</div>
-                                        @Html.ValidationMessage("odometerPhoto", "", new { @class = "invalid-feedback" })
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="receiptImage" class="form-label">Receipt Image *</label>
-                                        <div class="input-group">
-                                            <input type="file" name="receiptImage" class="form-control" id="receiptImage" accept=".jpg,.jpeg,.png" required />
-                                            <label class="input-group-text" for="receiptImage">Upload</label>
-                                        </div>
-                                        <div id="receiptImageHelp" class="form-text">Upload receipt image (JPG/PNG).</div>
-                                        @Html.ValidationMessage("receiptImage", "", new { @class = "invalid-feedback" })
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="digitalSignatureFile" class="form-label">Digital Signature *</label>
-                                        <div class="input-group">
-                                            <input type="file" name="digitalSignatureFile" class="form-control" id="digitalSignatureFile" accept=".jpg,.jpeg,.png" required />
-                                            <label class="input-group-text" for="digitalSignatureFile">Upload</label>
-                                        </div>
-                                        <div id="digitalSignatureHelp" class="form-text">Upload digital signature (JPG/PNG).</div>
-                                        @Html.ValidationMessage("digitalSignatureFile", "", new { @class = "invalid-feedback" })
-                                    </div>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="PlateNo" class="form-label">Vehicle *</label>
+                                    @Html.DropDownListFor(model => model.PlateNo, ViewBag.PlateNo as SelectList, "Select Vehicle", new { @class = "form-select select2", data_placeholder = "Select Vehicle", required = true })
+                                    @Html.ValidationMessageFor(model => model.PlateNo, "", new { @class = "invalid-feedback" })
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="DriverID" class="form-label">Driver *</label>
+                                    @Html.DropDownListFor(model => model.DriverID, ViewBag.DriverID as SelectList, "Select Driver", new { @class = "form-select select2", data_placeholder = "Select Driver", required = true })
+                                    @Html.ValidationMessageFor(model => model.DriverID, "", new { @class = "invalid-feedback" })
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="CurrentOdometer" class="form-label">Current Odometer (km) *</label>
+                                    @Html.EditorFor(model => model.CurrentOdometer, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0", required = true } })
+                                    @Html.ValidationMessageFor(model => model.CurrentOdometer, "", new { @class = "invalid-feedback" })
                                 </div>
                             </div>
-                            <div class="card-footer">
+
+                            <h5 class="mb-3 mt-4">Transaction Details</h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="LittersBought" class="form-label">Liters Bought *</label>
+                                    @Html.EditorFor(model => model.LittersBought, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "0", required = true } })
+                                    @Html.ValidationMessageFor(model => model.LittersBought, "", new { @class = "invalid-feedback" })
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="UnitPrice" class="form-label">Unit Price *</label>
+                                    @Html.EditorFor(model => model.UnitPrice, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "0", required = true } })
+                                    @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "invalid-feedback" })
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="AmountPaid" class="form-label">Amount Paid *</label>
+                                    @Html.EditorFor(model => model.AmountPaid, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "0", @readonly = "readonly", required = true,  } })
+                                    @Html.ValidationMessageFor(model => model.AmountPaid, "", new { @class = "invalid-feedback" })
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="Location" class="form-label">Location *</label>
+                                    @Html.EditorFor(model => model.Location, new { htmlAttributes = new { @class = "form-control", required = true } })
+                                    @Html.ValidationMessageFor(model => model.Location, "", new { @class = "invalid-feedback" })
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="ReceiptNum" class="form-label">Receipt Number *</label>
+                                    @Html.EditorFor(model => model.ReceiptNum, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0", required = true } })
+                                    @Html.ValidationMessageFor(model => model.ReceiptNum, "", new { @class = "invalid-feedback" })
+                                </div>
+                            </div>
+                            <h5 class="mb-3 mt-4">Attachment Details</h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="odometerPhoto" class="form-label">Odometer Photo *</label>
+                                    <div class="input-group">
+                                        <input type="file" name="odometerPhoto" class="form-control" id="odometerPhoto" accept=".jpg,.jpeg,.png" required />
+                                        <label class="input-group-text" for="odometerPhoto">Upload</label>
+                                    </div>
+                                    <div id="odometerPhotoHelp" class="form-text">Upload odometer photo (JPG/PNG).</div>
+                                    @Html.ValidationMessage("odometerPhoto", "", new { @class = "invalid-feedback" })
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="receiptImage" class="form-label">Receipt Image *</label>
+                                    <div class="input-group">
+                                        <input type="file" name="receiptImage" class="form-control" id="receiptImage" accept=".jpg,.jpeg,.png" required />
+                                        <label class="input-group-text" for="receiptImage">Upload</label>
+                                    </div>
+                                    <div id="receiptImageHelp" class="form-text">Upload receipt image (JPG/PNG).</div>
+                                    @Html.ValidationMessage("receiptImage", "", new { @class = "invalid-feedback" })
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="digitalSignatureFile" class="form-label">Digital Signature *</label>
+                                    <div class="input-group">
+                                        <input type="file" name="digitalSignatureFile" class="form-control" id="digitalSignatureFile" accept=".jpg,.jpeg,.png" required />
+                                        <label class="input-group-text" for="digitalSignatureFile">Upload</label>
+                                    </div>
+                                    <div id="digitalSignatureHelp" class="form-text">Upload digital signature (JPG/PNG).</div>
+                                    @Html.ValidationMessage("digitalSignatureFile", "", new { @class = "invalid-feedback" })
+                                </div>
+                            </div>
+                         </div>
+                         <div class="card-footer">
                                 @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
                                 <button type="submit" class="btn btn-primary me-2">Create</button>
                                 <a href="@Url.Action("Index", "FuelRefillRequests")" class="btn btn-secondary">Cancel</a>
-                            </div>
-                        }
+                         </div>
+                         }
                     </div>
                     <!--end::Form Card-->
                 </div>
@@ -224,6 +256,73 @@
                     }
                 }
             });
+
+            // Client-side validation for new fields
+            const litters = $('#LittersBought');
+            const amount = $('#AmountPaid');
+            const unit = $('#UnitPrice');
+            const receiptNum = $('#ReceiptNum');
+
+            function validatePositive(input, message) {
+                input.on('input', function () {
+                    const v = parseFloat($(this).val());
+                    if (isNaN(v) || v <= 0) {
+                        $(this).addClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                        $(this).after(`<div class="invalid-feedback">${message}</div>`);
+                    } else {
+                        $(this).removeClass('is-invalid');
+                        $(this).next('.invalid-feedback').remove();
+                    }
+                    if (input.is(litters) || input.is(unit)) {
+                        calculateAmount();
+                    }
+                    if (input.is(litters) || input.is(amount) || input.is(unit)) {
+                        validateAmount();
+                    }
+                });
+            }
+
+            validatePositive(litters, 'Liters bought must be a positive number.');
+            validatePositive(amount, 'Amount paid must be a positive number.');
+            validatePositive(unit, 'Unit price must be a positive number.');
+
+            receiptNum.on('input', function () {
+                const v = parseInt($(this).val());
+                if (isNaN(v) || v <= 0) {
+                    $(this).addClass('is-invalid');
+                    $(this).next('.invalid-feedback').remove();
+                    $(this).after('<div class="invalid-feedback">Receipt number must be a positive integer.</div>');
+                } else {
+                    $(this).removeClass('is-invalid');
+                    $(this).next('.invalid-feedback').remove();
+                }
+            });
+
+            function calculateAmount() {
+                const l = parseFloat(litters.val());
+                const u = parseFloat(unit.val());
+                if (!isNaN(l) && !isNaN(u) && l > 0 && u > 0) {
+                    const calculated = l * u;
+                    amount.val(calculated.toFixed(2));
+                }
+            }
+
+            function validateAmount() {
+                const l = parseFloat(litters.val());
+                const a = parseFloat(amount.val());
+                const u = parseFloat(unit.val());
+                if (!isNaN(l) && !isNaN(a) && !isNaN(u) && l > 0 && a > 0 && u > 0) {
+                    if (Math.abs(a - (l * u)) > (a * 0.01)) {
+                        amount.addClass('is-invalid');
+                        amount.next('.invalid-feedback').remove();
+                        amount.after('<div class="invalid-feedback">Amount does not match liters * unit price (1% tolerance).</div>');
+                    } else {
+                        amount.removeClass('is-invalid');
+                        amount.next('.invalid-feedback').remove();
+                    }
+                }
+            }
         });
     </script>
 }

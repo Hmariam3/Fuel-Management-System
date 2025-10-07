@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<FuelManagementSystem.Models.FuelTransaction>
+
 @{
     ViewBag.Title = "Fuel Transactions";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,15 +9,19 @@
     <!--begin::App Content Header-->
     <div class="app-content-header">
         <div class="container-fluid">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-sm-6">
                     <h3 class="mb-0">Fuel Transactions</h3>
                 </div>
                 <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Transactions</li>
-                    </ol>
+                    <div class="d-flex justify-content-end align-items-center gap-2">
+                        <div class="input-group input-group-sm" style="width: 250px;">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0" placeholder="Search records..." aria-label="Search" id="searchInput">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -27,59 +32,73 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card card-success card-outline mb-4">
-                        <div class="card-header">
-                            <h3 class="card-title">Transaction List</h3>
-
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table id="fuelTransactionsTable" class="table table-striped table-bordered" aria-label="Fuel transaction records">
-                                    <thead>
+                    <div class="card card-outline card-success mb-4 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="table-responsive" style="max-height: 70vh; overflow-x: auto;">
+                                <table id="fuelTransactionsTable" class="table table-bordered table-striped table-hover" aria-label="Fuel transaction records">
+                                    <thead class="table-light">
                                         <tr>
-                                            <th>T ID</th>
-                                            <th>Plate No</th>
-                                            <th>Driver</th>
-                                            <th>Liters Used</th>
-                                            <th>Amount</th>
-                                            <th>Beg Km</th>
-                                            <th>End Km</th>
-                                            <th>D KM</th>
-                                            <th>Avg Km/Liter</th>
-                                            <th>Transaction Date</th>
-                                            <th>Ecard Balance After</th>
-                                            <th>Location</th>
-                                            <th>Receipt Num</th>
-                                            <th>Product</th>
+                                            <th style="width: 50px; font-weight: bold;">#</th>
+                                            <th style="min-width: 100px; font-weight: bold;">T ID</th>
+                                            <th style="min-width: 100px; font-weight: bold;">Plate No</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Driver</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Liters Bought</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Amount</th>
+                                            <th style="min-width: 100px; font-weight: bold;">Beg Km</th>
+                                            <th style="min-width: 100px; font-weight: bold;">End Km</th>
+                                            <th style="min-width: 100px; font-weight: bold;">D KM</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Avg Km/Liter</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Expected Range</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Transaction Date</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Ecard Balance After</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Location</th>
+                                            <th style="min-width: 100px; font-weight: bold;">Receipt Num</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Product</th>
+                                            <th style="min-width: 100px; font-weight: bold; position: sticky; right: 0; background-color: #fff; z-index: 1;">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @if (Model != null && Model.Any())
                                         {
+                                            var index = 1;
                                             foreach (var item in Model)
                                             {
-                                        <tr class="align-middle">
-                                            <td>@item.TransactionID</td>
-                                            <td>@(string.IsNullOrEmpty(item.FuelRefillRequest?.PlateNo) ? "N/A" : item.FuelRefillRequest.PlateNo)</td>
-                                            <td>@(item.Driver?.DriverName ?? "N/A")</td>
-                                            <td>@item.LitersUsed</td>
-                                            <td>@item.Amount</td>
-                                            <td>@item.BegKm</td>
-                                            <td>@item.EndKm</td>
-                                            <td>@item.D_KM</td>
-                                            <td>@item.AvgKmLiter</td>
-                                            <td>@item.TransactionDateTime</td>
-                                            <td>@item.EcardBalanceAfter</td>
-                                            <td>@(string.IsNullOrEmpty(item.Location) ? "N/A" : item.Location)</td>
-                                            <td>@item.ReceiptNum</td>
-                                            <td>@(string.IsNullOrEmpty(item.Product) ? "N/A" : item.Product)</td>
-                                        </tr>
+                                            <tr class="align-middle">
+                                                <td>@index</td>
+                                                <td>@item.TransactionID</td>
+                                                <td>@(string.IsNullOrEmpty(item.FuelRefillRequest?.PlateNo) ? "N/A" : item.FuelRefillRequest.PlateNo)</td>
+                                                <td>@(item.Driver?.DriverName ?? "N/A")</td>
+                                                <td>@item.LitersUsed</td>
+                                                <td>@item.Amount</td>
+                                                <td>@item.BegKm</td>
+                                                <td>@item.EndKm</td>
+                                                <td>@item.D_KM</td>
+                                                <td>@item.AvgKmLiter</td>
+                                                <td>@item.ExpectedRangeKm</td>
+                                                <td>@item.TransactionDateTime</td>
+                                                <td>@item.EcardBalanceAfter</td>
+                                                <td>@item.Location</td>
+                                                <td>@item.ReceiptNum</td>
+                                                <td>
+                                                    <span class="badge"
+                                                          style="background-color: @(item.Product == "Benzene" ? "green" : item.Product == "Diesel" ? "#ff1a1a" : "gray"); color: white; border-radius: 15px; padding: 5px 10px;">
+                                                        @(string.IsNullOrEmpty(item.Product) ? "N/A" : item.Product)
+                                                    </span>
+                                                </td>
+                                                <td style="position: sticky; right: 0; background-color: #fff; z-index: 1;">
+                                                    <a href="@Url.Action("Details", "FuelTransactions", new { id = item.TransactionID })"
+                                                       class="btn btn-sm btn-info text-white me-1" title="Details">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                                index++;
                                             }
                                         }
                                         else
                                         {
                                             <tr>
-                                                <td colspan="15" class="text-center">No fuel transaction records found.</td>
+                                                <td colspan="16" class="text-center">No fuel transaction records found.</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -97,27 +116,50 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#fuelTransactionsTable').DataTable({
+            const table = $('#fuelTransactionsTable').DataTable({
                 paging: true,
                 searching: true,
                 ordering: true,
-                lengthMenu: [5, 10, 25, 50, 100],
-                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                pageLength: 5,
                 responsive: true,
                 language: {
-                    search: "_INPUT_",
+                    search: "",
                     searchPlaceholder: "Search records...",
                     paginate: {
                         previous: "&laquo;",
                         next: "&raquo;"
-                    }
+                    },
+                    emptyTable: "No fuel transaction records found."
                 },
                 columnDefs: [
-                    { orderable: false, targets: [-1] }
+                    { orderable: false, targets: [0, -1] },
+                    { width: "50px", targets: 0 },
+                    { width: "100px", targets: 1 },
+                    { width: "100px", targets: 2 },
+                    { width: "150px", targets: 3 },
+                    { width: "120px", targets: 4 },
+                    { width: "120px", targets: 5 },
+                    { width: "100px", targets: 6 },
+                    { width: "100px", targets: 7 },
+                    { width: "100px", targets: 8 },
+                    { width: "120px", targets: 9 },
+                    { width: "150px", targets: 10 },
+                    { width: "120px", targets: 11 },
+                    { width: "150px", targets: 12 },
+                    { width: "100px", targets: 13 },
+                    { width: "120px", targets: 14 },
+                    { width: "100px", targets: 15 }
                 ],
                 dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
                     "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                scrollX: true
+            });
+
+            // Custom search input binding
+            $('#searchInput').on('keyup', function () {
+                table.search(this.value).draw();
             });
         });
     </script>
