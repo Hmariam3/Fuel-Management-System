@@ -1,130 +1,186 @@
 ﻿@model FuelManagementSystem.Models.FuelTransaction
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Fuel Transaction Details - ID " + Model?.TransactionID;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Details</h2>
-
-<div>
-    <h4>FuelTransaction</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.LitersUsed)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.LitersUsed)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Amount)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Amount)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.BegKm)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.BegKm)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.EndKm)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.EndKm)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.D_KM)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.D_KM)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.AvgKmLiter)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.AvgKmLiter)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.TransactionDateTime)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.TransactionDateTime)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.EcardBalanceAfter)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.EcardBalanceAfter)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Location)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Location)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ReceiptNum)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ReceiptNum)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Product)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Product)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Driver.DriverName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Driver.DriverName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.FuelRefillRequest.PlateNo)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.FuelRefillRequest.PlateNo)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Vehicle.VehicleType)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Vehicle.VehicleType)
-        </dd>
-
-    </dl>
-</div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.TransactionID }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+<main class="app-main">
+    <!--begin::App Content Header-->
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Fuel Transaction Details - ID @Model.TransactionID</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "FuelTransactions")">Fuel Transactions</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Details</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content Header-->
+    <!--begin::App Content-->
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="row g-4">
+                <div class="col-md-12">
+                    @if (Model == null)
+                    {
+                        <div class="card card-success card-outline mb-4">
+                            <div class="card-body">
+                                <div class="alert alert-danger">
+                                    <p>Error: Fuel transaction record not found.</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        try
+                        {
+                            <!-- Transaction Details -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Transaction Information</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Transaction ID</strong>
+                                            <p>@Model.TransactionID</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Request ID</strong>
+                                            <p>@Model.RequestID</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Plate No</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.PlateNo) ? "N/A" : Model.PlateNo)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Driver</strong>
+                                            <p>@(Model.Driver?.DriverName ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Vehicle Type</strong>
+                                            <p>@(Model.Vehicle?.VehicleType ?? "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Liters Used</strong>
+                                            <p>@Model.LitersUsed.ToString("N2")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Amount</strong>
+                                            <p>@Model.Amount.ToString("N2")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Beginning Km</strong>
+                                            <p>@Model.BegKm</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Ending Km</strong>
+                                            <p>@Model.EndKm</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Distance (Km)</strong>
+                                            <p>@Model.D_KM</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Avg Km/Liter</strong>
+                                            <p>@(Model.AvgKmLiter.HasValue ? Model.AvgKmLiter.Value.ToString("N2") : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Expected Range (Km)</strong>
+                                            <p>@(Model.ExpectedRangeKm.HasValue ? Model.ExpectedRangeKm.Value.ToString("N2") : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Transaction Date</strong>
+                                            <p>@Model.TransactionDateTime.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Ecard Balance After</strong>
+                                            <p>@Model.EcardBalanceAfter.ToString("N2")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Location</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.Location) ? "N/A" : Model.Location)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Receipt Number</strong>
+                                            <p>@(Model.ReceiptNum.HasValue ? Model.ReceiptNum.Value.ToString() : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Product</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.Product) ? "N/A" : Model.Product)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Related Fuel Refill Request -->
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-header">
+                                    <div class="card-title">Related Fuel Refill Request</div>
+                                </div>
+                                <div class="card-body">
+                                    @if (Model.FuelRefillRequest != null)
+                                    {
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <strong class="form-label">Request ID</strong>
+                                                <p>@Model.FuelRefillRequest.RequestID</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <strong class="form-label">Plate No</strong>
+                                                <p>@(string.IsNullOrEmpty(Model.FuelRefillRequest.PlateNo) ? "N/A" : Model.FuelRefillRequest.PlateNo)</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <strong class="form-label">Status</strong>
+                                                <p>@(string.IsNullOrEmpty(Model.FuelRefillRequest.Status) ? "N/A" : Model.FuelRefillRequest.Status)</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <strong class="form-label">Request Date</strong>
+                                                <p>@Model.FuelRefillRequest.RequestDateTime.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                                            </div>
+                                            <!-- Add more fields if needed -->
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">No related fuel refill request.</p>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        catch (Exception ex)
+                        {
+                            <div class="card card-success card-outline mb-4">
+                                <div class="card-body">
+                                    <div class="alert alert-danger">
+                                        <p>Error rendering fuel transaction details: @ex.Message</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                console.error('View rendering error:', '@ex.Message', '@ex.StackTrace');
+                            </script>
+                        }
+                        <!-- Back Button -->
+                        <div class="card card-success card-outline mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-end">
+                                    <a href="@Url.Action("Index", "FuelTransactions")" class="btn btn-primary">Back to List</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::App Content-->
+</main>

@@ -83,6 +83,30 @@
                                             <p>@(string.IsNullOrEmpty(Model.ReviewStatus) ? "N/A" : Model.ReviewStatus)</p>
                                         </div>
                                         <div class="col-md-4">
+                                            <strong class="form-label">Liters Bought</strong>
+                                            <p>@(Model.LittersBought.HasValue ? Model.LittersBought.Value.ToString("N2") : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Amount Paid</strong>
+                                            <p>@(Model.AmountPaid.HasValue ? Model.AmountPaid.Value.ToString("N2") : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Unit Price</strong>
+                                            <p>@(Model.UnitPrice.HasValue ? Model.UnitPrice.Value.ToString("N2") : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Location</strong>
+                                            <p>@(string.IsNullOrEmpty(Model.Location) ? "N/A" : Model.Location)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Receipt Number</strong>
+                                            <p>@(Model.ReceiptNum.HasValue ? Model.ReceiptNum.Value.ToString() : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Is Early Refill</strong>
+                                            <p>@(Model.IsEarlyRefill.HasValue ? (Model.IsEarlyRefill.Value ? "Yes" : "No") : "N/A")</p>
+                                        </div>
+                                        <div class="col-md-4">
                                             <strong class="form-label">Odometer Photo</strong>
                                             <p><a href="@Model.OdometerPhoto" target="_blank">View Photo</a></p>
                                         </div>
@@ -110,9 +134,10 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Transaction ID</th>
-                                                        <th>Amount (L)</th>
+                                                        <th>Liters Used (L)</th>
+                                                        <th>Amount</th>
                                                         <th>Transaction Date</th>
-                                                        <th>Station</th>
+                                                        <th>Location</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -120,6 +145,7 @@
                                                     {
                                                         <tr>
                                                             <td>@transaction.TransactionID</td>
+                                                            <td>@transaction.LitersUsed</td>
                                                             <td>@transaction.Amount</td>
                                                             <td>@transaction.TransactionDateTime</td>
                                                             <td>@transaction.Location</td>
