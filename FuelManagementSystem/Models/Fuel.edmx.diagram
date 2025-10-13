@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="03d644a3b89243cf9e7b96530d0c3f3e" Name="Diagram1">
+      <Diagram DiagramId="d21fd638e6a040fb84fd7b1527307147" Name="Diagram1">
         <EntityTypeShape EntityType="FuelManagementSystemModel.AuditLog" Width="1.5" PointX="9.75" PointY="7.875" IsExpanded="true" />
         <EntityTypeShape EntityType="FuelManagementSystemModel.Branch" Width="1.5" PointX="5.25" PointY="7.125" IsExpanded="true" />
         <EntityTypeShape EntityType="FuelManagementSystemModel.CardAssignmentHistory" Width="1.5" PointX="0.75" PointY="1.875" IsExpanded="true" />
@@ -12,8 +12,8 @@
         <EntityTypeShape EntityType="FuelManagementSystemModel.Department" Width="1.5" PointX="5.25" PointY="10.25" IsExpanded="true" />
         <EntityTypeShape EntityType="FuelManagementSystemModel.Document" Width="1.5" PointX="2.75" PointY="1.875" IsExpanded="true" />
         <EntityTypeShape EntityType="FuelManagementSystemModel.Driver" Width="1.5" PointX="9.75" PointY="11.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="FuelManagementSystemModel.EcardReplenishmentRequest" Width="1.5" PointX="19.5" PointY="11.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="FuelManagementSystemModel.Ecard" Width="1.5" PointX="17.25" PointY="11.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.EcardReplenishmentRequest" Width="1.5" PointX="19.5" PointY="11.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="FuelManagementSystemModel.Ecard" Width="1.5" PointX="17.25" PointY="11.5" IsExpanded="true" />
         <EntityTypeShape EntityType="FuelManagementSystemModel.FuelRefillRequest" Width="1.5" PointX="12" PointY="10.375" IsExpanded="true" />
         <EntityTypeShape EntityType="FuelManagementSystemModel.FuelStandard" Width="1.5" PointX="15" PointY="16.875" IsExpanded="true" />
         <EntityTypeShape EntityType="FuelManagementSystemModel.FuelTransaction" Width="1.5" PointX="17.25" PointY="5.5" IsExpanded="true" />

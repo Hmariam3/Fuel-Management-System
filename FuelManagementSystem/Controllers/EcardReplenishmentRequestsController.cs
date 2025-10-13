@@ -56,31 +56,35 @@ namespace FuelManagementSystem.Controllers
 
                 // 2. Fetch real-time balance from API
                 decimal currentBalance = ecard.Balance ?? 0; // fallback to DB balance
-                try
-                {
-                    if (await totalCardService.LoginAsync("ETH02542", "H8KJ8PZH")) // TODO: secure credentials
-                    {
-                        var apiResponse = await totalCardService.GetApiTransactionsAsync(
-                            ecard.EcardID,
-                            DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd"),
-                            DateTime.Now.ToString("yyyy-MM-dd"));
+                decimal requestedAmount = (decimal)(ecard.BalanceType - currentBalance);
+                //try
+                //{
+                //    if (await totalCardService.LoginAsync("ETH02542", "H8KJ8PZH")) // TODO: secure credentials
+                //    {
+                //        var apiResponse = await totalCardService.GetApiTransactionsAsync(
+                //            ecard.EcardID,
+                //            DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd"),
+                //            DateTime.Now.ToString("yyyy-MM-dd"));
 
-                        currentBalance = (decimal?)(apiResponse?.Data?
-                            .OrderByDescending(t => t.TransactionDateTime)
-                            .FirstOrDefault()?.Solde) ?? currentBalance;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // log exception, keep fallback
-                    System.Diagnostics.Debug.WriteLine("Balance sync failed: " + ex.Message);
-                }
+                //        currentBalance = (decimal?)(apiResponse?.Data?
+                //            .OrderByDescending(t => t.TransactionDateTime)
+                //            .FirstOrDefault()?.Solde) ?? currentBalance;
+                //    }
+                //}
+                //catch (Exception ex)
+                //{
+                //    // log exception, keep fallback
+                //    System.Diagnostics.Debug.WriteLine("Balance sync failed: " + ex.Message);
+                //}
 
                 // 3. Update Ecard table with the fresh balance
-                ecard.Balance = currentBalance;
-                db.Entry(ecard).State = EntityState.Modified;
+                //ecard.Balance = currentBalance;
+
+
+                //db.Entry(ecard).State = EntityState.Modified;
 
                 // 4. Populate replenishment request
+                request.RequestedAmount = requestedAmount;
                 request.RequestedAt = DateTime.Now;
                 request.Status = "Pending";
                 request.RequestedBy = Session["UserId"] != null ? Session["UserId"].ToString() : null;
@@ -186,7 +190,84 @@ namespace FuelManagementSystem.Controllers
                 pdfDoc.Add(table);
                 pdfDoc.Close();
 
+
+                foreach (var req in approvedRequests)
+                {
+                    req.IsPrinted = true;
+                    db.Entry(req).State = EntityState.Modified;
+                }
+                db.SaveChanges();
                 return File(ms.ToArray(), "application/pdf", "Approved_Replenishment_Requests.pdf");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ExportSelectedApprovedToPdf(int[] selectedIds)
+        {
+            if (selectedIds == null || selectedIds.Length == 0)
+            {
+                TempData["Error"] = "Please select at least one approved request to export.";
+                return RedirectToAction("Index");
+            }
+
+            var selectedRequests = db.EcardReplenishmentRequests
+                .Where(r => selectedIds.Contains(r.Id) && r.Status == "Approved" && (r.IsPrinted == null || r.IsPrinted == false))
+                .OrderByDescending(r => r.RequestedAt)
+                .ToList();
+
+            if (!selectedRequests.Any())
+            {
+                TempData["Error"] = "No approved requests found among selected records.";
+                return RedirectToAction("Index");
+            }
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                var pdfDoc = new iTextSharp.text.Document(iTextSharp.text.PageSize.A4, 40, 40, 40, 40);
+                PdfWriter.GetInstance(pdfDoc, ms);
+                pdfDoc.Open();
+
+                var titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 14);
+                pdfDoc.Add(new Paragraph("Approved E-Card Replenishment Requests (Selected)", titleFont));
+                pdfDoc.Add(new Paragraph("Generated at: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm")));
+                pdfDoc.Add(new Paragraph(" "));
+
+                PdfPTable table = new PdfPTable(6) { WidthPercentage = 100 };
+                table.SetWidths(new float[] { 12, 15, 15, 15, 20, 20 });
+
+                string[] headers = { "Ecard ID", "Plate No", "Current Balance", "Requested Amount", "Balance After", "Approved At" };
+                foreach (var header in headers)
+                {
+                    table.AddCell(new PdfPCell(new Phrase(header, FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10)))
+                    {
+                        HorizontalAlignment = Element.ALIGN_CENTER,
+                        BackgroundColor = BaseColor.LIGHT_GRAY
+                    });
+                }
+
+                foreach (var r in selectedRequests)
+                {
+                    table.AddCell(r.EcardID);
+                    table.AddCell(r.Ecard?.PlateNo ?? "-");
+                    table.AddCell(r.CurrentBalance.GetValueOrDefault().ToString("N2"));
+                    table.AddCell(r.RequestedAmount.GetValueOrDefault().ToString("N2"));
+                    table.AddCell(r.BalanceAfter.GetValueOrDefault().ToString("N2"));
+                    table.AddCell(r.RequestedAt?.ToString("yyyy-MM-dd HH:mm") ?? "-");
+                }
+
+                pdfDoc.Add(table);
+                pdfDoc.Close();
+
+                // ✅ Mark only selected requests as printed
+                foreach (var req in selectedRequests)
+                {
+                    req.IsPrinted = true;
+                    db.Entry(req).State = EntityState.Modified;
+                }
+                db.SaveChanges(); // Save changes to database
+
+                return File(ms.ToArray(), "application/pdf", "Selected_Approved_Replenishments.pdf");
             }
         }
 

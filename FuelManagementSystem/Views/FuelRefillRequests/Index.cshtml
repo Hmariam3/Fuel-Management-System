@@ -42,6 +42,7 @@
                                             <th style="width: 50px; font-weight: bold;">#</th>
                                             <th style="min-width: 100px; font-weight: bold;">Request ID</th>
                                             <th style="min-width: 200px; font-weight: bold;">Vehicle</th>
+                                            <th style="min-width: 200px; font-weight: bold;">Card Type</th>
                                             <th style="min-width: 150px; font-weight: bold;">Driver</th>
                                             <th style="min-width: 120px; font-weight: bold;">Odometer (km)</th>
                                             <th style="min-width: 200px; font-weight: bold;">Mileage Deviation</th>
@@ -76,76 +77,77 @@
 
                                                 }
 
-                                                <tr class="align-middle">
-                                                    <td>@index</td>
-                                                    <td>@item.RequestID</td>
-                                                    <td>@(item.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(item.PlateNo) ? "N/A" : item.PlateNo))</td>
-                                                    <td>@(item.Driver?.DriverName ?? "N/A")</td>
-                                                    <td>@item.CurrentOdometer</td>
-                                                    <td class="@deviationColor">
-                                                        @if (item.MileageDeviation.HasValue)
-                                                        {
-                                                            @($"{item.MileageDeviation.Value:F2}%")
-                                                        }
-                                                        else
-                                                        {
-                                                            @("N/A")
-                                                        }
-                                                    </td>
-                                                    <td>
-                                                        @if (item.IsEarlyRefill == true)
-                                                        {
-                                                            <span class="badge bg-warning text-dark">
-                                                                <i class="bi bi-exclamation-triangle-fill me-1"></i> Early
-                                                            </span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="badge bg-success">
-                                                                <i class="bi bi-check-circle-fill me-1"></i> Normal
-                                                            </span>
-                                                        }
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge"
-                                                              style="background-color: @(item.Status == "Pending" ? "#1976d2" : item.Status == "Approved" ? "green" : item.Status == "Rejected" ? "#ff1a1a" : "gray"); color: white; border-radius: 15px; padding: 5px 10px;">
-                                                            @(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        @if (!string.IsNullOrEmpty(item.ReviewStatus))
-                                                        {
-                                                            <span class="badge bg-danger">
-                                                                <i class="bi bi-flag-fill me-1"></i> @item.ReviewStatus
-                                                            </span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <span class="badge bg-secondary">—</span>
-                                                        }
-                                                    </td>
-                                                    <td style="position: sticky; right: 0;  z-index: 1;">
-                                                        <a href="@Url.Action("Details", new { id = item.RequestID })"
-                                                           class="btn btn-sm btn-info text-white me-1" title="Details">
-                                                            <i class="bi bi-eye"></i>
-                                                        </a>
-                                                        <a href="@Url.Action("Edit", new { id = item.RequestID })"
-                                                           class="btn btn-sm btn-warning text-white me-1" title="Edit">
-                                                            <i class="bi bi-pencil-square"></i>
-                                                        </a>
-                                                        <a href="@Url.Action("Delete", new { id = item.RequestID })"
-                                                           class="btn btn-sm btn-danger me-1" title="Delete">
-                                                            <i class="bi bi-trash"></i>
-                                                        </a>
-                                                        @if (item.Status == "Pending")
-                                                        {
-                                                            <a href="@Url.Action("Approve", new { id = item.RequestID })"
-                                                               class="btn btn-sm btn-primary" title="Authorize">
-                                                                <i class="bi bi-check-circle"></i>
-                                                            </a>
-                                                        }
-                                                    </td>
-                                                </tr>
+                                        <tr class="align-middle">
+                                            <td>@index</td>
+                                            <td>@item.RequestID</td>
+                                            <td>@(item.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(item.PlateNo) ? "N/A" : item.PlateNo))</td>
+                                            <td>@item.Vehicle.Ecards.FirstOrDefault().CardType</td>
+                                            <td>@(item.Driver?.DriverName ?? "N/A")</td>
+                                            <td>@item.CurrentOdometer</td>
+                                            <td class="@deviationColor">
+                                                @if (item.MileageDeviation.HasValue)
+                                                {
+                                                    @($"{item.MileageDeviation.Value:F2}%")
+                                                }
+                                                else
+                                                {
+                                                    @("N/A")
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (item.IsEarlyRefill == true)
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Early
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="bi bi-check-circle-fill me-1"></i> Normal
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge"
+                                                      style="background-color: @(item.Status == "Pending" ? "#1976d2" : item.Status == "Approved" ? "green" : item.Status == "Rejected" ? "#ff1a1a" : "gray"); color: white; border-radius: 15px; padding: 5px 10px;">
+                                                    @(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(item.ReviewStatus))
+                                                {
+                                                    <span class="badge bg-danger">
+                                                        <i class="bi bi-flag-fill me-1"></i> @item.ReviewStatus
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">—</span>
+                                                }
+                                            </td>
+                                            <td style="position: sticky; right: 0;  z-index: 1;">
+                                                <a href="@Url.Action("Details", new { id = item.RequestID })"
+                                                   class="btn btn-sm btn-info text-white me-1" title="Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="@Url.Action("Edit", new { id = item.RequestID })"
+                                                   class="btn btn-sm btn-warning text-white me-1" title="Edit">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <a href="@Url.Action("Delete", new { id = item.RequestID })"
+                                                   class="btn btn-sm btn-danger me-1" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                                @if (item.Status == "Pending")
+                                                {
+                                                    <a href="@Url.Action("Approve", new { id = item.RequestID })"
+                                                       class="btn btn-sm btn-primary" title="Authorize">
+                                                        <i class="bi bi-check-circle"></i>
+                                                    </a>
+                                                }
+                                            </td>
+                                        </tr>
                                                 index++;
                                             }
                                         }

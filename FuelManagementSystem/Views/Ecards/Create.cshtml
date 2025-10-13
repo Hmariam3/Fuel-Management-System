@@ -95,6 +95,14 @@
                                         new { @class = "form-select select2", required = true })
                                     @Html.ValidationMessageFor(model => model.CardType, "", new { @class = "invalid-feedback" })
                                 </div>
+                                <div class="col-md-4">
+                                    <label for="BalanceType" class="form-label">Balance Type *</label>
+                                    @Html.DropDownListFor(model => model.BalanceType,
+                                        new SelectList(new[] { 50000m, 100000m }),
+                                        "Select Card Type",
+                                        new { @class = "form-select select2", required = true })
+                                    @Html.ValidationMessageFor(model => model.BalanceType, "", new { @class = "invalid-feedback" })
+                                </div>
                                 <div class="col-md-4" id="vehicleField">
                                     <label for="PlateNo" class="form-label">Vehicle *</label>
                                     @Html.DropDownListFor(model => model.PlateNo, ViewBag.PlateNo as SelectList, "Select Vehicle", new { @class = "form-select select2" })
@@ -175,17 +183,17 @@
             });
 
             // Client-side validation for Balance
-            $('#Balance').on('input', function () {
-                const value = parseFloat($(this).val());
-                if (isNaN(value) || value < 50000 || value > 100000) {
-                    $(this).addClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                    $(this).after('<div class="invalid-feedback">Balance must be either 50,000 and 100,000 ETB.</div>');
-                } else {
-                    $(this).removeClass('is-invalid');
-                    $(this).next('.invalid-feedback').remove();
-                }
-            });
+            //$('#Balance').on('input', function () {
+            //    const value = parseFloat($(this).val());
+            //    if (isNaN(value) || value < 50000 || value > 100000) {
+            //        $(this).addClass('is-invalid');
+            //        $(this).next('.invalid-feedback').remove();
+            //        $(this).after('<div class="invalid-feedback">Balance must be either 50,000 and 100,000 ETB.</div>');
+            //    } else {
+            //        $(this).removeClass('is-invalid');
+            //        $(this).next('.invalid-feedback').remove();
+            //    }
+            //});
         });
     </script>
 }

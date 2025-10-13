@@ -43,7 +43,7 @@ namespace FuelManagementSystem.Controllers
         // POST: Ecards/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "EcardID,PlateNo,CardType,Balance,Status,ActivationDateTime")] Ecard ecard)
+        public ActionResult Create([Bind(Include = "EcardID,PlateNo,CardType,BalanceType,Balance,Status,ActivationDateTime")] Ecard ecard)
         {
             if (ModelState.IsValid)
             {
@@ -59,17 +59,24 @@ namespace FuelManagementSystem.Controllers
                 if (ecard.CardType == "Reserved")
                 {
                     ecard.PlateNo = null;
-                    ecard.Balance = 0; // Reserved cards usually start with 0 balance
+                    ecard.Balance = ecard.BalanceType; // Reserved cards usually start with 0 balance
                 }
                 else // Normal Card
                 {
                     // Balance must be exactly 50,000 or 100,000 ETB
-                    if (ecard.Balance != 50000 && ecard.Balance != 100000)
+                    if (ecard.BalanceType != 50000 && ecard.BalanceType != 100000)
                     {
                         ModelState.AddModelError("Balance", "Fund amount must be either 50,000 or 100,000 ETB.");
                         ViewBag.PlateNo = new SelectList(db.Vehicles, "PlateNo", "MakeAndType", ecard.PlateNo);
                         return View(ecard);
                     }
+
+                    // Balance Card: PlateNo should be NULL
+                    if (ecard.Balance == null)
+                    {
+                        ecard.Balance = ecard.BalanceType; // assign Balance type for ecard balance
+                    }
+
                 }
 
                 // Set defaults

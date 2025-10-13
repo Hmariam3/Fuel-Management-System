@@ -23,6 +23,7 @@ namespace FuelManagementSystem.Models
         public Nullable<System.DateTime> RequestedAt { get; set; }
         public string Status { get; set; }
         public string Note { get; set; }
+        public Nullable<bool> IsPrinted { get; set; }
     
         public virtual Ecard Ecard { get; set; }
     }

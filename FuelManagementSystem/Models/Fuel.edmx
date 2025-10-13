@@ -95,6 +95,7 @@
           <Property Name="RequestedAt" Type="date" />
           <Property Name="Status" Type="nvarchar(max)" />
           <Property Name="Note" Type="nvarchar(max)" />
+          <Property Name="IsPrinted" Type="bit" />
         </EntityType>
         <EntityType Name="Ecards">
           <Key>
@@ -103,8 +104,9 @@
           <Property Name="EcardID" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="PlateNo" Type="varchar" MaxLength="20" />
           <Property Name="CardType" Type="nvarchar(max)" />
-          <Property Name="Status" Type="varchar" MaxLength="10" />
+          <Property Name="BalanceType" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Balance" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Status" Type="varchar" MaxLength="10" />
           <Property Name="ActivationDateTime" Type="datetime" />
         </EntityType>
         <EntityType Name="FuelRefillRequests">
@@ -813,6 +815,7 @@
           <Property Name="RequestedAt" Type="DateTime" Precision="0" />
           <Property Name="Status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsPrinted" Type="Boolean" />
           <NavigationProperty Name="Ecard" Relationship="Self.FK_EcardReplenishmentRequest_EcardReplenishmentRequest" FromRole="EcardReplenishmentRequest" ToRole="Ecards" />
         </EntityType>
         <EntityType Name="Ecard">
@@ -822,8 +825,9 @@
           <Property Name="EcardID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="PlateNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="CardType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Status" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="BalanceType" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Balance" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Status" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="ActivationDateTime" Type="DateTime" Precision="3" />
           <NavigationProperty Name="EcardReplenishmentRequests" Relationship="Self.FK_EcardReplenishmentRequest_EcardReplenishmentRequest" FromRole="Ecards" ToRole="EcardReplenishmentRequest" />
           <NavigationProperty Name="Vehicle" Relationship="Self.FK__Ecards__PlateNo__656C112C" FromRole="Ecards" ToRole="Vehicle" />
@@ -1570,6 +1574,7 @@
                 <ScalarProperty Name="RequestedAt" ColumnName="RequestedAt" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="Note" ColumnName="Note" />
+                <ScalarProperty Name="IsPrinted" ColumnName="IsPrinted" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1579,8 +1584,9 @@
                 <ScalarProperty Name="EcardID" ColumnName="EcardID" />
                 <ScalarProperty Name="PlateNo" ColumnName="PlateNo" />
                 <ScalarProperty Name="CardType" ColumnName="CardType" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="BalanceType" ColumnName="BalanceType" />
                 <ScalarProperty Name="Balance" ColumnName="Balance" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="ActivationDateTime" ColumnName="ActivationDateTime" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -23,8 +23,9 @@ namespace FuelManagementSystem.Models
         public string EcardID { get; set; }
         public string PlateNo { get; set; }
         public string CardType { get; set; }
-        public string Status { get; set; }
+        public Nullable<decimal> BalanceType { get; set; }
         public Nullable<decimal> Balance { get; set; }
+        public string Status { get; set; }
         public Nullable<System.DateTime> ActivationDateTime { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

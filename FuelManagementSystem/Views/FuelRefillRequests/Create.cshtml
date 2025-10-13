@@ -77,16 +77,23 @@
                         </div>
                     }
 
+
                     @if (ViewBag.LowBalanceWarning != null)
                     {
-                        <div class="alert alert-warning d-flex justify-content-between align-items-center">
-                            <span>@ViewBag.LowBalanceWarning</span>
-                            <a href="@Url.Action("Create", "EcardReplenishmentRequests", new { ecardId = ViewBag.EcardID })"
-                               class="btn btn-sm btn-outline-danger ms-3">
-                                Request Replenishment
-                            </a>
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            @Html.Raw(ViewBag.LowBalanceWarning)
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     }
+
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @Html.Raw(ViewBag.ErrorMessage)
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
 
                     <div class="card card-success card-outline mb-4">
                         <div class="card-header">
@@ -95,93 +102,93 @@
                         @using (Html.BeginForm("Create", "FuelRefillRequests", FormMethod.Post, new { @class = "needs-validation", novalidate = true, enctype = "multipart/form-data" }))
                         {
                             @Html.AntiForgeryToken()
-                        <div class="card-body">
-                            <h5 class="mb-3">Request Details</h5>
-                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="card-body">
+                                <h5 class="mb-3">Request Details</h5>
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label for="PlateNo" class="form-label">Vehicle *</label>
-                                    @Html.DropDownListFor(model => model.PlateNo, ViewBag.PlateNo as SelectList, "Select Vehicle", new { @class = "form-select select2", data_placeholder = "Select Vehicle", required = true })
-                                    @Html.ValidationMessageFor(model => model.PlateNo, "", new { @class = "invalid-feedback" })
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label for="PlateNo" class="form-label">Vehicle *</label>
+                                        @Html.DropDownListFor(model => model.PlateNo, ViewBag.PlateNo as SelectList, "Select Vehicle", new { @class = "form-select select2", data_placeholder = "Select Vehicle", required = true })
+                                        @Html.ValidationMessageFor(model => model.PlateNo, "", new { @class = "invalid-feedback" })
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="DriverID" class="form-label">Driver *</label>
+                                        @Html.DropDownListFor(model => model.DriverID, ViewBag.DriverID as SelectList, "Select Driver", new { @class = "form-select select2", data_placeholder = "Select Driver", required = true })
+                                        @Html.ValidationMessageFor(model => model.DriverID, "", new { @class = "invalid-feedback" })
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="CurrentOdometer" class="form-label">Current Odometer (km) *</label>
+                                        @Html.EditorFor(model => model.CurrentOdometer, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0", required = true } })
+                                        @Html.ValidationMessageFor(model => model.CurrentOdometer, "", new { @class = "invalid-feedback" })
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="DriverID" class="form-label">Driver *</label>
-                                    @Html.DropDownListFor(model => model.DriverID, ViewBag.DriverID as SelectList, "Select Driver", new { @class = "form-select select2", data_placeholder = "Select Driver", required = true })
-                                    @Html.ValidationMessageFor(model => model.DriverID, "", new { @class = "invalid-feedback" })
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="CurrentOdometer" class="form-label">Current Odometer (km) *</label>
-                                    @Html.EditorFor(model => model.CurrentOdometer, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0", required = true } })
-                                    @Html.ValidationMessageFor(model => model.CurrentOdometer, "", new { @class = "invalid-feedback" })
-                                </div>
-                            </div>
 
-                            <h5 class="mb-3 mt-4">Transaction Details</h5>
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label for="LittersBought" class="form-label">Liters Bought *</label>
-                                    @Html.EditorFor(model => model.LittersBought, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "0", required = true } })
-                                    @Html.ValidationMessageFor(model => model.LittersBought, "", new { @class = "invalid-feedback" })
+                                <h5 class="mb-3 mt-4">Transaction Details</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label for="UnitPrice" class="form-label">Unit Price *</label>
+                                        @Html.EditorFor(model => model.UnitPrice, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "0", required = true } })
+                                        @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "invalid-feedback" })
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="LittersBought" class="form-label">Liters Bought *</label>
+                                        @Html.EditorFor(model => model.LittersBought, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "0", required = true } })
+                                        @Html.ValidationMessageFor(model => model.LittersBought, "", new { @class = "invalid-feedback" })
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="AmountPaid" class="form-label">Amount Paid *</label>
+                                        @Html.EditorFor(model => model.AmountPaid, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "0", @readonly = "readonly", required = true, } })
+                                        @Html.ValidationMessageFor(model => model.AmountPaid, "", new { @class = "invalid-feedback" })
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="Location" class="form-label">Location *</label>
+                                        @Html.EditorFor(model => model.Location, new { htmlAttributes = new { @class = "form-control", required = true } })
+                                        @Html.ValidationMessageFor(model => model.Location, "", new { @class = "invalid-feedback" })
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="ReceiptNum" class="form-label">Receipt Number *</label>
+                                        @Html.EditorFor(model => model.ReceiptNum, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0", required = true } })
+                                        @Html.ValidationMessageFor(model => model.ReceiptNum, "", new { @class = "invalid-feedback" })
+                                    </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="UnitPrice" class="form-label">Unit Price *</label>
-                                    @Html.EditorFor(model => model.UnitPrice, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "0", required = true } })
-                                    @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "invalid-feedback" })
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="AmountPaid" class="form-label">Amount Paid *</label>
-                                    @Html.EditorFor(model => model.AmountPaid, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", min = "0", @readonly = "readonly", required = true,  } })
-                                    @Html.ValidationMessageFor(model => model.AmountPaid, "", new { @class = "invalid-feedback" })
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="Location" class="form-label">Location *</label>
-                                    @Html.EditorFor(model => model.Location, new { htmlAttributes = new { @class = "form-control", required = true } })
-                                    @Html.ValidationMessageFor(model => model.Location, "", new { @class = "invalid-feedback" })
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="ReceiptNum" class="form-label">Receipt Number *</label>
-                                    @Html.EditorFor(model => model.ReceiptNum, new { htmlAttributes = new { @class = "form-control", type = "number", min = "0", required = true } })
-                                    @Html.ValidationMessageFor(model => model.ReceiptNum, "", new { @class = "invalid-feedback" })
+                                <h5 class="mb-3 mt-4">Attachment Details</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label for="odometerPhoto" class="form-label">Odometer Photo *</label>
+                                        <div class="input-group">
+                                            <input type="file" name="odometerPhoto" class="form-control" id="odometerPhoto" accept=".jpg,.jpeg,.png" required />
+                                            <label class="input-group-text" for="odometerPhoto">Upload</label>
+                                        </div>
+                                        <div id="odometerPhotoHelp" class="form-text">Upload odometer photo (JPG/PNG).</div>
+                                        @Html.ValidationMessage("odometerPhoto", "", new { @class = "invalid-feedback" })
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="receiptImage" class="form-label">Receipt Image *</label>
+                                        <div class="input-group">
+                                            <input type="file" name="receiptImage" class="form-control" id="receiptImage" accept=".jpg,.jpeg,.png" required />
+                                            <label class="input-group-text" for="receiptImage">Upload</label>
+                                        </div>
+                                        <div id="receiptImageHelp" class="form-text">Upload receipt image (JPG/PNG).</div>
+                                        @Html.ValidationMessage("receiptImage", "", new { @class = "invalid-feedback" })
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="digitalSignatureFile" class="form-label">Digital Signature *</label>
+                                        <div class="input-group">
+                                            <input type="file" name="digitalSignatureFile" class="form-control" id="digitalSignatureFile" accept=".jpg,.jpeg,.png" required />
+                                            <label class="input-group-text" for="digitalSignatureFile">Upload</label>
+                                        </div>
+                                        <div id="digitalSignatureHelp" class="form-text">Upload digital signature (JPG/PNG).</div>
+                                        @Html.ValidationMessage("digitalSignatureFile", "", new { @class = "invalid-feedback" })
+                                    </div>
                                 </div>
                             </div>
-                            <h5 class="mb-3 mt-4">Attachment Details</h5>
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label for="odometerPhoto" class="form-label">Odometer Photo *</label>
-                                    <div class="input-group">
-                                        <input type="file" name="odometerPhoto" class="form-control" id="odometerPhoto" accept=".jpg,.jpeg,.png" required />
-                                        <label class="input-group-text" for="odometerPhoto">Upload</label>
-                                    </div>
-                                    <div id="odometerPhotoHelp" class="form-text">Upload odometer photo (JPG/PNG).</div>
-                                    @Html.ValidationMessage("odometerPhoto", "", new { @class = "invalid-feedback" })
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="receiptImage" class="form-label">Receipt Image *</label>
-                                    <div class="input-group">
-                                        <input type="file" name="receiptImage" class="form-control" id="receiptImage" accept=".jpg,.jpeg,.png" required />
-                                        <label class="input-group-text" for="receiptImage">Upload</label>
-                                    </div>
-                                    <div id="receiptImageHelp" class="form-text">Upload receipt image (JPG/PNG).</div>
-                                    @Html.ValidationMessage("receiptImage", "", new { @class = "invalid-feedback" })
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="digitalSignatureFile" class="form-label">Digital Signature *</label>
-                                    <div class="input-group">
-                                        <input type="file" name="digitalSignatureFile" class="form-control" id="digitalSignatureFile" accept=".jpg,.jpeg,.png" required />
-                                        <label class="input-group-text" for="digitalSignatureFile">Upload</label>
-                                    </div>
-                                    <div id="digitalSignatureHelp" class="form-text">Upload digital signature (JPG/PNG).</div>
-                                    @Html.ValidationMessage("digitalSignatureFile", "", new { @class = "invalid-feedback" })
-                                </div>
-                            </div>
-                         </div>
-                         <div class="card-footer">
+                            <div class="card-footer">
                                 @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
                                 <button type="submit" class="btn btn-primary me-2">Create</button>
                                 <a href="@Url.Action("Index", "FuelRefillRequests")" class="btn btn-secondary">Cancel</a>
-                         </div>
-                         }
+                            </div>
+                        }
                     </div>
                     <!--end::Form Card-->
                 </div>

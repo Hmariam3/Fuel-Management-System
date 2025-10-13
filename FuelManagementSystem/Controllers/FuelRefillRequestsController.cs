@@ -27,6 +27,7 @@ namespace FuelManagementSystem.Controllers
         {
             var fuelRefillRequests = db.FuelRefillRequests
                 .Include(f => f.Driver)
+                .Include(f => f.Vehicle.Ecards)
                 .Include(f => f.Vehicle);
             return View(fuelRefillRequests.ToList());
         }
@@ -289,10 +290,62 @@ namespace FuelManagementSystem.Controllers
                             > (fuelRefillRequest.AmountPaid.Value * 0.01m))
                         {
                             ModelState.AddModelError("AmountPaid", "Amount paid does not match liters bought multiplied by unit price (within 1% tolerance).");
+
+                            ViewBag.PlateNo = new SelectList(db.Vehicles, "PlateNo", "PlateNo", fuelRefillRequest.PlateNo);
+                            ViewBag.DriverID = new SelectList(db.Drivers, "DriverID", "DriverName", fuelRefillRequest.DriverID);
                             return View(fuelRefillRequest);
                         }
                     }
-                                 
+
+                    // ✅ Check E-Card balance logic
+                    var ecard = db.Ecards.FirstOrDefault(e => e.PlateNo == vehicle.PlateNo && e.Status == "Active");
+                    if (ecard == null)
+                    {
+                        ModelState.AddModelError("", "No active E-Card found for this vehicle.");
+
+                        ViewBag.PlateNo = new SelectList(db.Vehicles, "PlateNo", "PlateNo", fuelRefillRequest.PlateNo);
+                        ViewBag.DriverID = new SelectList(db.Drivers, "DriverID", "DriverName", fuelRefillRequest.DriverID);
+                        return View(fuelRefillRequest);
+                    }
+
+                    decimal amount = fuelRefillRequest.AmountPaid ?? 0;
+                    decimal cardBalanceAfter = (decimal)(ecard.Balance - amount);
+                    
+
+                    // ❌ 1. Prevent creation if balance would go negative
+                    if (cardBalanceAfter < 0)
+                    {
+                        ModelState.AddModelError("", $"Insufficient balance on the E-Card ({ecard.Balance:N2}). Refill amount ({amount:N2}) exceeds available balance.");
+
+                        ViewBag.PlateNo = new SelectList(db.Vehicles, "PlateNo", "PlateNo", fuelRefillRequest.PlateNo);
+                        ViewBag.DriverID = new SelectList(db.Drivers, "DriverID", "DriverName", fuelRefillRequest.DriverID);
+                        
+
+                        return View(fuelRefillRequest);
+                    }
+
+                    // ⚠️ 2. Trigger warning if balance after refill is below 25% of BalanceType
+                    if (ecard.BalanceType.HasValue)
+                    {
+                        decimal lowBalanceThreshold = ecard.BalanceType.Value * 0.25m;
+
+                        if (cardBalanceAfter < lowBalanceThreshold)
+                        {
+                            ViewBag.LowBalanceWarning =
+                                $"⚠️ Warning: After this refill, the E-Card balance will drop to {cardBalanceAfter:N2}. " +
+                                $"Please create a <a href='/EcardReplenishmentRequests/Create' class='alert-link text-decoration-underline'>Card Replenishment Request</a>.";
+                        }
+                    }
+
+                    // ⚠️ 3. Alert if there is a pending Replenishment
+                    var pendingReplenishment = db.EcardReplenishmentRequests.Any(r => r.EcardID == ecard.EcardID && r.Status == "Pending");
+
+                    if (pendingReplenishment)
+                    {
+                        ViewBag.InfoMessage = "⚠️ You have a pending replenishment request. Be cautious of your remaining balance.";
+                    }
+
+
                     // File uploads (same as your version)
                     if (odometerPhoto != null && receiptImage != null && digitalSignatureFile != null)
                     {
@@ -324,9 +377,17 @@ namespace FuelManagementSystem.Controllers
                     fuelRefillRequest.ReviewStatus = null;
 
                     db.FuelRefillRequests.Add(fuelRefillRequest);
+
                     await db.SaveChangesAsync();
 
-                    return RedirectToAction("Index");
+                    ViewBag.SuccessMessage = "Fuel refill request successfully created!";
+
+                    // ✅ Return a fresh model to clear all fields
+                    var emptyModel = new FuelRefillRequest();
+
+                    ViewBag.PlateNo = new SelectList(db.Vehicles, "PlateNo", "PlateNo");
+                    ViewBag.DriverID = new SelectList(db.Drivers, "DriverID", "DriverName");
+                    return View(emptyModel);
                 }
             }
 
