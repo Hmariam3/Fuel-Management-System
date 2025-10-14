@@ -21,7 +21,6 @@
                             </span>
                             <input type="text" class="form-control border-start-0" placeholder="Search records..." aria-label="Search" id="searchInput">
                         </div>
-                       @* <a href="@Url.Action("ExportApprovedToPdf", "EcardReplenishmentRequests")" class="btn btn-danger btn-sm">Export Approved to PDF</a>*@
                     </div>
                 </div>
             </div>
@@ -35,106 +34,134 @@
                 <div class="col-md-12">
                     <div class="card card-outline card-success mb-4 shadow-sm">
                         <div class="card-body p-4">
-                            @using (Html.BeginForm("ExportSelectedApprovedToPdf", "EcardReplenishmentRequests", FormMethod.Post))
-                            {
-                                @Html.AntiForgeryToken()
-                                <div class="d-flex justify-content-end mb-2">
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="bi bi-file-earmark-pdf"></i> Export Selected to PDF
-                                    </button>
-                                </div>
-                                <div class="table-responsive" style="max-height: 70vh; overflow-x: auto;">
-                                    <table id="replenishmentRequestsTable" class="table table-bordered table-striped table-hover" aria-label="Replenishment request records">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th style="width: 40px; text-align:center;">
-                                                    <input type="checkbox" id="selectAll" />
-                                                </th>
-                                                <th style="width: 50px; font-weight: bold;">#</th>
-                                                <th style="min-width: 100px; font-weight: bold;">Ecard</th>
-                                                <th style="min-width: 120px; font-weight: bold;">Current Balance</th>
-                                                <th style="min-width: 150px; font-weight: bold;">Requested Amount</th>
-                                                <th style="min-width: 120px; font-weight: bold;">Balance After</th>
-                                                <th style="min-width: 120px; font-weight: bold;">Status</th>
-                                                <th style="min-width: 120px; font-weight: bold;">Print Status</th>
-                                                <th style="min-width: 150px; font-weight: bold;">Requested By</th>
-                                                <th style="min-width: 150px; font-weight: bold;">Requested At</th>
-                                                <th style="min-width: 200px; font-weight: bold; position: sticky; right: 0; background-color: #fff; z-index: 1;">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @if (Model != null && Model.Any())
+
+                            <!-- ✅ Export form moved OUTSIDE the table -->
+                            <div class="d-flex justify-content-end mb-2">
+                                <button id="exportSelectedBtn" type="button" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-file-earmark-pdf"></i> Export Selected to PDF
+                                </button>
+                            </div>
+
+                            <div class="table-responsive" style="max-height: 70vh; overflow-x: auto;">
+
+                                @if (TempData["Success"] != null)
+                                {
+                                    <div class="alert alert-success">@TempData["Success"]</div>
+                                }
+                                @if (TempData["Error"] != null)
+                                {
+                                    <div class="alert alert-danger">@TempData["Error"]</div>
+                                }
+
+                                <table id="replenishmentRequestsTable" class="table table-bordered table-striped table-hover" aria-label="Replenishment request records">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 40px; text-align:center;">
+                                                <input type="checkbox" id="selectAll" />
+                                            </th>
+                                            <th style=" font-weight: bold;">#</th>
+                                            <th style="min-width: 100px; font-weight: bold;">Ecard</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Current Balance</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Requested Amount</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Balance After</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Status</th>
+                                            <th style="min-width: 120px; font-weight: bold;">Print Status</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Requested By</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Requested At</th>
+                                            <th style="min-width: 200px; font-weight: bold; position: sticky; right: 0; background-color: #fff; z-index: 1;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model != null && Model.Any())
+                                        {
+                                            var index = 1;
+                                            foreach (var item in Model)
                                             {
-                                                var index = 1;
-                                                foreach (var item in Model)
-                                                {
-                                            <tr class="align-middle">
-                                                <td style="text-align:center;">
-                                                    <input type="checkbox" name="selectedIds" value="@item.Id" class="rowCheckbox" />
-                                                </td>
-                                                <td>@index</td>
-                                                <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : item.EcardID)</td>
-                                                <td>@(item.CurrentBalance.HasValue ? item.CurrentBalance.Value.ToString("N2") : "N/A")</td>
-                                                <td>@(item.RequestedAmount.HasValue ? item.RequestedAmount.Value.ToString("N2") : "N/A")</td>
-                                                <td>@(item.BalanceAfter.HasValue ? item.BalanceAfter.Value.ToString("N2") : "N/A")</td>
-                                                <td>
-                                                    <span class="badge"
-                                                          style="background-color: @(item.Status == "Pending" ? "#1976d2" : item.Status == "Approved" ? "green" : item.Status == "Rejected" ? "#ff1a1a" : "gray"); color: white; border-radius: 15px; padding: 5px 10px;">
-                                                        @(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    @if (item.IsPrinted == true)
-                                                    {
-                                                        <span class="badge bg-warning text-dark">
-                                                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Printed
+                                                <tr class="align-middle">
+                                                    <td style="text-align:center;">
+                                                        <input type="checkbox" name="selectedIds" value="@item.Id" class="rowCheckbox" />
+                                                    </td>
+                                                    <td>@index</td>
+                                                    <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : item.EcardID)</td>
+                                                    <td>@(item.CurrentBalance.HasValue ? item.CurrentBalance.Value.ToString("N2") : "N/A")</td>
+                                                    <td>@(item.RequestedAmount.HasValue ? item.RequestedAmount.Value.ToString("N2") : "N/A")</td>
+                                                    <td>@(item.BalanceAfter.HasValue ? item.BalanceAfter.Value.ToString("N2") : "N/A")</td>
+                                                    <td>
+                                                        <span class="badge"
+                                                              style="background-color:@(
+                                                                    item.Status == "Pending" ? "#1976d2" :
+                                                                    item.Status == "Approved" ? "green" :
+                                                                    item.Status == "Rejected" ? "#ff1a1a" :
+                                                                    item.Status == "Funded" ? "#9C27B0" : "gray"
+                                                                  ); color:white; border-radius:15px; padding:5px 10px;">
+                                                            @(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)
                                                         </span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="badge bg-success">
-                                                            <i class="bi bi-check-circle-fill me-1"></i> Not-Printed
-                                                        </span>
-                                                    }
-                                                </td>
-                                                <td>@(item.Ecard?.Vehicle?.Driver != null ? item.Ecard.Vehicle.Driver.DriverName : "N/A")</td>
-                                                <td>@(item.RequestedAt.HasValue ? item.RequestedAt.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")</td>
-                                                <td style="position: sticky; right: 0; z-index: 1;">
-                                                    @if (item.Status == "Pending")
-                                                    {
-                                                        using (Html.BeginForm("Approve", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post, new { @style = "display:inline;" }))
+                                                    </td>
+                                                    <td>
+                                                        @if (item.IsPrinted == true)
                                                         {
-                                                            @Html.AntiForgeryToken()
-                                                            <button type="submit" class="btn btn-sm btn-success me-1" title="Approve">
-                                                                <i class="bi bi-check-circle"></i>
-                                                            </button>
+                                                            <span class="badge bg-warning text-dark">
+                                                                <i class="bi bi-exclamation-triangle-fill me-1"></i> Printed
+                                                            </span>
                                                         }
-                                                        using (Html.BeginForm("Reject", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post, new { @style = "display:inline;" }))
+                                                        else
                                                         {
-                                                            @Html.AntiForgeryToken()
-                                                            <div class="input-group input-group-sm mb-1">
-                                                                <input type="text" name="note" placeholder="Reason" class="form-control" style="max-width: 100px;" />
-                                                                <button type="submit" class="btn btn-sm btn-danger" title="Reject">
-                                                                    <i class="bi bi-x-circle"></i>
-                                                                </button>
+                                                            <span class="badge bg-success">
+                                                                <i class="bi bi-check-circle-fill me-1"></i> Not Printed
+                                                            </span>
+                                                        }
+                                                    </td>
+                                                    <td>@(item.Ecard?.Vehicle?.Driver?.DriverName ?? "N/A")</td>
+                                                    <td>@(item.RequestedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? "N/A")</td>
+                                                    <td style="position: sticky; right: 0;  z-index: 1;">
+                                                        @if (item.Status == "Pending")
+                                                        {
+                                                            <div class="d-flex">
+                                                                @using (Html.BeginForm("Approve", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post, new { style = "display:inline;" }))
+                                                                {
+                                                                    @Html.AntiForgeryToken()
+                                                                    <button type="submit" class="btn btn-sm btn-success me-1" title="Approve">
+                                                                        <i class="bi bi-check-circle"></i>
+                                                                    </button>
+                                                                }
+
+                                                                @using (Html.BeginForm("Reject", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post, new { style = "display:inline;" }))
+                                                                {
+                                                                    @Html.AntiForgeryToken()
+                                                                    <div class="input-group input-group-sm">
+                                                                        <input type="text" name="note" placeholder="Reason" class="form-control" style="max-width: 100px;" />
+                                                                        <button type="submit" class="btn btn-sm btn-danger" title="Reject">
+                                                                            <i class="bi bi-x-circle"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                }
                                                             </div>
                                                         }
-                                                    }
-                                                </td>
-                                            </tr>
-                                                    index++;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                <tr>
-                                                    <td colspan="9" class="text-center">No replenishment request records found.</td>
+                                                        else if (item.Status == "Approved")
+                                                        {
+                                                            using (Html.BeginForm("MarkAsFunded", "EcardReplenishmentRequests", new { id = item.Id }, FormMethod.Post, new { style = "display:inline;" }))
+                                                            {
+                                                                @Html.AntiForgeryToken()
+                                                                <button type="submit" class="btn btn-sm btn-primary" title="Mark as Funded">
+                                                                    <i class="bi bi-cash-stack"></i> Fund
+                                                                </button>
+                                                            }
+                                                        }
+                                                    </td>
                                                 </tr>
+                                                index++;
                                             }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="11" class="text-center">No replenishment request records found.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -157,31 +184,15 @@
                 language: {
                     search: "",
                     searchPlaceholder: "Search records...",
-                    paginate: {
-                        previous: "&laquo;",
-                        next: "&raquo;"
-                    },
+                    paginate: { previous: "&laquo;", next: "&raquo;" },
                     emptyTable: "No replenishment request records found."
                 },
                 columnDefs: [
-                    { orderable: false, targets: [0, -1] },
-                    { width: "50px", targets: 0 },
-                    { width: "100px", targets: 1 },
-                    { width: "120px", targets: 2 },
-                    { width: "120px", targets: 3 },
-                    { width: "120px", targets: 4 },
-                    { width: "120px", targets: 5 },
-                    { width: "150px", targets: 6 },
-                    { width: "150px", targets: 7 },
-                    { width: "200px", targets: 8 }
+                    { orderable: false, targets: [0, -1] }
                 ],
-                dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
                 scrollX: true
             });
 
-            // Custom search input binding
             $('#searchInput').on('keyup', function () {
                 table.search(this.value).draw();
             });
@@ -196,6 +207,39 @@
                 } else if ($('.rowCheckbox:checked').length === $('.rowCheckbox').length) {
                     $('#selectAll').prop('checked', true);
                 }
+            });
+
+            // ✅ Handle Export Selected button click
+            $('#exportSelectedBtn').on('click', function () {
+                const selectedIds = $('.rowCheckbox:checked').map(function () {
+                    return $(this).val();
+                }).get();
+
+                if (selectedIds.length === 0) {
+                    alert("⚠️ Please select at least one approved request to export.");
+                    return;
+                }
+
+                // Post via AJAX
+                $.ajax({
+                    url: '@Url.Action("ExportSelectedApprovedToPdf", "EcardReplenishmentRequests")',
+                    type: 'POST',
+                    traditional: true, // important to send array correctly
+                    data: {
+                        selectedIds: selectedIds,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    xhrFields: { responseType: 'blob' },
+                    success: function (blob) {
+                        const link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = 'Approved_Replenishment_Requests.pdf';
+                        link.click();
+                    },
+                    error: function () {
+                        alert("❌ Please Make Sure that the Selected Requests are either Approved or Not Printed.");
+                    }
+                });
             });
 
         });

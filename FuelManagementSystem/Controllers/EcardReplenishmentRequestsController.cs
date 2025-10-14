@@ -309,5 +309,34 @@ namespace FuelManagementSystem.Controllers
                 return Json(new[] { new { Id = 0, EcardID = "N/A", RequestedAt = DateTime.Now, Status = "Pending" } }, JsonRequestBehavior.AllowGet);
             }
         }
+
+        // Mark as Funded
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult MarkAsFunded(int id)
+        {
+            var request = db.EcardReplenishmentRequests.Find(id);
+            if (request != null && request.Status == "Approved" && request.IsPrinted == true)
+            {
+                var ecard = db.Ecards.FirstOrDefault(e => e.EcardID == request.EcardID);
+                if (ecard != null)
+                {
+                    ecard.Balance += request.RequestedAmount ?? 0;
+                    request.Status = "Funded"; // new status
+                    request.Note = "Payment confirmed and balance updated on " + DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+                    db.Entry(ecard).State = EntityState.Modified;
+                    db.Entry(request).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData["Success"] = $"E-Card replenishment funded successfully. New Balance: {ecard.Balance:N2} ETB";
+                }
+            }
+            else
+            {
+                TempData["Error"] = "Please Make Sure that you Printed the Request.";
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index");
+        }
+
     }
 }

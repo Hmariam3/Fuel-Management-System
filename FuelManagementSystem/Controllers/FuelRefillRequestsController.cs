@@ -376,6 +376,14 @@ namespace FuelManagementSystem.Controllers
                     fuelRefillRequest.Status = "Pending";
                     fuelRefillRequest.ReviewStatus = null;
 
+                    // update Ecard Balance on the Create part
+                    var ecard = db.Ecards.FirstOrDefault(e => e.PlateNo == vehicle.PlateNo && e.Status == "Active");
+                    decimal amount = fuelRefillRequest.AmountPaid ?? 0;
+                    decimal cardBalanceAfter = (decimal)(ecard.Balance - amount);
+
+                    ecard.Balance = cardBalanceAfter;
+                    db.Entry(ecard).State = EntityState.Modified;
+
                     db.FuelRefillRequests.Add(fuelRefillRequest);
 
                     await db.SaveChangesAsync();
@@ -706,7 +714,7 @@ namespace FuelManagementSystem.Controllers
 
                     decimal liters = fuelRefillRequest.LittersBought ?? 0;
                     decimal amount = fuelRefillRequest.AmountPaid ?? 0;
-                    decimal cardBalanceAfter = (decimal)(ecard.Balance - amount);
+                    decimal cardBalanceAfter = (decimal)(ecard.Balance);
 
                     if (cardBalanceAfter < 0)
                     {
@@ -770,8 +778,8 @@ namespace FuelManagementSystem.Controllers
 
                     db.FuelTransactions.Add(fuelTransaction);
 
-                    ecard.Balance = cardBalanceAfter;
-                    db.Entry(ecard).State = EntityState.Modified;
+                    //ecard.Balance = cardBalanceAfter;
+                    //db.Entry(ecard).State = EntityState.Modified;
 
                     fuelRefillRequest.Status = "Approved";
                     fuelRefillRequest.MileageDeviation = mileageDeviation;
