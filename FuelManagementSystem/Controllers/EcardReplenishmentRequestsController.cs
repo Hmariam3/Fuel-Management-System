@@ -34,7 +34,17 @@ namespace FuelManagementSystem.Controllers
         // GET: Requests/Create
         public ActionResult Create(string ecardId)
         {
-            ViewBag.EcardID = new SelectList(db.Ecards.Where(e => e.Status == "Active"), "EcardID", "EcardID", ecardId);
+            ViewBag.EcardID = new SelectList(
+                                    db.Ecards
+                                      .Where(e => e.Status == "Active")
+                                      .Select(e => new
+                                      {
+                                          EcardID = e.EcardID,
+                                          DisplayText = e.EcardID + " (" + e.CardType + ")"
+                                      }),
+                                    "EcardID",
+                                    "DisplayText"
+                                );
             return View();
         }
 
@@ -50,7 +60,18 @@ namespace FuelManagementSystem.Controllers
                 if (ecard == null)
                 {
                     ModelState.AddModelError("EcardID", "Invalid Ecard selected.");
-                    ViewBag.EcardID = new SelectList(db.Ecards, "EcardID", "EcardID", request.EcardID);
+                    ViewBag.EcardID = new SelectList(
+                                            db.Ecards
+                                              .Where(e => e.Status == "Active")
+                                              .Select(e => new
+                                              {
+                                                  EcardID = e.EcardID,
+                                                  DisplayText = e.EcardID + " (" + e.CardType + ")"
+                                              }),
+                                            "EcardID",
+                                            "DisplayText"
+                                        );
+
                     return View(request);
                 }
 
@@ -323,6 +344,7 @@ namespace FuelManagementSystem.Controllers
                 {
                     ecard.Balance += request.RequestedAmount ?? 0;
                     request.Status = "Funded"; // new status
+                    request.BalanceAfter = ecard.Balance;
                     request.Note = "Payment confirmed and balance updated on " + DateTime.Now.ToString("yyyy-MM-dd HH:mm");
                     db.Entry(ecard).State = EntityState.Modified;
                     db.Entry(request).State = EntityState.Modified;

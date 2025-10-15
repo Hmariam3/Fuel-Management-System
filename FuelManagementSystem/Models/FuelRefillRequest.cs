@@ -22,6 +22,7 @@ namespace FuelManagementSystem.Models
     
         public int RequestID { get; set; }
         public string PlateNo { get; set; }
+        public string CardType { get; set; }
         public int DriverID { get; set; }
         public int CurrentOdometer { get; set; }
         public System.DateTime RequestDateTime { get; set; }

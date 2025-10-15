@@ -81,7 +81,7 @@
                                             <td>@index</td>
                                             <td>@item.RequestID</td>
                                             <td>@(item.Vehicle?.MakeAndType ?? "N/A") (@(string.IsNullOrEmpty(item.PlateNo) ? "N/A" : item.PlateNo))</td>
-                                            <td>@item.Vehicle.Ecards.FirstOrDefault().CardType</td>
+                                            <td>@item.CardType</td>
                                             <td>@(item.Driver?.DriverName ?? "N/A")</td>
                                             <td>@item.CurrentOdometer</td>
                                             <td class="@deviationColor">

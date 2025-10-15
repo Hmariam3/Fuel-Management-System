@@ -55,7 +55,7 @@
                                             <p>@Model.TransactionID</p>
                                         </div>
                                         <div class="col-md-4">
-                                            <strong class="form-label">Request ID</strong>
+                                            <strong class="form-label">Fuel ID</strong>
                                             <p>@Model.RequestID</p>
                                         </div>
                                         <div class="col-md-4">
@@ -124,14 +124,14 @@
                             <!-- Related Fuel Refill Request -->
                             <div class="card card-success card-outline mb-4">
                                 <div class="card-header">
-                                    <div class="card-title">Related Fuel Refill Request</div>
+                                    <div class="card-title">Related Fuel Refill</div>
                                 </div>
                                 <div class="card-body">
                                     @if (Model.FuelRefillRequest != null)
                                     {
                                         <div class="row g-3">
                                             <div class="col-md-4">
-                                                <strong class="form-label">Request ID</strong>
+                                                <strong class="form-label">Fuel ID</strong>
                                                 <p>@Model.FuelRefillRequest.RequestID</p>
                                             </div>
                                             <div class="col-md-4">

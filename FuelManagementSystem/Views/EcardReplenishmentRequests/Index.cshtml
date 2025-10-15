@@ -60,7 +60,7 @@
                                                 <input type="checkbox" id="selectAll" />
                                             </th>
                                             <th style=" font-weight: bold;">#</th>
-                                            <th style="min-width: 100px; font-weight: bold;">Ecard</th>
+                                            <th style="min-width: 150px; font-weight: bold;">Ecard</th>
                                             <th style="min-width: 120px; font-weight: bold;">Current Balance</th>
                                             <th style="min-width: 150px; font-weight: bold;">Requested Amount</th>
                                             <th style="min-width: 120px; font-weight: bold;">Balance After</th>
@@ -82,7 +82,7 @@
                                                         <input type="checkbox" name="selectedIds" value="@item.Id" class="rowCheckbox" />
                                                     </td>
                                                     <td>@index</td>
-                                                    <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : item.EcardID)</td>
+                                                    <td>@(string.IsNullOrEmpty(item.EcardID) ? "N/A" : $"{item.EcardID} ({item.Ecard.CardType})")</td>
                                                     <td>@(item.CurrentBalance.HasValue ? item.CurrentBalance.Value.ToString("N2") : "N/A")</td>
                                                     <td>@(item.RequestedAmount.HasValue ? item.RequestedAmount.Value.ToString("N2") : "N/A")</td>
                                                     <td>@(item.BalanceAfter.HasValue ? item.BalanceAfter.Value.ToString("N2") : "N/A")</td>

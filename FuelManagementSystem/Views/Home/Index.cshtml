@@ -43,11 +43,27 @@ $(document).ready(function () {
         let html = '';
         if (data && data.length > 0) {
             data.forEach(function (transaction) {
+                // Handle .NET /Date(…)/ format
+                let rawDate = transaction.TransactionDateTime;
+                let parsedDate = null;
+
+                if (rawDate) {
+                    // Match /Date(1728902400000)/
+                    let match = /\/Date\((\d+)\)\//.exec(rawDate);
+                    if (match) {
+                        parsedDate = new Date(parseInt(match[1]));
+                    } else {
+                        parsedDate = new Date(rawDate); // fallback for normal ISO format
+                    }
+                }
+
+                // Format as readable date
+                let formattedDate = parsedDate ? parsedDate.toLocaleDateString() : 'N/A';
+
                 let detailsUrl = '@Url.Action("Details", "FuelTransactions", new { id = "__id__" })'.replace('__id__', transaction.TransactionID);
                 html += `<tr>
                     <td>${transaction.TransactionID}</td>
-<td>${new Date(transaction.TransactionDateTime).toLocaleDateString()}</td>
-
+                    <td>${formattedDate}</td>
                     <td>${transaction.PlateNo || 'N/A'}</td>
                     <td>${(transaction.LitersUsed || 0).toFixed(2)}</td>
                     <td>${(transaction.Amount || 0).toFixed(2)}</td>
@@ -94,6 +110,23 @@ $(document).ready(function () {
         let html = '';
         if (data && data.length > 0) {
             data.forEach(function (request, index) {
+                // Handle .NET /Date(…)/ format
+                let rawDate = request.RequestDateTime;
+                let parsedDate = null;
+
+                if (rawDate) {
+                    // Match /Date(1728902400000)/
+                    let match = /\/Date\((\d+)\)\//.exec(rawDate);
+                    if (match) {
+                        parsedDate = new Date(parseInt(match[1]));
+                    } else {
+                        parsedDate = new Date(rawDate); // fallback for ISO format
+                    }
+                }
+
+                // Format date (you can use toLocaleString() if you want time)
+                let formattedDate = parsedDate ? parsedDate.toLocaleDateString() : 'N/A';
+
                 let detailsUrl = '@Url.Action("Details", "FuelRefillRequests", new { id = "__id__" })'.replace('__id__', request.RequestID);
                 html += `<li>
                     <span class="handle">
@@ -101,11 +134,11 @@ $(document).ready(function () {
                         <i class="fas fa-ellipsis-v"></i>
                     </span>
                     <div class="icheck-primary d-inline ml-2">
-                        <input type="checkbox" name="refill${index}" id="refillCheck${index}" ${request.Status === 'Completed' ? 'checked' : ''}>
+                        <input type="checkbox" name="refill${index}" id="refillCheck${index}" ${request.Status === 'Approved' ? 'checked' : ''}>
                         <label for="refillCheck${index}"></label>
                     </div>
                     <span class="text">Refill Request for ${request.PlateNo || 'N/A'}</span>
-                    <small class="badge badge-primary"><i class="far fa-clock"></i> ${new Date(request.RequestDateTime).toLocaleDateString()}</small>
+                    <small class="badge badge-primary"><i class="far fa-clock"></i> ${formattedDate}</small>
                     <div class="tools">
                         <a href="${detailsUrl}" class="fas fa-edit"></a>
                     </div>
@@ -119,35 +152,57 @@ $(document).ready(function () {
         $('#refillRequests').html('<li>Error loading refill requests.</li>');
     });
 
-    // Fetch Pending Replenishments
-    fetchJson('@Url.Action("GetPendingReplenishments", "EcardReplenishmentRequests")', function (data) {
-        let html = '';
-        if (data && data.length > 0) {
-            data.forEach(function (replenishment, index) {
-                let detailsUrl = '@Url.Action("Details", "EcardReplenishmentRequests", new { id = "__id__" })'.replace('__id__', replenishment.Id);
-                html += `<li>
-                    <span class="handle">
-                        <i class="fas fa-ellipsis-v"></i>
-                        <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                    <div class="icheck-primary d-inline ml-2">
-                        <input type="checkbox" name="replenish${index}" id="replenishCheck${index}" ${replenishment.Status === 'Approved' ? 'checked' : ''}>
-                        <label for="replenishCheck${index}"></label>
-                    </div>
-                    <span class="text">Replenish E-Card ${replenishment.EcardID || 'N/A'}</span>
-                    <small class="badge badge-warning"><i class="far fa-clock"></i> ${new Date(replenishment.RequestedAt).toLocaleDateString()}</small>
-                    <div class="tools">
-                        <a href="${detailsUrl}" class="fas fa-edit"></a>
-                    </div>
-                </li>`;
-            });
-        } else {
-            html += '<li>No pending replenishments.</li>';
-        }
-        $('#replenishmentTasks').html(html);
-    }, function () {
-        $('#replenishmentTasks').html('<li>Error loading replenishments.</li>');
-    });
+// Fetch Pending Replenishments (Detailed)
+fetchJson('@Url.Action("GetPendingReplenishmentsDetails", "EcardReplenishmentRequests")', function (data) {
+    let html = '';
+    if (data && data.length > 0) {
+        data.forEach(function (replenishment, index) {
+            // Handle .NET /Date(…)/ format safely
+            let rawDate = replenishment.RequestedAt;
+            let parsedDate = null;
+
+            if (rawDate) {
+                let match = /\/Date\((\d+)\)\//.exec(rawDate);
+                if (match) {
+                    parsedDate = new Date(parseInt(match[1]));
+                } else {
+                    parsedDate = new Date(rawDate);
+                }
+            }
+
+            // Format nicely
+            let formattedDate = parsedDate ? parsedDate.toLocaleDateString() : 'N/A';
+
+            // Generate details link
+            let detailsUrl = '@Url.Action("Details", "EcardReplenishmentRequests", new { id = "__id__" })'
+                .replace('__id__', replenishment.Id);
+
+            // Build list item
+            html += `<li>
+                <span class="handle">
+                    <i class="fas fa-ellipsis-v"></i>
+                    <i class="fas fa-ellipsis-v"></i>
+                </span>
+                <div class="icheck-primary d-inline ml-2">
+                    <input type="checkbox" name="replenish${index}" id="replenishCheck${index}" ${replenishment.Status === 'Approved' ? 'checked' : ''}>
+                    <label for="replenishCheck${index}"></label>
+                </div>
+                <span class="text">Replenish E-Card ${replenishment.EcardID || 'N/A'}</span>
+                <small class="badge badge-warning"><i class="far fa-clock"></i> ${formattedDate}</small>
+                <div class="tools">
+                    <a href="${detailsUrl}" class="fas fa-edit"></a>
+                </div>
+            </li>`;
+        });
+    } else {
+        html = '<li>No pending replenishments.</li>';
+    }
+
+    $('#replenishmentTasks').html(html);
+}, function () {
+    $('#replenishmentTasks').html('<li>Error loading replenishments.</li>');
+});
+
 });
 </script>
 
@@ -296,11 +351,11 @@ $(document).ready(function () {
                                 <li>Loading requests...</li>
                             </ul>
                         </div>
-                        <div class="card-footer border-0">
+                        @*<div class="card-footer border-0">
                             <a href="@Url.Action("Create", "FuelRefillRequests")" class="btn btn-primary float-end">
                                 <i class="fas fa-plus"></i> Add Request
                             </a>
-                        </div>
+                        </div>*@
                     </div>
 
                     <div class="card text-white bg-warning bg-gradient border-warning mb-4">
@@ -321,11 +376,11 @@ $(document).ready(function () {
                                 <li>Loading replenishments...</li>
                             </ul>
                         </div>
-                        <div class="card-footer border-0">
+                        @*<div class="card-footer border-0">
                             <a href="@Url.Action("CreateReplenishment", "Ecards")" class="btn btn-warning float-end">
                                 <i class="fas fa-plus"></i> Add Replenishment
                             </a>
-                        </div>
+                        </div>*@
                     </div>
                 </div>
             </div>

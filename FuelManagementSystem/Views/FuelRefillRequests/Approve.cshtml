@@ -46,12 +46,12 @@
                             <!-- Request Details -->
                             <div class="card card-success card-outline mb-4">
                                 <div class="card-header">
-                                    <div class="card-title">Request Information</div>
+                                    <div class="card-title">Fuel Information</div>
                                 </div>
                                 <div class="card-body">
                                     <div class="row g-3">
                                         <div class="col-md-4">
-                                            <strong class="form-label">Request ID</strong>
+                                            <strong class="form-label">Fuel ID</strong>
                                             <p>@Model.RequestID</p>
                                         </div>
                                         <div class="col-md-4">
@@ -67,12 +67,28 @@
                                             <p>@(Model.CurrentOdometer.ToString() ?? "N/A")</p>
                                         </div>
                                         <div class="col-md-4">
-                                            <strong class="form-label">Request Date</strong>
+                                            <strong class="form-label">Fuel Date</strong>
                                             <p>@(Model.RequestDateTime.ToString("yyyy-MM-dd HH:mm:ss"))</p>
                                         </div>
                                         <div class="col-md-4">
                                             <strong class="form-label">Status</strong>
                                             <p>@(string.IsNullOrEmpty(Model.Status) ? "N/A" : Model.Status)</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Litters </strong>
+                                            <p>@Model.LittersBought</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Amount </strong>
+                                            <p>@Model.AmountPaid</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Location </strong>
+                                            <p>@Model.Location</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong class="form-label">Receipt </strong>
+                                            <p>@Model.ReceiptNum</p>
                                         </div>
                                         <div class="col-md-4">
                                             <strong class="form-label">Mileage Deviation (%)</strong>

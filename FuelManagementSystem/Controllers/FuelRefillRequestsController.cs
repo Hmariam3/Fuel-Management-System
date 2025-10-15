@@ -230,7 +230,7 @@ namespace FuelManagementSystem.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(
-            [Bind(Include = "RequestID,PlateNo,DriverID,CurrentOdometer,RequestDateTime,ReceiptImage,OdometerPhoto,DigitalSignature,Status,MileageDeviation,LittersBought,AmountPaid,UnitPrice,Location,ReceiptNum")]
+            [Bind(Include = "RequestID,PlateNo,CardType,DriverID,CurrentOdometer,RequestDateTime,ReceiptImage,OdometerPhoto,DigitalSignature,Status,MileageDeviation,LittersBought,AmountPaid,UnitPrice,Location,ReceiptNum")]
     FuelRefillRequest fuelRefillRequest,
             HttpPostedFileBase odometerPhoto,
             HttpPostedFileBase receiptImage,
@@ -372,9 +372,7 @@ namespace FuelManagementSystem.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    fuelRefillRequest.RequestDateTime = DateTime.Now;
-                    fuelRefillRequest.Status = "Pending";
-                    fuelRefillRequest.ReviewStatus = null;
+
 
                     // update Ecard Balance on the Create part
                     var ecard = db.Ecards.FirstOrDefault(e => e.PlateNo == vehicle.PlateNo && e.Status == "Active");
@@ -384,18 +382,26 @@ namespace FuelManagementSystem.Controllers
                     ecard.Balance = cardBalanceAfter;
                     db.Entry(ecard).State = EntityState.Modified;
 
+                    fuelRefillRequest.RequestDateTime = DateTime.Now;
+                    fuelRefillRequest.Status = "Pending";
+                    fuelRefillRequest.ReviewStatus = null;
+                    fuelRefillRequest.CardType = ecard.CardType + '(' + ecard.EcardID + ')';
                     db.FuelRefillRequests.Add(fuelRefillRequest);
 
                     await db.SaveChangesAsync();
 
-                    ViewBag.SuccessMessage = "Fuel refill request successfully created!";
+                    ViewBag.SuccessMessage = "✅ Fuel refill request successfully created!";
 
-                    // ✅ Return a fresh model to clear all fields
+                    // ✅ Clear old form data from ModelState before returning a new empty model
+                    ModelState.Clear();
+
                     var emptyModel = new FuelRefillRequest();
 
                     ViewBag.PlateNo = new SelectList(db.Vehicles, "PlateNo", "PlateNo");
                     ViewBag.DriverID = new SelectList(db.Drivers, "DriverID", "DriverName");
+
                     return View(emptyModel);
+
                 }
             }
 

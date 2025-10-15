@@ -115,6 +115,7 @@
           </Key>
           <Property Name="RequestID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PlateNo" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="CardType" Type="nvarchar(max)" />
           <Property Name="DriverID" Type="int" Nullable="false" />
           <Property Name="CurrentOdometer" Type="int" Nullable="false" />
           <Property Name="RequestDateTime" Type="datetime" Nullable="false" />
@@ -838,6 +839,7 @@
           </Key>
           <Property Name="RequestID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PlateNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CardType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DriverID" Type="Int32" Nullable="false" />
           <Property Name="CurrentOdometer" Type="Int32" Nullable="false" />
           <Property Name="RequestDateTime" Type="DateTime" Nullable="false" Precision="3" />
@@ -1596,6 +1598,7 @@
               <MappingFragment StoreEntitySet="FuelRefillRequests">
                 <ScalarProperty Name="RequestID" ColumnName="RequestID" />
                 <ScalarProperty Name="PlateNo" ColumnName="PlateNo" />
+                <ScalarProperty Name="CardType" ColumnName="CardType" />
                 <ScalarProperty Name="DriverID" ColumnName="DriverID" />
                 <ScalarProperty Name="CurrentOdometer" ColumnName="CurrentOdometer" />
                 <ScalarProperty Name="RequestDateTime" ColumnName="RequestDateTime" />
