@@ -11,6 +11,7 @@ using FuelManagementSystem.Models;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Net;
+using OfficeOpenXml;
 
 namespace FuelManagementSystem
 {
@@ -22,6 +23,7 @@ namespace FuelManagementSystem
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             var container = new UnityContainer();
 

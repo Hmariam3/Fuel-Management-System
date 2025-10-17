@@ -32,7 +32,91 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card card-outline card-success mb-4 shadow-sm">
+                    <div class="card card-outline mb-4 shadow-sm">
+                        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #00ADEF;">
+                            <h5 class="card-title mb-0 text-white">
+                                <i class="bi bi-fuel-pump me-2"></i>Fuel Transactions
+                            </h5>
+
+                            <!-- Export Section -->
+                            <div class="d-flex gap-2 align-items-center">
+                                <!-- Quick Export Button -->
+                                <button type="button" class="btn btn-success btn-sm" onclick="exportToExcel(null, null)" title="Export All Data">
+                                    <i class="bi bi-download me-1"></i>Export All
+                                </button>
+
+                                <!-- Export Dropdown -->
+                                <div class="dropdown">
+                                    <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-file-earmark-excel me-1"></i>Advanced Export
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdown">
+                                        <li><h6 class="dropdown-header">Export Options</h6></li>
+
+                                        <!-- Export Current Month -->
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="exportToExcel(null, getCurrentMonth())">
+                                                <i class="bi bi-calendar-month me-2 text-success"></i>Current Month (All Vehicles)
+                                            </a>
+                                        </li>
+
+                                        <!-- Export by Vehicle (Searchable Dropdown) -->
+                                        <li><h6 class="dropdown-header mt-2">By Vehicle</h6></li>
+                                        <li>
+                                            <select class="form-select form-select-sm w-100" id="vehicleSelect" onchange="exportToExcel(this.value, getCurrentMonth())">
+                                                <option value="">-- Select a Vehicle --</option>
+                                            </select>
+                                        </li>
+
+                                        <!-- Custom Export Modal Trigger -->
+                                        <li class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item text-primary fw-bold" href="#" data-bs-toggle="modal" data-bs-target="#exportModal">
+                                                <i class="bi bi-gear me-2"></i>Custom Export...
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Export Modal (unchanged) -->
+                        <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header text-white" style="background-color: #00ADEF;">
+                                        <h5 class="modal-title" id="exportModalLabel">
+                                            <i class="bi bi-file-earmark-excel me-2"></i>Custom Export Options
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="exportForm">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="plateNoSelect" class="form-label">Vehicle Plate No</label>
+                                                    <select class="form-select" id="plateNoSelect" name="plateNo">
+                                                        <option value="">-- All Vehicles --</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="monthSelect" class="form-label">Month</label>
+                                                    <select class="form-select" id="monthSelect" name="month">
+                                                        <option value="">-- All Months --</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="d-grid">
+                                                <button type="submit" class="btn text-white" style="background-color: #00ADEF;">
+                                                    <i class="bi bi-download me-2"></i>Generate Excel Report
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="card-body p-4">
                             <div class="table-responsive" style="max-height: 70vh; overflow-x: auto;">
                                 <table id="fuelTransactionsTable" class="table table-bordered table-striped table-hover" aria-label="Fuel transaction records">
@@ -63,35 +147,35 @@
                                             var index = 1;
                                             foreach (var item in Model)
                                             {
-                                            <tr class="align-middle">
-                                                <td>@index</td>
-                                                <td>@item.TransactionID</td>
-                                                <td>@(string.IsNullOrEmpty(item.FuelRefillRequest?.PlateNo) ? "N/A" : item.FuelRefillRequest.PlateNo)</td>
-                                                <td>@(item.Driver?.DriverName ?? "N/A")</td>
-                                                <td>@item.LitersUsed</td>
-                                                <td>@item.Amount</td>
-                                                <td>@item.BegKm</td>
-                                                <td>@item.EndKm</td>
-                                                <td>@item.D_KM</td>
-                                                <td>@item.AvgKmLiter</td>
-                                                <td>@item.ExpectedRangeKm</td>
-                                                <td>@item.TransactionDateTime</td>
-                                                <td>@item.EcardBalanceAfter</td>
-                                                <td>@item.Location</td>
-                                                <td>@item.ReceiptNum</td>
-                                                <td>
-                                                    <span class="badge"
-                                                          style="background-color: @(item.Product == "Benzene" ? "green" : item.Product == "Diesel" ? "#ff1a1a" : "gray"); color: white; border-radius: 15px; padding: 5px 10px;">
-                                                        @(string.IsNullOrEmpty(item.Product) ? "N/A" : item.Product)
-                                                    </span>
-                                                </td>
-                                                <td style="position: sticky; right: 0; background-color: #fff; z-index: 1;">
-                                                    <a href="@Url.Action("Details", "FuelTransactions", new { id = item.TransactionID })"
-                                                       class="btn btn-sm btn-info text-white me-1" title="Details">
-                                                        <i class="bi bi-eye"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
+                                                <tr class="align-middle">
+                                                    <td>@index</td>
+                                                    <td>@item.TransactionID</td>
+                                                    <td>@(string.IsNullOrEmpty(item.FuelRefillRequest?.PlateNo) ? "N/A" : item.FuelRefillRequest.PlateNo)</td>
+                                                    <td>@(item.Driver?.DriverName ?? "N/A")</td>
+                                                    <td>@item.LitersUsed</td>
+                                                    <td>@item.Amount</td>
+                                                    <td>@item.BegKm</td>
+                                                    <td>@item.EndKm</td>
+                                                    <td>@item.D_KM</td>
+                                                    <td>@item.AvgKmLiter</td>
+                                                    <td>@item.ExpectedRangeKm</td>
+                                                    <td>@item.TransactionDateTime</td>
+                                                    <td>@item.EcardBalanceAfter</td>
+                                                    <td>@item.Location</td>
+                                                    <td>@item.ReceiptNum</td>
+                                                    <td>
+                                                        <span class="badge"
+                                                              style="background-color: @(item.Product == "Benzene" ? "green" : item.Product == "Diesel" ? "#ff1a1a" : "gray"); color: white; border-radius: 15px; padding: 5px 10px;">
+                                                            @(string.IsNullOrEmpty(item.Product) ? "N/A" : item.Product)
+                                                        </span>
+                                                    </td>
+                                                    <td style="position: sticky; right: 0; background-color: #fff; z-index: 1;">
+                                                        <a href="@Url.Action("Details", "FuelTransactions", new { id = item.TransactionID })"
+                                                           class="btn btn-sm btn-info text-white me-1" title="Details">
+                                                            <i class="bi bi-eye"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
                                                 index++;
                                             }
                                         }
@@ -114,8 +198,11 @@
 </main>
 
 @section Scripts {
+    <link rel="stylesheet" href="~/dist/css/bootstrap-select.min.css" />
+    <script src="~/dist/js/bootstrap-select.min.js"></script>
     <script>
         $(document).ready(function () {
+            // Existing DataTable initialization code...
             const table = $('#fuelTransactionsTable').DataTable({
                 paging: true,
                 searching: true,
@@ -161,6 +248,121 @@
             $('#searchInput').on('keyup', function () {
                 table.search(this.value).draw();
             });
+
+            // Load plate numbers for export dropdown and vehicle select
+            loadPlateNumbers();
+
+            // Load months for export dropdown
+            loadMonths();
+
+            // Initialize Bootstrap Select for vehicle dropdown
+            $('#vehicleSelect').selectpicker({
+                liveSearch: true,
+                title: '-- Select a Vehicle --',
+                showTick: true,
+                style: 'btn-light btn-sm'
+            });
+
+            // Handle export form submission
+            $('#exportForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const plateNo = $('#plateNoSelect').val();
+                const month = $('#monthSelect').val();
+
+                exportToExcel(plateNo, month);
+            });
         });
+
+        // Load plate numbers for export dropdown and vehicle select
+        function loadPlateNumbers() {
+            $.ajax({
+                url: '@Url.Action("GetPlateNosForExport", "FuelTransactions")',
+                type: 'GET',
+                success: function (data) {
+                    const select = $('#plateNoSelect');
+                    const vehicleSelect = $('#vehicleSelect');
+                    select.empty();
+                    vehicleSelect.empty();
+                    select.append('<option value="">-- All Vehicles --</option>');
+                    vehicleSelect.append('<option value="">-- Select a Vehicle --</option>');
+
+                    $.each(data, function (index, plateNo) {
+                        select.append(`<option value="${plateNo}">${plateNo}</option>`);
+                        vehicleSelect.append(`<option value="${plateNo}">${plateNo}</option>`);
+                    });
+
+                    // Refresh Bootstrap Select
+                    $('#vehicleSelect').selectpicker('refresh');
+                },
+                error: function () {
+                    console.error('Error loading plate numbers');
+                }
+            });
+        }
+
+        // Load months for export dropdown
+        function loadMonths() {
+            $.ajax({
+                url: '@Url.Action("GetMonthsForExport", "FuelTransactions")',
+                type: 'GET',
+                success: function (data) {
+                    const select = $('#monthSelect');
+                    select.empty();
+                    select.append('<option value="">-- All Months --</option>');
+
+                    $.each(data, function (index, monthObj) {
+                        const year = new Date().getFullYear(); // Assuming current year
+                        const monthValue = `${year}-${monthObj.Month.toString().padStart(2, '0')}`;
+                        const monthDisplay = `${monthObj.MonthName} ${year}`;
+                        select.append(`<option value="${monthValue}">${monthDisplay}</option>`);
+                    });
+                },
+                error: function () {
+                    console.error('Error loading months');
+                }
+            });
+        }
+
+        // Export to Excel function
+        function exportToExcel(plateNo, month) {
+            let url = '@Url.Action("ExportToExcel", "FuelTransactions")';
+
+            if (plateNo) {
+                url += `?plateNo=${encodeURIComponent(plateNo)}`;
+            }
+            if (month) {
+                url += `${url.includes('?') ? '&' : '?'}month=${encodeURIComponent(month)}`;
+            }
+
+            // Show loading indicator
+            const button = $(event ? event.target : 'button[type="submit"]');
+            const originalText = button.html();
+            button.html('<i class="bi bi-hourglass-split me-2"></i>Generating Report...').prop('disabled', true);
+
+            // Create temporary link for download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `FuelTransactions_${plateNo || 'All'}_${month || 'All'}.xlsx`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Reset button
+            setTimeout(() => {
+                button.html(originalText).prop('disabled', false);
+            }, 2000);
+        }
+
+        // Get current month in YYYY-MM format
+        function getCurrentMonth() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            return `${year}-${month}`;
+        }
     </script>
 }
+
+
+
